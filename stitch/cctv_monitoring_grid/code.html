@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KINETIC_OBSERVATORY | CCTV Grid</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "outline-variant": "#46484d",
+                        "inverse-primary": "#006976",
+                        "on-tertiary-fixed": "#331f00",
+                        "surface-bright": "#292c33",
+                        "on-primary": "#005762",
+                        "primary-fixed-dim": "#00d4ec",
+                        "primary": "#81ecff",
+                        "secondary-container": "#006e16",
+                        "secondary-fixed": "#00fc40",
+                        "tertiary-fixed-dim": "#ec9e00",
+                        "surface-container": "#171a1f",
+                        "surface-container-high": "#1d2025",
+                        "inverse-surface": "#f9f9ff",
+                        "error-container": "#9f0519",
+                        "tertiary-container": "#feaa00",
+                        "outline": "#74757a",
+                        "on-secondary-fixed": "#00440a",
+                        "tertiary": "#ffbd5c",
+                        "surface-container-lowest": "#000000",
+                        "on-secondary-container": "#e6ffdc",
+                        "secondary-dim": "#00ec3b",
+                        "on-tertiary-container": "#503300",
+                        "tertiary-dim": "#ec9e00",
+                        "primary-dim": "#00d4ec",
+                        "on-primary-container": "#004d57",
+                        "on-surface-variant": "#aaabb0",
+                        "on-surface": "#f6f6fc",
+                        "inverse-on-surface": "#53555a",
+                        "on-error": "#490006",
+                        "surface-container-highest": "#23262c",
+                        "surface-container-low": "#111318",
+                        "error-dim": "#d7383b",
+                        "secondary": "#00fc40",
+                        "surface-tint": "#81ecff",
+                        "on-secondary-fixed-variant": "#006513",
+                        "surface-dim": "#0c0e12",
+                        "on-background": "#f6f6fc",
+                        "surface": "#0c0e12",
+                        "on-error-container": "#ffa8a3",
+                        "secondary-fixed-dim": "#00ec3b",
+                        "on-tertiary-fixed-variant": "#5b3b00",
+                        "on-primary-fixed-variant": "#005762",
+                        "background": "#0c0e12",
+                        "primary-container": "#00e3fd",
+                        "error": "#ff716c",
+                        "tertiary-fixed": "#feaa00",
+                        "surface-variant": "#23262c",
+                        "primary-fixed": "#00e3fd",
+                        "on-primary-fixed": "#003840",
+                        "on-tertiary": "#5c3b00",
+                        "on-secondary": "#005a10"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0c0e12; }
+        ::-webkit-scrollbar-thumb { background: #46484d; border-radius: 2px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30">
+<!-- TopNavBar Navigation Shell -->
+<header class="fixed top-0 left-0 w-full z-50 bg-[#111318]/80 backdrop-blur-xl flex justify-between items-center px-6 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold text-[#81ecff] uppercase font-['Space_Grotesk'] tracking-tight">KINETIC_OBSERVATORY</span>
+<div class="hidden md:flex items-center gap-6">
+<a class="text-[#aaabb0] hover:text-[#f6f6fc] transition-colors duration-200 font-['Space_Grotesk'] tracking-tight" href="#">Dashboard</a>
+<a class="text-[#81ecff] font-bold font-['Space_Grotesk'] tracking-tight underline decoration-2 underline-offset-8" href="#">CCTV Grid</a>
+<a class="text-[#aaabb0] hover:text-[#f6f6fc] transition-colors duration-200 font-['Space_Grotesk'] tracking-tight" href="#">Analytics</a>
+<a class="text-[#aaabb0] hover:text-[#f6f6fc] transition-colors duration-200 font-['Space_Grotesk'] tracking-tight" href="#">Alerts</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-[#81ecff] scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="p-2 text-[#81ecff] scale-95 active:scale-90 transition-transform relative">
+<span class="material-symbols-outlined" data-icon="notifications_active">notifications_active</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 text-[#81ecff] scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+<div class="absolute bottom-0 left-0 bg-gradient-to-b from-[#1d2025] to-transparent h-px w-full"></div>
+</header>
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-0 h-full w-64 z-40 bg-[#171a1f] flex flex-col pt-20 pb-6 shadow-[4px_0_24px_rgba(0,0,0,0.5)]">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary" data-icon="admin_panel_settings">admin_panel_settings</span>
+</div>
+<div>
+<div class="text-[#81ecff] font-['Space_Grotesk'] font-bold leading-tight">ATCS_COMMAND</div>
+<div class="text-xs text-on-surface-variant">Sector 07 - Active</div>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-6 py-3 text-[#aaabb0] hover:text-[#f6f6fc] hover:bg-[#1d2025]/50 hover:translate-x-1 transition-all duration-200 font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-[#81ecff] bg-[#1d2025] border-r-2 border-[#81ecff] font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="videocam">videocam</span>
+<span>CCTV Grid</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-[#aaabb0] hover:text-[#f6f6fc] hover:bg-[#1d2025]/50 hover:translate-x-1 transition-all duration-200 font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="insights">insights</span>
+<span>Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-[#aaabb0] hover:text-[#f6f6fc] hover:bg-[#1d2025]/50 hover:translate-x-1 transition-all duration-200 font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+<span>Alerts</span>
+</a>
+</nav>
+<div class="mt-auto px-6 space-y-1">
+<a class="flex items-center gap-3 py-2 text-[#aaabb0] hover:text-[#f6f6fc] transition-all font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 py-2 text-[#aaabb0] hover:text-[#f6f6fc] transition-all font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+<span>Logs</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-64 pt-20 p-6 min-h-screen">
+<div class="flex gap-6 h-[calc(100vh-8rem)]">
+<!-- Camera Selection Panel -->
+<section class="w-72 flex flex-col gap-4">
+<div class="bg-surface-container rounded-xl overflow-hidden shadow-2xl flex flex-col h-full border border-outline-variant/10">
+<div class="p-4 bg-surface-container-high flex items-center justify-between">
+<h2 class="font-headline text-sm font-bold tracking-wider text-on-surface uppercase">Camera Selection</h2>
+<span class="material-symbols-outlined text-on-surface-variant text-lg" data-icon="filter_list">filter_list</span>
+</div>
+<div class="p-4 flex-1 overflow-y-auto space-y-3">
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-none ring-1 ring-outline-variant/30 rounded-lg py-2 pl-10 pr-4 text-xs focus:ring-primary transition-all" placeholder="Search sectors..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-2 text-on-surface-variant text-base" data-icon="search">search</span>
+</div>
+<!-- Draggable Camera Items -->
+<div class="space-y-2">
+<div class="p-3 bg-surface-container-high hover:bg-surface-bright rounded-lg cursor-grab active:cursor-grabbing transition-all border-l-4 border-primary/40 group">
+<div class="flex items-center justify-between mb-1">
+<span class="text-[10px] text-primary uppercase font-bold tracking-widest">Sector 01</span>
+<span class="material-symbols-outlined text-xs text-on-surface-variant group-hover:text-primary" data-icon="drag_indicator">drag_indicator</span>
+</div>
+<div class="text-sm font-medium text-on-surface">CCTV-01: North Bridge</div>
+</div>
+<div class="p-3 bg-surface-container-high hover:bg-surface-bright rounded-lg cursor-grab transition-all border-l-4 border-secondary/40 group">
+<div class="flex items-center justify-between mb-1">
+<span class="text-[10px] text-secondary uppercase font-bold tracking-widest">Sector 04</span>
+<span class="material-symbols-outlined text-xs text-on-surface-variant" data-icon="drag_indicator">drag_indicator</span>
+</div>
+<div class="text-sm font-medium text-on-surface">CCTV-12: Tunnel Entry</div>
+</div>
+<div class="p-3 bg-error/10 ring-1 ring-error/30 rounded-lg cursor-grab transition-all border-l-4 border-error group animate-pulse">
+<div class="flex items-center justify-between mb-1">
+<span class="text-[10px] text-error uppercase font-bold tracking-widest">Alert High</span>
+<span class="material-symbols-outlined text-xs text-error" data-icon="error">error</span>
+</div>
+<div class="text-sm font-medium text-on-surface">CCTV-04: Simpang Lima</div>
+</div>
+<div class="p-3 bg-surface-container-high hover:bg-surface-bright rounded-lg cursor-grab transition-all border-l-4 border-tertiary/40 group">
+<div class="flex items-center justify-between mb-1">
+<span class="text-[10px] text-tertiary uppercase font-bold tracking-widest">Sector 02</span>
+<span class="material-symbols-outlined text-xs text-on-surface-variant" data-icon="drag_indicator">drag_indicator</span>
+</div>
+<div class="text-sm font-medium text-on-surface">CCTV-08: Grand Avenue</div>
+</div>
+<div class="p-3 bg-surface-container-high hover:bg-surface-bright rounded-lg cursor-grab transition-all border-l-4 border-primary/40 group opacity-50">
+<div class="flex items-center justify-between mb-1">
+<span class="text-[10px] text-primary uppercase font-bold tracking-widest">Sector 05</span>
+<span class="material-symbols-outlined text-xs text-on-surface-variant" data-icon="lock">lock</span>
+</div>
+<div class="text-sm font-medium text-on-surface">CCTV-21: South Depot</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CCTV Grid Area -->
+<section class="flex-1 flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="flex bg-surface-container rounded-lg p-1">
+<button class="px-3 py-1.5 bg-surface-container-highest rounded text-primary text-xs font-bold uppercase tracking-widest">3x3 Grid</button>
+<button class="px-3 py-1.5 text-on-surface-variant text-xs font-bold uppercase tracking-widest hover:text-on-surface transition-colors">4x3 Grid</button>
+</div>
+<div class="h-4 w-px bg-outline-variant/30"></div>
+<span class="text-xs text-on-surface-variant">Active Feeds: <span class="text-primary">09</span> / 42 Total</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-2 px-4 py-1.5 bg-surface-container-high rounded-lg text-xs font-bold text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="fullscreen">fullscreen</span>
+                            Expand HUD
+                        </button>
+<button class="flex items-center gap-2 px-4 py-1.5 bg-primary text-on-primary rounded-lg text-xs font-bold hover:shadow-[0_0_15px_rgba(129,236,255,0.4)] transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="save">save</span>
+                            Save Layout
+                        </button>
+</div>
+</div>
+<!-- The Live Grid -->
+<div class="flex-1 grid grid-cols-3 grid-rows-3 gap-3">
+<!-- Grid Cell 1 -->
+<div class="relative bg-surface-container-lowest rounded-lg overflow-hidden group border border-outline-variant/10">
+<img class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity grayscale-[30%]" data-alt="night time highway intersection with long exposure light trails from busy traffic and city lights in distance" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVlQ-A7v6agyT33CAN_PUNyNx-fi0_HfGP-1D0MFgDbKJZRhMX8tJRoHYvixPfT0_hFMRGZ6i5p8SM9H5eshNFx81KIQMnPOpguLOU40IHWWE8uxMGkAg1RZX9OtQMKYsH3PeADKfPmm249qIG6CScka5e_Q8iQ9qqYBhmWabYPk1XIiPrM0B4biekerHpxkiyg1QDKyilwGfffk0i5eA7xOy6V690Mu_HGxyHgcoq_7_4c1jl7HLc1NwTeSbBlJdlpHVsSU3nUikA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40"></div>
+<div class="absolute top-2 left-2 flex items-center gap-2">
+<span class="flex items-center gap-1 px-1.5 py-0.5 bg-black/60 backdrop-blur-md rounded text-[10px] font-bold text-on-surface">
+<span class="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse"></span> REC
+                            </span>
+<span class="px-1.5 py-0.5 bg-black/60 backdrop-blur-md rounded text-[10px] font-bold text-on-surface-variant">CCTV-01</span>
+</div>
+<div class="absolute bottom-2 left-2 right-2 flex justify-between items-end">
+<div>
+<div class="text-[10px] font-bold text-primary uppercase tracking-tighter">Sector 01: North Bridge</div>
+<div class="text-[9px] text-on-surface-variant font-mono">34.0522° N, 118.2437° W</div>
+</div>
+<span class="material-symbols-outlined text-on-surface/50 text-base" data-icon="videocam">videocam</span>
+</div>
+</div>
+<!-- Grid Cell 2 -->
+<div class="relative bg-surface-container-lowest rounded-lg overflow-hidden group border border-outline-variant/10">
+<img class="w-full h-full object-cover opacity-80 grayscale-[30%]" data-alt="wide angle view of modern urban street with high rise buildings and clear afternoon sky with some traffic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcoVkqkK6eSM8q6WjJOq8uQpft80I0J-Zpyr44BvlsO0NSwygOptul3J2GTdAzXoic38uaIDfBIrVbhWzX2Z8qIsxkaf1fRx176zMGrG8jX__tMDtbA8wGWZ2BxtqFVM3LPmnpbsLJlPFoHWOggZBiXPOl2PztWe5ygsJPSHasSW5hxxp71KleEI_sQMxEs8Gda-Igc1YbWfpIEPECbFdQr_XQVfwO2Hqlj1oHgUjJXPDuuc2n7Ha0-5cXtZMLD-Sld0TfrBngLSgJ"/>
+<div class="absolute inset-0 bg-black/20"></div>
+<div class="absolute top-2 left-2 flex items-center gap-2">
+<span class="flex items-center gap-1 px-1.5 py-0.5 bg-black/60 backdrop-blur-md rounded text-[10px] font-bold text-on-surface">
+<span class="w-1.5 h-1.5 bg-secondary rounded-full"></span> LIVE
+                            </span>
+</div>
+<div class="absolute bottom-2 left-2">
+<div class="text-[10px] font-bold text-on-surface uppercase tracking-tighter">CCTV-02: Main Boulevard</div>
+</div>
+</div>
+<!-- Grid Cell 3 -->
+<div class="relative bg-surface-container-lowest rounded-lg overflow-hidden group border border-outline-variant/10">
+<img class="w-full h-full object-cover opacity-80 grayscale-[30%]" data-alt="industrial tunnel with bright artificial lighting and clean roadway leading into the distance" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrHNWbiMxf_dO4J5nV0lwY2RFP2VlxUUrEdUSypk4oJ6iQLRhvWQQbxHZellsIah52uF3yTY4C9xv81Bg6oOPr43OsBEipJ2ZDhH_HFRgIWHUgKBsCGzGXSsCm4Cf3j07Zh1QS97px2GAWWY1Vm6SrHLaaUI6RyYPeCT97EVJDXOUB9eucX05chyXRc3e--PveL00ugNS2q6QX2ZWnYpqPuAd36mWtg6MGuERf9Hnpp6jXFToI0tc5XSBFYPdcFlIkBghFz-JX0OEl"/>
+<div class="absolute inset-0 bg-black/20"></div>
+<div class="absolute top-2 left-2">
+<span class="px-1.5 py-0.5 bg-black/60 backdrop-blur-md rounded text-[10px] font-bold text-on-surface">CCTV-03</span>
+</div>
+</div>
+<!-- Grid Cell 4 (INCIDENT HIGHLIGHT) -->
+<div class="relative bg-surface-container-lowest rounded-lg overflow-hidden ring-2 ring-error shadow-[0_0_30px_rgba(255,113,108,0.3)] z-10 group">
+<img class="w-full h-full object-cover" data-alt="congested city intersection at dusk with red brake lights from many cars creating a dense traffic scene" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZNplvKLXKTBKJRvqT4eXG7BH7054e3cghb2PL29JglayR5OPSBjEw_MzqYLYhv5s3qG0HhJsNN8_5q5Rmpy6YhHlb8Es8Zp60tXpFL9oTopNB6GTBmf2gEXkAEJpi3G37YeF85gm3l77A_ROtpqoaJ5b15s6Iif9xwdD4aryno-z6zYHUyUwhNTd0O0-Elb2t_QIaJ2L7YtRj3f6DagjecAgM-zZJAkbh6lQ1KpSmSmKAp-tcFI8m711uQVrnDAqEHrhXxiCoGKVI"/>
+<div class="absolute inset-0 bg-error/10 mix-blend-overlay"></div>
+<div class="absolute top-2 left-2 flex items-center gap-2">
+<span class="flex items-center gap-1 px-2 py-1 bg-error rounded text-[10px] font-bold text-on-error uppercase">
+<span class="material-symbols-outlined text-[10px]" data-icon="report" data-weight="fill">report</span> INCIDENT DETECTED
+                            </span>
+</div>
+<div class="absolute top-2 right-2">
+<div class="px-2 py-1 bg-black/80 backdrop-blur-md rounded text-[10px] font-mono text-error font-bold">14:21:05 PST</div>
+</div>
+<div class="absolute inset-0 border-[6px] border-error/20 pointer-events-none"></div>
+<div class="absolute bottom-0 left-0 w-full p-3 bg-gradient-to-t from-error-container/90 to-transparent">
+<div class="text-sm font-bold text-on-surface mb-1">CCTV-04: Simpang Lima</div>
+<div class="flex gap-2">
+<span class="text-[10px] px-2 py-0.5 bg-white/10 rounded-full font-bold">Code: RED-04</span>
+<span class="text-[10px] px-2 py-0.5 bg-white/10 rounded-full font-bold">Congestion: 94%</span>
+</div>
+</div>
+</div>
+<!-- Grid Cell 5 -->
+<div class="relative bg-surface-container-lowest rounded-lg overflow-hidden group border border-outline-variant/10">
+<img class="w-full h-full object-cover opacity-80 grayscale-[30%]" data-alt="aerial view of urban freeway cloverleaf interchange during early morning with light traffic flow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEdCe34_oRvKM8NSGlJmqIi8h8Oap8uDU62Rqtgz7rOgH65d0tDNcQfyIFu77AMvDdP0pCixbJNZ9KdlvpBMDgkVTuWeAkPzKSkRFViENmIFIKe9ArOOcBtD_gLNpDv_0rIldpngwfXiAn2a5JlWUX3Bdeow3x5DxG0ix8FaoulP5GJXFpNhOx1wfcd-DOKWeId9w2ZVeNYJKSoDUOa2VWynZKoQ9-J7H4AKlS3UhB5gbtK8Hp-Lid-aFIvsemKijrlFvcXS4SWjnr"/>
+<div class="absolute top-2 right-2">
+<span class="px-1.5 py-0.5 bg-black/60 backdrop-blur-md rounded text-[10px] font-bold text-secondary">FLOW: OPTIMAL</span>
+</div>
+<div class="absolute bottom-2 left-2">
+<div class="text-[10px] font-bold text-on-surface uppercase tracking-tighter">CCTV-05: Junction 7</div>
+</div>
+</div>
+<!-- Grid Cell 6 -->
+<div class="relative bg-surface-container-lowest rounded-lg overflow-hidden group border border-outline-variant/10">
+<div class="w-full h-full flex flex-col items-center justify-center bg-[#111318]">
+<span class="material-symbols-outlined text-outline-variant text-4xl mb-2" data-icon="videocam_off">videocam_off</span>
+<div class="text-[10px] font-bold text-outline-variant uppercase tracking-widest">Signal Lost</div>
+</div>
+<div class="absolute bottom-2 left-2">
+<div class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">CCTV-06: Loading Bay B</div>
+</div>
+</div>
+<!-- Grid Cell 7 -->
+<div class="relative bg-surface-container-lowest rounded-lg overflow-hidden group border border-outline-variant/10">
+<img class="w-full h-full object-cover opacity-80 grayscale-[30%]" data-alt="empty suburban street with green trees and sunlight dappled on the pavement in late morning" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDj6ZrcmtMvCQ480S7EnMdRHN0xa4lAryioHi_ZgdWS7nq3UroXi41pi6aPkBE_W886bp2flSJfV7qSBVOml_3MUlY7Kn8IJu6yJ7hHU8_9CCcZlj9HAchlTR2micG8azZxomdqdX1XcTVaid3UwSfePgU6004s5ltwjrez_NDWw4FlgJ-I-6qG5l0ZdBLpftvtskD7wOFZUzszrlzufVmx9hGy3vOXhbxeRIbLpNOCxLHFPQ9XmIYs7nLc1fsz_kVQNM391pZkCtYw"/>
+<div class="absolute bottom-2 left-2">
+<div class="text-[10px] font-bold text-on-surface uppercase tracking-tighter">CCTV-07: West Park</div>
+</div>
+</div>
+<!-- Grid Cell 8 -->
+<div class="relative bg-surface-container-lowest rounded-lg overflow-hidden group border border-outline-variant/10">
+<img class="w-full h-full object-cover opacity-80 grayscale-[30%]" data-alt="commercial warehouse district with large trucks parked in loading docks and industrial building facades" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqstJDryYm6w4kmZoDnExdJ-f7dIsqbNwoHrp8-lT0m2D4OSXMkpYTh6MxYMLwuWjwlK1JSxI_T7pq_cnfI61cg-CwLdMbhkkfpQpq14fYthfHvQtjbO3znesYbbSUymCWwiSV36239JxWCdgxdjM7xNzzwR_EK_eBGfxyJG5LgdIBaq65XULlqhrIkQrzTXG5I6OkO2tlZ7LAhIo4c0n-tKeGDaVHlZIwxZIfuRatxux0fJzMtw_Q4Bdkr92USQc1PZWgmmkPrVIv"/>
+<div class="absolute bottom-2 left-2">
+<div class="text-[10px] font-bold text-on-surface uppercase tracking-tighter">CCTV-08: Logistics Way</div>
+</div>
+</div>
+<!-- Grid Cell 9 -->
+<div class="relative bg-surface-container-lowest rounded-lg overflow-hidden group border border-outline-variant/10">
+<img class="w-full h-full object-cover opacity-80 grayscale-[30%]" data-alt="view of a calm river running through a city with bridges and modern architecture under a soft sunset sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcShrGW7k_I4Bu9dvCFDYCyAt0RP2iReEaxvSuTAlXBoxoLj4FQecRBHHCLI38hi6IGcwf5ti0UbVliTTcQQBI9Ry9go2gKGuY2TzmbcTA3_pMV_dclpeTnZE3xDQI2OgVMKTCI3Ipb5JASzDgqLqThiUjBN5_RmXwASYxHNaSPsIvwa1SsicsCjscjEDuQmu5kM_gOco89zvBJA5g5PVPWbIMuy68hApBzfCk13Cbgw1OpsU0bzfpEKvzvlXsnIZE4JzDP32vWAC6"/>
+<div class="absolute top-2 left-2 flex items-center gap-2">
+<span class="flex items-center gap-1 px-1.5 py-0.5 bg-black/60 backdrop-blur-md rounded text-[10px] font-bold text-on-surface">
+<span class="w-1.5 h-1.5 bg-secondary rounded-full"></span> LIVE
+                            </span>
+</div>
+<div class="absolute bottom-2 left-2">
+<div class="text-[10px] font-bold text-on-surface uppercase tracking-tighter">CCTV-09: Riverfront Dr.</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- FAB Suppression: Contextually appropriate for CCTV screen to have a quick action for alerts -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-error text-on-error rounded-xl shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all group z-50">
+<span class="material-symbols-outlined text-3xl" data-icon="add_alert" data-weight="fill">add_alert</span>
+<div class="absolute right-16 px-4 py-2 bg-surface-container-highest text-on-surface text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl border border-outline-variant/20 uppercase tracking-widest">
+            Broadcast Emergency Alert
+        </div>
+</button>
+<!-- Visual Polish: Subtle grain overlay for HUD feel -->
+<div class="fixed inset-0 pointer-events-none opacity-[0.03] z-[60]" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAxKLzWAV5npmcubwr6ZR4VSnDOUrwOyWQr5zeNS1qTpJcuu5W-r9h0EK3TJhzgerAAnrQhd7L89qMIHjofFF2Lp-oYHorbjIKi5lGMZGykS5IQRQPE7zEw4JWoH-avV-bt3zS2TNjqFCkwucozC6RJMBc-GlA2RR72QPBduOC2qZqoAw5J3X33F_VDGrJQVwY6ZMIUtMsywRV1s_f1af_Etzi9xfffeoANSmDwJ32i-zyACIAo4h167w20Ex40aIEfXJ_erQUVRuPl');"></div>
+</body></html>

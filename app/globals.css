@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-on-surface font-body;
+  }
+}
+
+@layer utilities {
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+
+  .material-symbols-filled {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+
+  .glass-panel {
+    background: rgba(41, 44, 51, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .traffic-pulse {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .traffic-pulse::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #81ecff;
+    box-shadow: 0 0 8px #81ecff;
+    opacity: 0.6;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0c0e12;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #46484d;
+    border-radius: 2px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #74757a;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Smooth scroll */
+  html {
+    scroll-behavior: smooth;
+  }
+
+}
+
+/* ─── Leaflet overrides (outside @layer so cascade priority > layered rules) ── */
+.leaflet-popup-content-wrapper {
+  background: #1a1d22 !important;
+  border: 1px solid rgba(129, 236, 255, 0.15) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7) !important;
+  padding: 0 !important;
+  color: #f6f6fc !important;
+}
+
+.leaflet-popup-content {
+  margin: 12px 14px !important;
+  color: #f6f6fc !important;
+  line-height: 1.4 !important;
+}
+
+.leaflet-popup-content p {
+  color: inherit !important;
+  margin: 0 !important;
+}
+
+.leaflet-popup-tip-container .leaflet-popup-tip {
+  background: #1a1d22 !important;
+  box-shadow: none !important;
+}
+
+.leaflet-popup-close-button {
+  color: #74757a !important;
+  font-size: 18px !important;
+  top: 6px !important;
+  right: 8px !important;
+  padding: 0 !important;
+  width: 20px !important;
+  height: 20px !important;
+  line-height: 20px !important;
+  text-align: center !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: #f6f6fc !important;
+  background: transparent !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(12, 14, 18, 0.75) !important;
+  color: #74757a !important;
+  font-size: 9px !important;
+}
+
+.leaflet-control-attribution a {
+  color: #aaabb0 !important;
+}
