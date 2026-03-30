@@ -47,18 +47,7 @@ export default function SideNavBar() {
           </p>
         </div>
 
-        {/* Collapse toggle — desktop */}
-        <button
-          onClick={toggle}
-          className="hidden md:flex items-center justify-center w-8 h-8 rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors flex-shrink-0"
-          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
-            {isCollapsed ? 'menu' : 'chevron_left'}
-          </span>
-        </button>
-
-        {/* Close button — mobile */}
+        {/* Close button — mobile only (desktop collapse is in nav section below TopNavBar) */}
         <button
           onClick={closeMobile}
           className="flex md:hidden items-center justify-center w-8 h-8 rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors flex-shrink-0"
@@ -70,11 +59,25 @@ export default function SideNavBar() {
 
       {/* ─── Navigation ─── */}
       <nav className="flex-1 py-3 overflow-y-auto overflow-x-hidden no-scrollbar">
-        {!isCollapsed && (
-          <p className="px-4 mb-2 text-[9px] font-headline text-on-surface-variant/40 uppercase tracking-[0.2em] hidden md:block">
-            Menu
-          </p>
-        )}
+        {/* Collapse toggle — desktop only, in nav area (below TopNavBar so it's clickable) */}
+        <button
+          onClick={toggle}
+          className={[
+            'hidden md:flex items-center w-full px-3 py-2 mb-2 rounded-lg',
+            'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors',
+            isCollapsed ? 'justify-center' : 'justify-between',
+          ].join(' ')}
+          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {!isCollapsed && (
+            <span className="text-[9px] font-headline text-on-surface-variant/40 uppercase tracking-[0.2em]">
+              Menu
+            </span>
+          )}
+          <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: '18px' }}>
+            {isCollapsed ? 'menu_open' : 'chevron_left'}
+          </span>
+        </button>
         <ul className="space-y-0.5 px-2">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href;
