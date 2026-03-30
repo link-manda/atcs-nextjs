@@ -3,7 +3,7 @@ import "./globals.css";
 import AppShell from "@/components/layout/AppShell";
 
 export const metadata: Metadata = {
-  title: "KINETIC OBSERVATORY | ATCS COMMAND",
+  title: "BALI COMMAND CENTER | ATCS COMMAND",
   description:
     "Advanced Area Traffic Control System — Bali Command Center. Real-time CCTV monitoring and analytics dashboard.",
 };

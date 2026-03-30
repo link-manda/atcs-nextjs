@@ -19,7 +19,7 @@ export default function TopNavBar() {
 
         {/* Logo */}
         <span className="font-headline font-bold text-primary uppercase tracking-tight text-sm sm:text-base flex-shrink-0">
-          KINETIC_OBSERVATORY
+          COMMAND_CENTER
         </span>
 
         {/* Spacer */}

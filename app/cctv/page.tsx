@@ -2,7 +2,7 @@ import CCTVPageClient from './CCTVPageClient';
 import { cctvChannels } from '@/data/cctv-data';
 
 export const metadata = {
-  title: 'KINETIC OBSERVATORY | CCTV Grid — Bali ATCS',
+  title: 'BALI COMMAND CENTER | CCTV Grid — Bali ATCS',
   description:
     'Live CCTV monitoring grid untuk Area Traffic Control System Bali. 92 kamera aktif dengan streaming real-time, peta interaktif, dan filter per wilayah.',
 };
