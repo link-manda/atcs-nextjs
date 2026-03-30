@@ -6,7 +6,7 @@ export default function TopNavBar() {
   const { toggleMobile } = useSidebar();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-surface-container-low/90 backdrop-blur-xl border-b border-outline-variant/20 h-16">
+    <header className="fixed top-0 left-0 right-0 z-[1001] bg-surface-container-low/90 backdrop-blur-xl border-b border-outline-variant/20 h-16">
       <div className="flex items-center h-full px-4 gap-3">
         {/* Hamburger — mobile only */}
         <button

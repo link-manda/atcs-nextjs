@@ -58,7 +58,7 @@ export default function DashboardClient({ channels }: Props) {
   return (
     <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)] gap-0">
       {/* ─── Map ─── */}
-      <div className="flex-1 relative min-h-[50vh] lg:min-h-0">
+      <div className="flex-1 relative isolate min-h-[50vh] lg:min-h-0">
         <DashboardMap cameras={channels} />
 
         {/* Map overlay badge */}

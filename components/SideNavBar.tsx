@@ -23,7 +23,7 @@ export default function SideNavBar() {
   return (
     <aside
       className={[
-        'fixed top-0 left-0 h-full z-40 flex flex-col',
+        'fixed top-0 left-0 h-full z-[1000] flex flex-col',
         'bg-surface-container-low border-r border-outline-variant/20',
         'transition-[transform,width] duration-300 ease-in-out',
         isCollapsed ? 'md:w-14' : 'md:w-64',

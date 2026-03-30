@@ -10,7 +10,7 @@ function MobileBackdrop() {
   if (!isMobileOpen) return null;
   return (
     <div
-      className="fixed inset-0 bg-black/60 z-30 md:hidden"
+      className="fixed inset-0 bg-black/60 z-[999] md:hidden"
       onClick={closeMobile}
       aria-hidden="true"
     />
