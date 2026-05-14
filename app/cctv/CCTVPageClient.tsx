@@ -6,15 +6,21 @@ import CCTVSidebar from '@/components/cctv/CCTVSidebar';
 import CCTVGridView, { LAYOUTS } from '@/components/cctv/CCTVGridView';
 import type { CCTVChannel } from '@/types/cctv';
 import type { GridLayout } from '@/components/cctv/CCTVGridView';
+import { LayoutGrid, Map as MapIcon, Trash2, Video, Activity } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
 
 const CCTVMap = dynamic(() => import('@/components/cctv/CCTVMap'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full flex items-center justify-center bg-surface-container rounded-xl border border-outline-variant/10">
+    <div className="w-full h-full flex items-center justify-center bg-muted/30 rounded-xl border border-border/50">
       <div className="text-center">
-        <span className="material-symbols-outlined text-primary text-4xl animate-pulse block mb-2">map</span>
-        <p className="text-xs text-on-surface-variant font-headline uppercase tracking-widest">
-          Memuat Peta...
+        <MapIcon className="w-8 h-8 text-primary animate-pulse mx-auto mb-3" />
+        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em]">
+          Initializing Tactical Map...
         </p>
       </div>
     </div>
@@ -33,7 +39,6 @@ export default function CCTVPageClient({ channels }: Props) {
   );
   const [layout, setLayout]         = useState<GridLayout>('3x3');
   const [viewMode, setViewMode]     = useState<ViewMode>('grid');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const maxSlots = LAYOUTS[layout].max;
 
@@ -68,122 +73,100 @@ export default function CCTVPageClient({ channels }: Props) {
   );
 
   return (
-    <div className="flex gap-4 h-[calc(100vh-5.5rem)]">
-      {/* Sidebar FAB — mobile only (< md) */}
-      <button
-        onClick={() => setSidebarOpen((v) => !v)}
-        className="fixed bottom-20 right-4 z-30 md:hidden w-12 h-12 bg-surface-container-high border border-outline-variant/20 rounded-xl flex items-center justify-center text-on-surface-variant hover:text-primary shadow-xl transition-colors"
-        aria-label="Toggle kamera sidebar"
-      >
-        <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-          {sidebarOpen ? 'close' : 'videocam'}
-        </span>
-      </button>
-
-      {/* ─── Camera List Sidebar ─── */}
-      <section
-        className={[
-          'flex-shrink-0 w-64 md:w-72',
-          'transition-transform duration-200',
-          // md+ = always visible in-flow
-          'md:block md:relative md:translate-x-0',
-          // < md = overlay drawer
-          sidebarOpen
-            ? 'fixed inset-y-16 left-0 z-20 block'
-            : 'hidden md:block',
-        ].join(' ')}
-      >
-        <CCTVSidebar
-          channels={channels}
-          selectedCams={selectedCams}
-          maxSlots={maxSlots}
-          onSelect={handleSelect}
-          onDeselect={handleDeselect}
-        />
+    <div className="flex gap-6 h-[calc(100vh-6.5rem)]">
+      {/* ─── Camera List Sidebar (Desktop) ─── */}
+      <section className="hidden md:block flex-shrink-0 w-80">
+        <div className="h-full rounded-xl overflow-hidden border border-border/50 shadow-2xl">
+          <CCTVSidebar
+            channels={channels}
+            selectedCams={selectedCams}
+            maxSlots={maxSlots}
+            onSelect={handleSelect}
+            onDeselect={handleDeselect}
+          />
+        </div>
       </section>
 
-      {/* Backdrop for mobile sidebar */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-10 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-          aria-hidden="true"
-        />
-      )}
+      {/* Sidebar (Mobile) */}
+      <div className="md:hidden fixed bottom-6 right-6 z-50">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button size="icon" className="w-14 h-14 rounded-full shadow-2xl">
+              <Video className="w-6 h-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 w-80">
+            <CCTVSidebar
+              channels={channels}
+              selectedCams={selectedCams}
+              maxSlots={maxSlots}
+              onSelect={handleSelect}
+              onDeselect={handleDeselect}
+            />
+          </SheetContent>
+        </Sheet>
+      </div>
 
-      {/* ─── Main Grid / Map Canvas ─── */}
-      <section className="flex-1 flex flex-col gap-3 min-w-0">
-        {/* Toolbar: view toggle + status + clear all */}
-        <div className="flex items-center justify-between flex-shrink-0 flex-wrap gap-2">
-          {/* View tabs */}
-          <div className="flex bg-surface-container rounded-lg p-1 gap-0.5">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold uppercase tracking-widest transition-all ${
-                viewMode === 'grid'
-                  ? 'bg-surface-container-highest text-primary shadow'
-                  : 'text-on-surface-variant hover:text-on-surface'
-              }`}
-            >
-              <span className="material-symbols-outlined text-sm">grid_view</span>
-              <span className="hidden sm:inline">Grid</span>
-            </button>
-            <button
-              onClick={() => setViewMode('map')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold uppercase tracking-widest transition-all ${
-                viewMode === 'map'
-                  ? 'bg-surface-container-highest text-primary shadow'
-                  : 'text-on-surface-variant hover:text-on-surface'
-              }`}
-            >
-              <span className="material-symbols-outlined text-sm">map</span>
-              <span className="hidden sm:inline">Peta Bali</span>
-            </button>
-          </div>
+      {/* ─── Main Content Canvas ─── */}
+      <section className="flex-1 flex flex-col gap-4 min-w-0">
+        {/* Toolbar */}
+        <div className="flex items-center justify-between flex-shrink-0 gap-4 flex-wrap">
+          <Tabs 
+            value={viewMode} 
+            onValueChange={(v) => setViewMode(v as ViewMode)} 
+            className="w-auto"
+          >
+            <TabsList className="bg-muted/50 border border-border/50">
+              <TabsTrigger value="grid" className="gap-2 text-[10px] font-bold uppercase tracking-widest px-4">
+                <LayoutGrid className="w-3.5 h-3.5" />
+                Grid View
+              </TabsTrigger>
+              <TabsTrigger value="map" className="gap-2 text-[10px] font-bold uppercase tracking-widest px-4">
+                <MapIcon className="w-3.5 h-3.5" />
+                Tactical Map
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
 
-          {/* Right side: status + clear all */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
-              <span className="text-[10px] font-headline text-on-surface-variant uppercase tracking-widest">
-                {channels.length} CCTV Online
-              </span>
-            </div>
-
-            {/* Clear All — only visible when cameras are selected */}
-            {selectedCams.length > 0 && (
-              <button
-                onClick={handleClearAll}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-error/10 border border-error/20 text-error hover:bg-error/20 hover:border-error/40 transition-all text-[10px] font-headline font-bold uppercase tracking-widest"
-                title="Hapus semua channel dari grid"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
-                  clear_all
+          <div className="flex items-center gap-4">
+             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/30 border border-border/50">
+                <Activity className="w-3 h-3 text-secondary animate-pulse" />
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                  {channels.length} Nodes Operational
                 </span>
-                <span className="hidden sm:inline">Clear All</span>
-                <span className="text-error/60">({selectedCams.length})</span>
-              </button>
-            )}
+             </div>
+
+             {selectedCams.length > 0 && (
+               <Button 
+                variant="destructive" 
+                size="sm" 
+                onClick={handleClearAll}
+                className="gap-2 text-[10px] font-bold uppercase tracking-widest h-9"
+               >
+                 <Trash2 className="w-3.5 h-3.5" />
+                 Clear All ({selectedCams.length})
+               </Button>
+             )}
           </div>
         </div>
 
-        {/* Content */}
-        {viewMode === 'grid' ? (
-          <CCTVGridView
-            selectedCams={selectedCams}
-            layout={layout}
-            onRemove={handleDeselect}
-            onLayoutChange={handleLayoutChange}
-          />
-        ) : (
-          <div className="flex-1 rounded-xl overflow-hidden border border-outline-variant/10 min-h-0">
+        {/* Dynamic Display */}
+        <div className="flex-1 min-h-0 bg-background/30 rounded-xl overflow-hidden border border-border/50 shadow-inner">
+          {viewMode === 'grid' ? (
+            <CCTVGridView
+              selectedCams={selectedCams}
+              layout={layout}
+              onRemove={handleDeselect}
+              onLayoutChange={handleLayoutChange}
+            />
+          ) : (
             <CCTVMap
               cameras={channels}
               selectedIds={selectedIds}
               onCameraClick={handleSelect}
             />
-          </div>
-        )}
+          )}
+        </div>
       </section>
     </div>
   );
