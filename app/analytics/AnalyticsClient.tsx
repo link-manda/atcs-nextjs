@@ -206,7 +206,7 @@ export default function AnalyticsClient({ channels }: Props) {
               <div className="flex items-center gap-6">
                 <div className="relative w-20 h-20 flex-shrink-0">
                   <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
-                    <circle cx="18" cy="18" r="15.9" fill="none" stroke="#171a1f" strokeWidth="3.8" />
+                    <circle cx="18" cy="18" r="15.9" fill="none" stroke="currentColor" className="text-muted" strokeWidth="3.8" />
                     <circle
                       cx="18" cy="18" r="15.9" fill="none"
                       stroke="#00fc40" strokeWidth="3.8"
