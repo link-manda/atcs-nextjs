@@ -203,32 +203,31 @@
 }
 
 /* ─── Leaflet overrides ─── */
-.leaflet-popup-content-wrapper {
-  background: #1a1d22 !important;
-  border: 1px solid rgba(129, 236, 255, 0.15) !important;
+.tactical-popup .leaflet-popup-content-wrapper {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
   border-radius: 10px !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
   padding: 0 !important;
-  color: #f6f6fc !important;
+  color: #1a1d22 !important;
 }
 
-.leaflet-popup-content {
+.tactical-popup .leaflet-popup-content {
   margin: 12px 14px !important;
-  color: #f6f6fc !important;
+  color: #1a1d22 !important;
   line-height: 1.4 !important;
 }
 
-.leaflet-popup-content p {
-  color: inherit !important;
-  margin: 0 !important;
-}
-
-.leaflet-popup-tip-container .leaflet-popup-tip {
-  background: #1a1d22 !important;
+.tactical-popup .leaflet-popup-tip-container .leaflet-popup-tip {
+  background: rgba(255, 255, 255, 0.9) !important;
   box-shadow: none !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-top: none !important;
+  border-left: none !important;
 }
 
-.leaflet-popup-close-button {
+.tactical-popup .leaflet-popup-close-button {
   color: #74757a !important;
   font-size: 18px !important;
   top: 6px !important;
@@ -240,17 +239,17 @@
   text-align: center !important;
 }
 
-.leaflet-popup-close-button:hover {
-  color: #f6f6fc !important;
+.tactical-popup .leaflet-popup-close-button:hover {
+  color: #1a1d22 !important;
   background: transparent !important;
 }
 
 .leaflet-control-attribution {
-  background: rgba(12, 14, 18, 0.75) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
   color: #74757a !important;
   font-size: 9px !important;
 }
 
 .leaflet-control-attribution a {
-  color: #aaabb0 !important;
+  color: #000 !important;
 }
