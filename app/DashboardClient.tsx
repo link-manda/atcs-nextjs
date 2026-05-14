@@ -8,7 +8,7 @@ import type { CCTVChannel } from '@/types/cctv';
 const DashboardMap = dynamic(() => import('@/components/dashboard/DashboardMap'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full flex items-center justify-center bg-surface-container-lowest">
+    <div className="w-full h-full flex items-center justify-center bg-background">
       <div className="text-center">
         <span className="material-symbols-outlined text-primary text-4xl animate-pulse block mb-3">
           map
@@ -63,9 +63,9 @@ export default function DashboardClient({ channels }: Props) {
       </div>
 
       {/* ─── Stats Panel ─── */}
-      <aside className="w-full lg:w-80 xl:w-96 bg-surface-container border-t lg:border-t-0 lg:border-l border-outline-variant/20 flex flex-col overflow-hidden">
+      <aside className="w-full lg:w-80 xl:w-96 bg-surface-container border-t lg:border-t-0 lg:border-l border-border/20 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-5 py-4 border-b border-outline-variant/10 flex-shrink-0">
+        <div className="px-5 py-4 border-b border-border/10 flex-shrink-0">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[9px] font-bold text-on-surface-variant uppercase tracking-[0.2em]">
               System Status
@@ -84,7 +84,7 @@ export default function DashboardClient({ channels }: Props) {
 
         {/* Stat Cards */}
         <div className="p-4 grid grid-cols-2 gap-3 flex-shrink-0">
-          <div className="bg-surface-container-high rounded-xl p-3 border border-outline-variant/10">
+          <div className="bg-surface-container-high rounded-xl p-3 border border-border/10">
             <p className="text-[9px] font-headline text-on-surface-variant uppercase tracking-widest mb-1">
               Total Kamera
             </p>
@@ -93,7 +93,7 @@ export default function DashboardClient({ channels }: Props) {
             </p>
             <p className="text-[9px] text-on-surface-variant mt-0.5">unit terpasang</p>
           </div>
-          <div className="bg-surface-container-high rounded-xl p-3 border border-outline-variant/10">
+          <div className="bg-surface-container-high rounded-xl p-3 border border-border/10">
             <p className="text-[9px] font-headline text-on-surface-variant uppercase tracking-widest mb-1">
               Ber-GPS
             </p>
@@ -104,7 +104,7 @@ export default function DashboardClient({ channels }: Props) {
               {Math.round((stats.withGPS / stats.total) * 100)}% coverage
             </p>
           </div>
-          <div className="bg-surface-container-high rounded-xl p-3 border border-outline-variant/10">
+          <div className="bg-surface-container-high rounded-xl p-3 border border-border/10">
             <p className="text-[9px] font-headline text-on-surface-variant uppercase tracking-widest mb-1">
               Total Wilayah
             </p>
@@ -113,7 +113,7 @@ export default function DashboardClient({ channels }: Props) {
             </p>
             <p className="text-[9px] text-on-surface-variant mt-0.5">kabupaten/kota</p>
           </div>
-          <div className="bg-surface-container-high rounded-xl p-3 border border-outline-variant/10">
+          <div className="bg-surface-container-high rounded-xl p-3 border border-border/10">
             <p className="text-[9px] font-headline text-on-surface-variant uppercase tracking-widest mb-1">
               Tanpa GPS
             </p>
@@ -160,7 +160,7 @@ export default function DashboardClient({ channels }: Props) {
         </div>
 
         {/* CTA */}
-        <div className="p-4 border-t border-outline-variant/10 flex-shrink-0">
+        <div className="p-4 border-t border-border/10 flex-shrink-0">
           <Link
             href="/cctv"
             className="flex items-center justify-center gap-2 w-full py-2.5 bg-primary/10 border border-primary/30 text-primary rounded-lg hover:bg-primary/20 transition-colors text-xs font-headline font-bold uppercase tracking-widest group"
@@ -173,7 +173,7 @@ export default function DashboardClient({ channels }: Props) {
           </Link>
           <Link
             href="/analytics"
-            className="flex items-center justify-center gap-2 w-full py-2.5 mt-2 bg-surface-container-high border border-outline-variant/20 text-on-surface-variant rounded-lg hover:text-on-surface transition-colors text-xs font-headline font-bold uppercase tracking-widest"
+            className="flex items-center justify-center gap-2 w-full py-2.5 mt-2 bg-surface-container-high border border-border/20 text-on-surface-variant rounded-lg hover:text-on-surface transition-colors text-xs font-headline font-bold uppercase tracking-widest"
           >
             <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>insights</span>
             Lihat Analytics

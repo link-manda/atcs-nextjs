@@ -1,28 +1,26 @@
 'use client';
 
-import CCTVCard from './CCTVCard';
-import type { CCTVChannel } from '@/types/cctv';
+import React from 'react';
+import { CCTVChannel } from '@/types/cctv';
+import { CCTVGridItem } from './CCTVGridItem';
+import { cn } from '@/lib/utils';
+import { LayoutGrid, Maximize, Grid2X2, Grid3X3, Layout } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
-export type GridLayout = '2x2' | '3x3' | '4x3';
+export type GridLayout = '1x1' | '2x2' | '3x3' | '4x4';
 
-interface LayoutConfig {
-  cols: number;
-  rows: number;
-  max: number;
-  label: string;
-}
-
-export const LAYOUTS: Record<GridLayout, LayoutConfig> = {
-  '2x2': { cols: 2, rows: 2, max: 4,  label: '2×2' },
-  '3x3': { cols: 3, rows: 3, max: 9,  label: '3×3' },
-  '4x3': { cols: 4, rows: 3, max: 12, label: '4×3' },
+export const LAYOUTS: Record<GridLayout, { cols: string; max: number; label: string; icon: React.ElementType }> = {
+  '1x1': { cols: 'grid-cols-1', max: 1, label: 'Single', icon: Maximize },
+  '2x2': { cols: 'grid-cols-2', max: 4, label: '2x2 View', icon: Grid2X2 },
+  '3x3': { cols: 'grid-cols-3', max: 9, label: '3x3 View', icon: Grid3X3 },
+  '4x4': { cols: 'grid-cols-4', max: 16, label: '4x4 View', icon: Layout },
 };
 
 interface CCTVGridViewProps {
   selectedCams: CCTVChannel[];
   layout: GridLayout;
   onRemove: (id: number) => void;
-  onLayoutChange: (l: GridLayout) => void;
+  onLayoutChange: (layout: GridLayout) => void;
 }
 
 export default function CCTVGridView({
@@ -31,82 +29,72 @@ export default function CCTVGridView({
   onRemove,
   onLayoutChange,
 }: CCTVGridViewProps) {
-  const { cols, rows, max } = LAYOUTS[layout];
-  const slots = Array.from({ length: max });
+  const currentLayout = LAYOUTS[layout];
 
   return (
-    <div className="flex-1 flex flex-col gap-3 min-h-0">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-3">
-          {/* Layout switcher */}
-          <div className="flex bg-surface-container rounded-lg p-1 gap-0.5">
-            {(Object.keys(LAYOUTS) as GridLayout[]).map((l) => (
-              <button
-                key={l}
-                onClick={() => onLayoutChange(l)}
-                className={`px-3 py-1.5 rounded text-xs font-bold uppercase tracking-widest transition-all ${
-                  layout === l
-                    ? 'bg-surface-container-highest text-primary shadow'
-                    : 'text-on-surface-variant hover:text-on-surface'
-                }`}
-              >
-                {LAYOUTS[l].label}
-              </button>
-            ))}
-          </div>
-          <div className="h-4 w-px bg-outline-variant/30" />
-          <span className="text-xs text-on-surface-variant">
-            Aktif:{' '}
-            <span className="text-primary font-bold">
-              {String(selectedCams.length).padStart(2, '0')}
-            </span>
-            /{max} Slot
+    <div className="flex flex-col h-full bg-background/20">
+      {/* Grid Controls */}
+      <div className="flex items-center justify-between p-3 border-b border-border/50 bg-muted/10">
+        <div className="flex items-center gap-2">
+          <LayoutGrid className="w-4 h-4 text-primary/70" />
+          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            Display Matrix
           </span>
         </div>
-
-        <span className="text-[10px] font-headline text-on-surface-variant/50 uppercase tracking-widest">
-          Klik kamera untuk fullscreen
-        </span>
+        
+        <div className="flex items-center gap-1">
+          {(Object.keys(LAYOUTS) as GridLayout[]).map((key) => {
+            const config = LAYOUTS[key];
+            const isActive = layout === key;
+            const Icon = config.icon;
+            
+            return (
+              <Button
+                key={key}
+                variant={isActive ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => onLayoutChange(key)}
+                className={cn(
+                  "h-8 px-2.5 gap-2 text-[10px] font-bold uppercase tracking-widest",
+                  isActive ? "bg-primary/20 text-primary border border-primary/30" : "text-muted-foreground"
+                )}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{config.label}</span>
+              </Button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Grid */}
-      <div
-        className="flex-1 min-h-0"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(${cols}, 1fr)`,
-          gridTemplateRows: `repeat(${rows}, 1fr)`,
-          gap: '0.625rem',
-        }}
-      >
-        {slots.map((_, idx) => {
-          const cam = selectedCams[idx];
-
-          if (cam) {
-            return (
-              <CCTVCard
-                key={cam.cctv_id}
-                camera={cam}
-                onRemove={() => onRemove(cam.cctv_id)}
-              />
-            );
-          }
-
-          return (
-            <div
-              key={`empty-${idx}`}
-              className="relative rounded-lg border border-outline-variant/10 border-dashed flex flex-col items-center justify-center bg-surface-container/30 text-center"
-            >
-              <span className="material-symbols-outlined text-outline-variant/30 text-4xl">
-                add_circle
-              </span>
-              <p className="text-[9px] text-outline-variant/40 mt-1.5 uppercase tracking-widest font-headline">
-                Slot Kosong
+      {/* The Grid */}
+      <div className="flex-1 overflow-y-auto p-4 no-scrollbar">
+        {selectedCams.length === 0 ? (
+          <div className="h-full flex items-center justify-center">
+            <div className="text-center p-8 border-2 border-dashed border-border/30 rounded-2xl max-w-sm">
+              <div className="w-16 h-16 rounded-full bg-muted/30 flex items-center justify-center mx-auto mb-4">
+                <LayoutGrid className="w-8 h-8 text-muted-foreground/50" />
+              </div>
+              <h3 className="text-sm font-bold text-foreground mb-1">Matrix Empty</h3>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                Select camera nodes from the sidebar to populate the monitoring matrix.
               </p>
             </div>
-          );
-        })}
+          </div>
+        ) : (
+          <div className={cn(
+            "grid gap-4",
+            currentLayout.cols
+          )}>
+            {selectedCams.slice(0, currentLayout.max).map((cam) => (
+              <CCTVGridItem 
+                key={cam.cctv_id} 
+                channel={cam} 
+                onRemove={onRemove} 
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

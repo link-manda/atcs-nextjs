@@ -67,7 +67,7 @@ export default function AnalyticsClient({ channels }: Props) {
             { label: 'Total Kamera', value: stats.total.toString(), color: 'text-primary' },
             { label: 'Wilayah', value: stats.regionEntries.length.toString(), color: 'text-tertiary' },
           ].map(({ label, value, color }) => (
-            <div key={label} className="bg-surface-container-high px-4 py-2 rounded-lg flex flex-col items-end border border-outline-variant/10">
+            <div key={label} className="bg-surface-container-high px-4 py-2 rounded-lg flex flex-col items-end border border-border/10">
               <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">{label}</span>
               <span className={`font-headline text-xl font-bold ${color}`}>{value}</span>
             </div>
@@ -121,7 +121,7 @@ export default function AnalyticsClient({ channels }: Props) {
             ].map((card) => (
               <div
                 key={card.label}
-                className="bg-surface-container rounded-xl p-4 border border-outline-variant/10 flex flex-col gap-2"
+                className="bg-surface-container rounded-xl p-4 border border-border/10 flex flex-col gap-2"
               >
                 <div className="flex items-center justify-between">
                   <p className="text-[10px] font-headline text-on-surface-variant uppercase tracking-widest">
@@ -147,8 +147,8 @@ export default function AnalyticsClient({ channels }: Props) {
         </section>
 
         {/* 2. Region Bar Chart — left */}
-        <section className="col-span-1 md:col-span-1 xl:col-span-7 bg-surface-container rounded-xl overflow-hidden border border-outline-variant/10">
-          <div className="px-5 py-4 border-b border-outline-variant/10 flex items-center gap-2">
+        <section className="col-span-1 md:col-span-1 xl:col-span-7 bg-surface-container rounded-xl overflow-hidden border border-border/10">
+          <div className="px-5 py-4 border-b border-border/10 flex items-center gap-2">
             <span className="material-symbols-outlined text-primary" style={{ fontSize: '18px' }}>leaderboard</span>
             <h2 className="font-headline text-xs font-bold tracking-widest text-primary uppercase">
               Distribusi Kamera Per Wilayah
@@ -194,8 +194,8 @@ export default function AnalyticsClient({ channels }: Props) {
         {/* 3. Stream Type + GPS Summary — right */}
         <section className="col-span-1 md:col-span-1 xl:col-span-5 flex flex-col gap-5">
           {/* GPS coverage card */}
-          <div className="bg-surface-container rounded-xl border border-outline-variant/10 overflow-hidden">
-            <div className="px-5 py-4 border-b border-outline-variant/10 flex items-center gap-2">
+          <div className="bg-surface-container rounded-xl border border-border/10 overflow-hidden">
+            <div className="px-5 py-4 border-b border-border/10 flex items-center gap-2">
               <span className="material-symbols-outlined text-secondary" style={{ fontSize: '18px' }}>satellite_alt</span>
               <h2 className="font-headline text-xs font-bold tracking-widest text-secondary uppercase">
                 Coverage GPS
@@ -235,8 +235,8 @@ export default function AnalyticsClient({ channels }: Props) {
           </div>
 
           {/* Stream type card */}
-          <div className="bg-surface-container rounded-xl border border-outline-variant/10 overflow-hidden flex-1">
-            <div className="px-5 py-4 border-b border-outline-variant/10 flex items-center gap-2">
+          <div className="bg-surface-container rounded-xl border border-border/10 overflow-hidden flex-1">
+            <div className="px-5 py-4 border-b border-border/10 flex items-center gap-2">
               <span className="material-symbols-outlined text-tertiary" style={{ fontSize: '18px' }}>stream</span>
               <h2 className="font-headline text-xs font-bold tracking-widest text-tertiary uppercase">
                 Tipe Stream
@@ -278,8 +278,8 @@ export default function AnalyticsClient({ channels }: Props) {
         </section>
 
         {/* 4. Map section */}
-        <section className="col-span-1 md:col-span-2 xl:col-span-12 bg-surface-container rounded-xl overflow-hidden border border-outline-variant/10">
-          <div className="px-5 py-4 border-b border-outline-variant/10 flex items-center gap-2">
+        <section className="col-span-1 md:col-span-2 xl:col-span-12 bg-surface-container rounded-xl overflow-hidden border border-border/10">
+          <div className="px-5 py-4 border-b border-border/10 flex items-center gap-2">
             <span className="material-symbols-outlined text-primary" style={{ fontSize: '18px' }}>map</span>
             <h2 className="font-headline text-xs font-bold tracking-widest text-primary uppercase">
               Peta Persebaran Kamera
@@ -295,7 +295,7 @@ export default function AnalyticsClient({ channels }: Props) {
       </div>
 
       {/* ─── Footer ─── */}
-      <footer className="mt-10 pt-6 border-t border-outline-variant/10 flex flex-wrap justify-between items-center gap-4">
+      <footer className="mt-10 pt-6 border-t border-border/10 flex flex-wrap justify-between items-center gap-4">
         <div className="flex flex-wrap items-center gap-6">
           <div>
             <span className="text-[10px] font-bold text-on-surface-variant block">SUMBER DATA</span>

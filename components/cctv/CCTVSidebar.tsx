@@ -11,7 +11,8 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { Check } from 'lucide-react';
+import { Check, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 interface Props {
   channels: CCTVChannel[];
@@ -28,18 +29,28 @@ export default function CCTVSidebar({
   onSelect,
   onDeselect,
 }: Props) {
+  const [search, setSearch] = React.useState('');
+
   const selectedIds = React.useMemo(
     () => new Set(selectedCams.map((c) => c.cctv_id)),
     [selectedCams]
   );
 
+  const filteredChannels = React.useMemo(() => {
+    if (!search) return channels;
+    return channels.filter(c => 
+      c.ch_name.toLowerCase().includes(search.toLowerCase()) ||
+      c.region.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [channels, search]);
+
   const grouped = React.useMemo(() => {
-    return channels.reduce<Record<CCTVRegion, CCTVChannel[]>>((acc, cam) => {
+    return filteredChannels.reduce<Record<CCTVRegion, CCTVChannel[]>>((acc, cam) => {
       if (!acc[cam.region]) acc[cam.region] = [];
       acc[cam.region].push(cam);
       return acc;
     }, {} as Record<CCTVRegion, CCTVChannel[]>);
-  }, [channels]);
+  }, [filteredChannels]);
 
   const regions = (Object.keys(grouped).sort() as CCTVRegion[]).filter(
     (r) => grouped[r].length > 0
@@ -47,16 +58,26 @@ export default function CCTVSidebar({
 
   return (
     <div className="flex flex-col h-full bg-background/50 backdrop-blur-md">
-      <div className="p-4 border-b border-border/50 bg-muted/20">
+      <div className="p-4 border-b border-border/50 bg-muted/20 space-y-3">
         <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground flex items-center justify-between">
           Regional Nodes
           <Badge variant="outline" className="ml-auto font-mono text-[9px] h-4 px-1.5 border-primary/30 text-primary">
             {selectedCams.length}/{maxSlots}
           </Badge>
         </h2>
+
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+          <Input 
+            placeholder="Search nodes..." 
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-8 pl-8 text-[11px] bg-background border-border/50 focus:border-primary/50 shadow-sm"
+          />
+        </div>
       </div>
 
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 min-h-0">
         <Accordion type="multiple" className="w-full px-2 py-2">
           {regions.map((region) => (
             <AccordionItem key={region} value={region} className="border-none mb-1">
@@ -74,7 +95,7 @@ export default function CCTVSidebar({
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pb-1">
-                <div className="flex flex-col gap-0.5 mt-1 px-1">
+                <div className="flex flex-col gap-1 mt-1 px-1">
                   {grouped[region].map((cam) => {
                     const isSelected = selectedIds.has(cam.cctv_id);
                     const isFull = selectedCams.length >= maxSlots && !isSelected;
@@ -103,16 +124,12 @@ export default function CCTVSidebar({
                           {isSelected && <Check className="w-2.5 h-2.5 text-primary-foreground stroke-[4]" />}
                         </div>
                         
-                        <span className="flex-1 text-[11px] font-medium truncate py-1 transition-transform group-hover:translate-x-0.5">
+                        <span 
+                          title={cam.ch_name}
+                          className="flex-1 min-w-0 text-[11px] font-medium truncate py-1 transition-transform group-hover:translate-x-0.5"
+                        >
                           {cam.ch_name}
                         </span>
-
-                        {/* Hover Overlay for GPS */}
-                        <div className="absolute right-0 top-0 bottom-0 flex items-center bg-gradient-to-l from-muted via-muted/90 to-transparent pl-8 pr-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <span className="text-[9px] font-mono text-primary font-bold tracking-tight">
-                            {cam.lat?.toFixed(4)}, {cam.lng?.toFixed(4)}
-                          </span>
-                        </div>
                       </button>
                     );
                   })}

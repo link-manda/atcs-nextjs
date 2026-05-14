@@ -13,7 +13,7 @@ interface CCTVGridItemProps {
 
 export function CCTVGridItem({ channel, onRemove }: CCTVGridItemProps) {
   return (
-    <div className="group relative w-full aspect-video bg-black overflow-hidden rounded-lg border border-border/40 hover:border-primary/50 transition-colors">
+    <div className="group relative w-full aspect-video bg-background overflow-hidden rounded-lg border border-border/40 hover:border-primary/50 transition-colors">
       {/* The Stream */}
       <CCTVPlayer channel={channel} />
 
@@ -21,14 +21,14 @@ export function CCTVGridItem({ channel, onRemove }: CCTVGridItemProps) {
       <div className="absolute inset-0 pointer-events-none p-3 flex flex-col justify-between">
         {/* Top HUD */}
         <div className="flex justify-between items-start">
-          <div className="glass-panel px-3 py-1.5 rounded flex items-center gap-2 border border-white/10">
-             <span className="font-headline font-bold text-xs uppercase tracking-wider text-white">
+          <div className="glass-panel px-3 py-1.5 rounded flex items-center gap-2 border border-border/50">
+             <span className="font-headline font-bold text-xs uppercase tracking-wider text-foreground">
                {channel.ch_name}
              </span>
           </div>
-          
+
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="bg-red-500/20 text-red-400 border-red-500/30 flex items-center gap-1.5 py-0.5 px-2">
+            <Badge variant="outline" className="bg-red-500/10 text-red-500 border-red-500/30 flex items-center gap-1.5 py-0.5 px-2 bg-background/80 backdrop-blur-md">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
@@ -40,8 +40,8 @@ export function CCTVGridItem({ channel, onRemove }: CCTVGridItemProps) {
 
         {/* Bottom HUD */}
         <div className="flex justify-between items-end">
-          <div className="glass-panel px-2 py-1 rounded border border-white/10">
-            <span className="font-mono text-[9px] text-white/70">
+          <div className="glass-panel px-2 py-1 rounded border border-border/50">
+            <span className="font-mono text-[9px] text-muted-foreground font-medium">
               COORD: {channel.lat?.toFixed(6) ?? "0.000000"}, {channel.lng?.toFixed(6) ?? "0.000000"}
             </span>
           </div>
@@ -49,7 +49,7 @@ export function CCTVGridItem({ channel, onRemove }: CCTVGridItemProps) {
       </div>
 
       {/* Interactive Layer (Hover) */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 flex items-center justify-center pointer-events-none">
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-background/40 backdrop-blur-[2px] flex items-center justify-center pointer-events-none">
         <div className="pointer-events-auto">
           <Button 
             variant="destructive" 

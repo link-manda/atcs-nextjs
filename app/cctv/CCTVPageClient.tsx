@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import CCTVSidebar from '@/components/cctv/CCTVSidebar';
 import CCTVGridView, { LAYOUTS } from '@/components/cctv/CCTVGridView';
 import type { CCTVChannel } from '@/types/cctv';
@@ -9,9 +9,8 @@ import type { GridLayout } from '@/components/cctv/CCTVGridView';
 import { LayoutGrid, Map as MapIcon, Trash2, Video, Activity } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
+import { useDenpasarCCTV } from '@/hooks/useDenpasarCCTV';
 
 const CCTVMap = dynamic(() => import('@/components/cctv/CCTVMap'), {
   ssr: false,
@@ -33,12 +32,26 @@ interface Props {
   channels: CCTVChannel[];
 }
 
-export default function CCTVPageClient({ channels }: Props) {
-  const [selectedCams, setSelectedCams] = useState<CCTVChannel[]>(
-    channels.slice(0, 9)
-  );
+export default function CCTVPageClient(props: Props) {
+  const { data: dpsChannels, loading: dpsLoading } = useDenpasarCCTV();
+  
+  const allChannels = useMemo(() => {
+    return [...props.channels, ...dpsChannels];
+  }, [props.channels, dpsChannels]);
+
+  const [selectedCams, setSelectedCams] = useState<CCTVChannel[]>([]);
   const [layout, setLayout]         = useState<GridLayout>('3x3');
   const [viewMode, setViewMode]     = useState<ViewMode>('grid');
+
+  const hasInitialized = useRef(false);
+
+  // Set default selection once when channels load
+  useEffect(() => {
+    if (!hasInitialized.current && allChannels.length > 0) {
+      setSelectedCams(allChannels.slice(0, 9));
+      hasInitialized.current = true;
+    }
+  }, [allChannels]);
 
   const maxSlots = LAYOUTS[layout].max;
 
@@ -78,7 +91,7 @@ export default function CCTVPageClient({ channels }: Props) {
       <section className="hidden md:block flex-shrink-0 w-80">
         <div className="h-full rounded-xl overflow-hidden border border-border/50 shadow-2xl">
           <CCTVSidebar
-            channels={channels}
+            channels={allChannels}
             selectedCams={selectedCams}
             maxSlots={maxSlots}
             onSelect={handleSelect}
@@ -97,7 +110,7 @@ export default function CCTVPageClient({ channels }: Props) {
           </SheetTrigger>
           <SheetContent side="left" className="p-0 w-80">
             <CCTVSidebar
-              channels={channels}
+              channels={allChannels}
               selectedCams={selectedCams}
               maxSlots={maxSlots}
               onSelect={handleSelect}
@@ -132,7 +145,7 @@ export default function CCTVPageClient({ channels }: Props) {
              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/30 border border-border/50">
                 <Activity className="w-3 h-3 text-secondary animate-pulse" />
                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                  {channels.length} Nodes Operational
+                  {allChannels.length} Nodes Operational
                 </span>
              </div>
 
@@ -161,7 +174,7 @@ export default function CCTVPageClient({ channels }: Props) {
             />
           ) : (
             <CCTVMap
-              cameras={channels}
+              cameras={allChannels}
               selectedIds={selectedIds}
               onCameraClick={handleSelect}
             />
