@@ -60,55 +60,26 @@ export default function DashboardClient({ channels }: Props) {
       {/* ─── Map ─── */}
       <div className="flex-1 relative isolate min-h-[50vh] lg:min-h-0">
         <DashboardMap cameras={channels} />
-
-        {/* Map overlay badge */}
-        <div className="absolute top-4 left-4 z-[400] glass-panel px-3 py-2 rounded-lg border border-outline-variant/20 pointer-events-none">
-          <p className="text-[9px] font-headline text-on-surface-variant uppercase tracking-widest mb-0.5">
-            Persebaran CCTV
-          </p>
-          <p className="text-sm font-headline font-bold text-primary">
-            Provinsi Bali
-          </p>
-        </div>
-
-        {/* Legend */}
-        <div className="absolute bottom-4 left-4 z-[400] glass-panel px-3 py-2.5 rounded-lg border border-outline-variant/20 max-w-[180px]">
-          <p className="text-[9px] font-headline text-on-surface-variant uppercase tracking-widest mb-2">
-            Legend Region
-          </p>
-          <div className="space-y-1">
-            {stats.regionEntries.slice(0, 6).map(([region, count]) => (
-              <div key={region} className="flex items-center gap-2">
-                <span
-                  className="w-2 h-2 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: REGION_COLORS[region] ?? '#81ecff' }}
-                />
-                <span className="text-[9px] text-on-surface flex-1 truncate">{region}</span>
-                <span className="text-[9px] font-bold text-primary">{count}</span>
-              </div>
-            ))}
-            {stats.regionEntries.length > 6 && (
-              <p className="text-[8px] text-on-surface-variant">
-                +{stats.regionEntries.length - 6} lainnya
-              </p>
-            )}
-          </div>
-        </div>
       </div>
 
       {/* ─── Stats Panel ─── */}
       <aside className="w-full lg:w-80 xl:w-96 bg-surface-container border-t lg:border-t-0 lg:border-l border-outline-variant/20 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="px-5 py-4 border-b border-outline-variant/10 flex-shrink-0">
-          <h2 className="font-headline text-xs font-bold text-on-surface uppercase tracking-widest">
-            Ringkasan Sistem
-          </h2>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
-            <span className="text-[10px] text-on-surface-variant font-headline uppercase tracking-wider">
-              Data Aktif
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[9px] font-bold text-on-surface-variant uppercase tracking-[0.2em]">
+              System Status
             </span>
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-secondary shadow-[0_0_8px_rgba(var(--secondary-rgb),0.5)] animate-pulse" />
+              <span className="text-[9px] font-bold text-on-surface font-mono uppercase">
+                OPERATIONAL
+              </span>
+            </div>
           </div>
+          <p className="text-xs font-bold text-primary font-headline">
+            Tactical Map Interface v4.2
+          </p>
         </div>
 
         {/* Stat Cards */}
@@ -156,7 +127,7 @@ export default function DashboardClient({ channels }: Props) {
         {/* Region Breakdown */}
         <div className="flex-1 overflow-y-auto px-4 pb-4 no-scrollbar">
           <p className="text-[9px] font-headline text-on-surface-variant uppercase tracking-widest mb-3">
-            Distribusi Per Wilayah
+            Regional Clusters (Legend)
           </p>
           <div className="space-y-2.5">
             {stats.regionEntries.map(([region, count]) => {
