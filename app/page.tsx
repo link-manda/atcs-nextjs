@@ -1,7 +1,7 @@
 import DashboardClient from '@/app/DashboardClient';
 import {
   CCTV_DATA_REVALIDATE_SECONDS,
-  getCCTVChannels,
+  getAllCCTVChannels,
 } from '@/data/cctv-api';
 
 export const revalidate = CCTV_DATA_REVALIDATE_SECONDS;
@@ -14,7 +14,7 @@ export const metadata = {
 
 export default async function DashboardPage() {
   try {
-    const channels = await getCCTVChannels();
+    const channels = await getAllCCTVChannels();
     return <DashboardClient channels={channels} />;
   } catch {
     return (

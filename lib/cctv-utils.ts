@@ -62,8 +62,8 @@ export function detectRegion(cctv: RawCCTV): CCTVRegion {
   )
     return 'Klungkung';
 
-  if (name.includes('padang galak') || name.includes('bali beach'))
-    return 'Gianyar';
+  if (name.includes('padang galak') || name.includes('bali beach') || name.includes('sudirman'))
+    return 'Denpasar';
 
   if (
     name.includes('taman kota') ||
@@ -71,10 +71,9 @@ export function detectRegion(cctv: RawCCTV): CCTVRegion {
     name.includes('bale bengong') ||
     name.includes('wifi corner') ||
     name.includes('dangin carik') ||
-    name.includes('garuda') ||
-    name.includes('taman kota')
+    name.includes('garuda')
   )
-    return 'Denpasar';
+    return 'Tabanan';
 
   if (
     name.includes('jimbaran') ||

@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import CCTVSidebar from '@/components/cctv/CCTVSidebar';
 import CCTVGridView, { LAYOUTS } from '@/components/cctv/CCTVGridView';
 import type { CCTVChannel } from '@/types/cctv';
@@ -10,7 +10,6 @@ import { LayoutGrid, Map as MapIcon, Trash2, Video, Activity, PanelLeftClose, Pa
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useDenpasarCCTV } from '@/hooks/useDenpasarCCTV';
 import { cn } from "@/lib/utils";
 
 const CCTVMap = dynamic(() => import('@/components/cctv/CCTVMap'), {
@@ -34,11 +33,7 @@ interface Props {
 }
 
 export default function CCTVPageClient(props: Props) {
-  const { data: dpsChannels, loading: dpsLoading } = useDenpasarCCTV();
-  
-  const allChannels = useMemo(() => {
-    return [...props.channels, ...dpsChannels];
-  }, [props.channels, dpsChannels]);
+  const allChannels = props.channels;
 
   const [selectedCams, setSelectedCams] = useState<CCTVChannel[]>([]);
   const [layout, setLayout]         = useState<GridLayout>('3x3');
