@@ -11,9 +11,9 @@ export type GridLayout = '1x1' | '2x2' | '3x3' | '4x4';
 
 export const LAYOUTS: Record<GridLayout, { cols: string; max: number; label: string; icon: React.ElementType }> = {
   '1x1': { cols: 'grid-cols-1', max: 1, label: 'Single', icon: Maximize },
-  '2x2': { cols: 'grid-cols-2', max: 4, label: '2x2 View', icon: Grid2X2 },
-  '3x3': { cols: 'grid-cols-3', max: 9, label: '3x3 View', icon: Grid3X3 },
-  '4x4': { cols: 'grid-cols-4', max: 16, label: '4x4 View', icon: Layout },
+  '2x2': { cols: 'grid-cols-1 sm:grid-cols-2', max: 4, label: '2x2 View', icon: Grid2X2 },
+  '3x3': { cols: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3', max: 9, label: '3x3 View', icon: Grid3X3 },
+  '4x4': { cols: 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4', max: 16, label: '4x4 View', icon: Layout },
 };
 
 interface CCTVGridViewProps {

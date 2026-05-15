@@ -6,11 +6,12 @@ import CCTVSidebar from '@/components/cctv/CCTVSidebar';
 import CCTVGridView, { LAYOUTS } from '@/components/cctv/CCTVGridView';
 import type { CCTVChannel } from '@/types/cctv';
 import type { GridLayout } from '@/components/cctv/CCTVGridView';
-import { LayoutGrid, Map as MapIcon, Trash2, Video, Activity } from 'lucide-react';
+import { LayoutGrid, Map as MapIcon, Trash2, Video, Activity, PanelLeftClose, PanelLeft } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useDenpasarCCTV } from '@/hooks/useDenpasarCCTV';
+import { cn } from "@/lib/utils";
 
 const CCTVMap = dynamic(() => import('@/components/cctv/CCTVMap'), {
   ssr: false,
@@ -42,6 +43,7 @@ export default function CCTVPageClient(props: Props) {
   const [selectedCams, setSelectedCams] = useState<CCTVChannel[]>([]);
   const [layout, setLayout]         = useState<GridLayout>('3x3');
   const [viewMode, setViewMode]     = useState<ViewMode>('grid');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const hasInitialized = useRef(false);
 
@@ -88,8 +90,13 @@ export default function CCTVPageClient(props: Props) {
   return (
     <div className="flex gap-6 h-[calc(100vh-6.5rem)]">
       {/* ─── Camera List Sidebar (Desktop) ─── */}
-      <section className="hidden md:block flex-shrink-0 w-80">
-        <div className="h-full rounded-xl overflow-hidden border border-border/50 shadow-2xl">
+      <section 
+        className={cn(
+          "hidden md:block flex-shrink-0 transition-all duration-300 ease-in-out",
+          isSidebarOpen ? "w-80 opacity-100" : "w-0 opacity-0 overflow-hidden"
+        )}
+      >
+        <div className="h-full w-80 rounded-xl overflow-hidden border border-border/50 shadow-2xl">
           <CCTVSidebar
             channels={allChannels}
             selectedCams={selectedCams}
@@ -121,25 +128,36 @@ export default function CCTVPageClient(props: Props) {
       </div>
 
       {/* ─── Main Content Canvas ─── */}
-      <section className="flex-1 flex flex-col gap-4 min-w-0">
+      <section className="flex-1 flex flex-col gap-4 min-w-0 transition-all duration-300">
         {/* Toolbar */}
         <div className="flex items-center justify-between flex-shrink-0 gap-4 flex-wrap">
-          <Tabs 
-            value={viewMode} 
-            onValueChange={(v) => setViewMode(v as ViewMode)} 
-            className="w-auto"
-          >
-            <TabsList className="bg-muted/50 border border-border/50">
-              <TabsTrigger value="grid" className="gap-2 text-[10px] font-bold uppercase tracking-widest px-4">
-                <LayoutGrid className="w-3.5 h-3.5" />
-                Grid View
-              </TabsTrigger>
-              <TabsTrigger value="map" className="gap-2 text-[10px] font-bold uppercase tracking-widest px-4">
-                <MapIcon className="w-3.5 h-3.5" />
-                Tactical Map
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              className="hidden md:flex h-9 w-9 border-border/50"
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+            >
+              {isSidebarOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeft className="w-4 h-4" />}
+            </Button>
+            <Tabs 
+              value={viewMode} 
+              onValueChange={(v) => setViewMode(v as ViewMode)} 
+              className="w-auto"
+            >
+              <TabsList className="bg-muted/50 border border-border/50">
+                <TabsTrigger value="grid" className="gap-2 text-[10px] font-bold uppercase tracking-widest px-4">
+                  <LayoutGrid className="w-3.5 h-3.5" />
+                  Grid View
+                </TabsTrigger>
+                <TabsTrigger value="map" className="gap-2 text-[10px] font-bold uppercase tracking-widest px-4">
+                  <MapIcon className="w-3.5 h-3.5" />
+                  Tactical Map
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
 
           <div className="flex items-center gap-4">
              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/30 border border-border/50">

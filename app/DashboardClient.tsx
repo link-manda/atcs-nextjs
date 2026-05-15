@@ -56,9 +56,9 @@ export default function DashboardClient({ channels }: Props) {
   }, [channels]);
 
   return (
-    <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)] gap-0">
+    <div className="flex flex-col lg:flex-row h-auto lg:h-[calc(100vh-4rem)] min-h-[calc(100vh-4rem)] gap-0">
       {/* ─── Map ─── */}
-      <div className="flex-1 relative isolate min-h-[50vh] lg:min-h-0">
+      <div className="relative isolate h-[50vh] lg:h-auto lg:flex-1">
         <DashboardMap cameras={channels} />
       </div>
 
