@@ -28,9 +28,11 @@ export function CCTVPlayer({ channel }: CCTVPlayerProps) {
 
   if (!mounted) return null;
 
+  const Player = ReactPlayer as any;
+
   return (
     <div className="w-full h-full relative">
-      <ReactPlayer
+      <Player
         url={channel.streaming_url}
         playing
         muted
