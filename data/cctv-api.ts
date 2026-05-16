@@ -48,8 +48,15 @@ function mapToChannel(entry: RawCCTVEntry): CCTVChannel {
   }
 
   // Rewrite Shinobi Buleleng MP4 pseudo-stream to native Shinobi iframe embed to fix AbortError / 504 timeouts
-  if (streamingUrl.includes('shinobi.bulelengkab.go.id') && streamingUrl.includes('/mp4/')) {
-    streamingUrl = streamingUrl.replace('/mp4/', '/embed/').replace('/s.mp4', '/fullscreen|jquery|hd');
+  // Pattern matches: [protocol]//[domain]/[token]/mp4/[group]/[monitor]/s.mp4
+  const shinobiRegex = /^(https?:\/\/shinobi\.bulelengkab\.go\.id\/[^\/]+)\/mp4\/([^\/]+\/[^\/]+)\/s\.mp4$/i;
+  const match = streamingUrl.match(shinobiRegex);
+  if (match) {
+    // Encode pipes as %7C to avoid confusing browser URL parsers in some environments (like Firefox)
+    // which can lead to malformed window.location.origin inside the iframe.
+    const embedUrl = `${match[1]}/embed/${match[2]}/fullscreen%7Cjquery%7Chd`;
+    // Route through our proxy to inject socket.io fix for their duplicate URL bug
+    streamingUrl = `/api/proxy/shinobi?url=${encodeURIComponent(embedUrl)}`;
   }
 
   return {

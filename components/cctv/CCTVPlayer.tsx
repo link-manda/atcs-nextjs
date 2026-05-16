@@ -14,6 +14,9 @@ export function CCTVPlayer({ channel }: CCTVPlayerProps) {
   const [key, setKey] = useState(0);
   const MAX_RETRIES = 5;
 
+  // Diagnostic log to track URL duplication/mangling
+  console.log(`[CCTVPlayer] Rendering ${channel.ch_name} with URL: ${channel.streaming_url} (Type: ${channel.player_type})`);
+
   useEffect(() => {
     setMounted(true);
   }, []);
