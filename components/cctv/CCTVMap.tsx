@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { CCTVChannel } from '@/types/cctv';
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
@@ -47,6 +47,8 @@ function MapBounds({ cameras }: { cameras: CCTVChannel[] }) {
 }
 
 export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMapProps) {
+  const [showTraffic, setShowTraffic] = useState(false);
+
   const withGps = useMemo(
     () => cameras.filter((c) => c.lat !== null && c.lng !== null),
     [cameras]
@@ -64,6 +66,23 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
 
   return (
     <div className="w-full h-full relative bg-background/50 isolate">
+      {/* Toggle Button */}
+      <div className="absolute top-4 right-4 z-[1000]">
+        <button
+          onClick={() => setShowTraffic(!showTraffic)}
+          className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-lg backdrop-blur-md border ${
+            showTraffic 
+              ? 'bg-secondary/20 border-secondary/50 text-secondary ring-1 ring-secondary/50' 
+              : 'bg-background/80 border-border/50 text-muted-foreground hover:bg-background/90'
+          }`}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+            traffic
+          </span>
+          Live Traffic
+        </button>
+      </div>
+
       <MapContainer
         center={[-8.4095, 115.1889]} // Bali Center
         zoom={10}
@@ -74,6 +93,15 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
         />
+        
+        {showTraffic && process.env.NEXT_PUBLIC_TOMTOM_API_KEY && (
+          <TileLayer
+            url={`https://api.tomtom.com/traffic/map/4/tile/flow/relative/{z}/{x}/{y}.png?key=${process.env.NEXT_PUBLIC_TOMTOM_API_KEY}`}
+            attribution='&copy; <a href="https://www.tomtom.com">TomTom</a>'
+            opacity={0.8}
+            zIndex={10}
+          />
+        )}
         
         {withGps.map((cam) => {
           const isSelected = selectedIds.has(cam.cctv_id);
