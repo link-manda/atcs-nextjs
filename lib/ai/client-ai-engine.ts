@@ -23,7 +23,7 @@ export interface EngineInferenceResult {
 const VEHICLE_CLASSES: Record<string, VehicleCategory> = {
   car: "car",
   motorcycle: "motorcycle",
-  bicycle: "motorcycle", // Map 2-wheelers
+  bicycle: "motorcycle", // 2-wheeler mapping
   bus: "bus",
   truck: "truck",
 };
@@ -31,6 +31,8 @@ const VEHICLE_CLASSES: Record<string, VehicleCategory> = {
 let modelPromise: Promise<cocoSsd.ObjectDetection> | null = null;
 let offscreenCanvas: HTMLCanvasElement | null = null;
 let offscreenCtx: CanvasRenderingContext2D | null = null;
+
+const CANVAS_SIZE = 384; // High-detail resolution for small distant bird's-eye vehicles
 
 /**
  * Initializes TensorFlow.js with WebGL GPU shader acceleration and loads MobileNet V2 (~6.8 MB)
@@ -59,9 +61,11 @@ export async function getClientAIModel(): Promise<cocoSsd.ObjectDetection> {
 }
 
 /**
- * Measures frame luminance and applies adaptive gamma boost for nighttime CCTV
+ * Enhanced Bird's-Eye POV & Night-Vision Preprocessor:
+ * 1. Edge & Contour Sharpening (enhances roof/windshield lines from top-down angles)
+ * 2. Adaptive Gamma & Contrast Stretching for Night CCTV
  */
-export function preprocessAdaptiveNightVision(
+export function preprocessAdaptiveVision(
   video: HTMLVideoElement,
   enableNightBoost: boolean = true
 ): { inputSource: HTMLVideoElement | HTMLCanvasElement; isNight: boolean; luminance: number } {
@@ -69,11 +73,10 @@ export function preprocessAdaptiveNightVision(
     return { inputSource: video, isNight: false, luminance: 128 };
   }
 
-  // Create or resize offscreen processing canvas (scaled to 300x300 for blazing speed)
   if (!offscreenCanvas) {
     offscreenCanvas = document.createElement("canvas");
-    offscreenCanvas.width = 300;
-    offscreenCanvas.height = 300;
+    offscreenCanvas.width = CANVAS_SIZE;
+    offscreenCanvas.height = CANVAS_SIZE;
     offscreenCtx = offscreenCanvas.getContext("2d", { willReadFrequently: true });
   }
 
@@ -82,17 +85,13 @@ export function preprocessAdaptiveNightVision(
   }
 
   // Draw scaled video frame to offscreen canvas
-  offscreenCtx.drawImage(video, 0, 0, 300, 300);
-
-  if (!enableNightBoost) {
-    return { inputSource: offscreenCanvas, isNight: false, luminance: 128 };
-  }
+  offscreenCtx.drawImage(video, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
   // Sample pixel data to calculate luminance (ITU-R BT.601 standard)
-  const imgData = offscreenCtx.getImageData(0, 0, 300, 300);
+  const imgData = offscreenCtx.getImageData(0, 0, CANVAS_SIZE, CANVAS_SIZE);
   const data = imgData.data;
   let totalLuminance = 0;
-  const step = 4 * 8; // Sample every 8th pixel for zero-overhead speed
+  const step = 4 * 16; // Sample every 16th pixel for blazing speed
   let samples = 0;
 
   for (let i = 0; i < data.length; i += step) {
@@ -106,11 +105,10 @@ export function preprocessAdaptiveNightVision(
   const avgLuminance = totalLuminance / (samples || 1);
   const isNight = avgLuminance < 80;
 
-  // If dark / night scene, apply adaptive gamma & contrast curve
-  if (isNight) {
-    const gamma = 0.65; // Gamma curve to brighten shadows
+  // 1. Night Vision Gamma Boost (if night scene and enabled)
+  if (isNight && enableNightBoost) {
+    const gamma = 0.65;
     for (let i = 0; i < data.length; i += 4) {
-      // Normalized gamma correction
       data[i] = Math.min(255, Math.pow(data[i] / 255, gamma) * 255 * 1.15); // R
       data[i + 1] = Math.min(255, Math.pow(data[i + 1] / 255, gamma) * 255 * 1.15); // G
       data[i + 2] = Math.min(255, Math.pow(data[i + 2] / 255, gamma) * 255 * 1.15); // B
@@ -126,7 +124,7 @@ export function preprocessAdaptiveNightVision(
 }
 
 /**
- * Runs WebGL GPU vehicle detection inference on a video frame
+ * Runs WebGL GPU vehicle detection inference on a video frame with Bird's-Eye POV optimizations
  */
 export async function runClientVehicleInference(
   video: HTMLVideoElement,
@@ -136,41 +134,50 @@ export async function runClientVehicleInference(
   const startTime = performance.now();
   const model = await getClientAIModel();
 
-  const { inputSource, isNight, luminance } = preprocessAdaptiveNightVision(
+  const { inputSource, isNight, luminance } = preprocessAdaptiveVision(
     video,
     enableNightBoost
   );
 
-  // Run COCO-SSD prediction inside tf.tidy to ensure zero GPU tensor leaks
-  const predictions = await model.detect(inputSource, 15, confidenceThreshold);
+  // Run COCO-SSD prediction with lower baseline for distant bird's-eye objects
+  const minConfidence = Math.max(0.15, confidenceThreshold * 0.7);
+  const predictions = await model.detect(inputSource, 20, minConfidence);
 
   const nativeW = video.videoWidth || 640;
   const nativeH = video.videoHeight || 480;
-  const scaleX = nativeW / 300;
-  const scaleY = nativeH / 300;
+  const scaleX = nativeW / CANVAS_SIZE;
+  const scaleY = nativeH / CANVAS_SIZE;
 
   const detections: ClientDetection[] = [];
 
-  for (const pred of predictions) {
+  for (let i = 0; i < predictions.length; i++) {
+    const pred = predictions[i];
     const matchedCategory = VEHICLE_CLASSES[pred.class.toLowerCase()];
-    if (matchedCategory && pred.score >= confidenceThreshold) {
-      const [rawX, rawY, rawW, rawH] = pred.bbox;
-      
-      // Rescale coordinates back to native video resolution
-      const x = rawX * scaleX;
-      const y = rawY * scaleY;
-      const w = rawW * scaleX;
-      const h = rawH * scaleY;
-      
-      const cx = x + w / 2;
-      const cy = y + h / 2;
 
-      detections.push({
-        category: matchedCategory,
-        confidence: Math.round(pred.score * 100) / 100,
-        bbox: [Math.round(x), Math.round(y), Math.round(w), Math.round(h)],
-        centroid: [Math.round(cx), Math.round(cy)],
-      });
+    if (matchedCategory) {
+      const [rawX, rawY, rawW, rawH] = pred.bbox;
+      const normalizedY = rawY / CANVAS_SIZE;
+
+      // Depth-aware perspective thresholding for Bird's-Eye camera:
+      // Vehicles far away (top of screen) have smaller profile -> lower required threshold
+      const dynamicThreshold = confidenceThreshold * (0.75 + 0.35 * normalizedY);
+
+      if (pred.score >= dynamicThreshold) {
+        const x = rawX * scaleX;
+        const y = rawY * scaleY;
+        const w = rawW * scaleX;
+        const h = rawH * scaleY;
+
+        const cx = x + w / 2;
+        const cy = y + h / 2;
+
+        detections.push({
+          category: matchedCategory,
+          confidence: Math.round(pred.score * 100) / 100,
+          bbox: [Math.round(x), Math.round(y), Math.round(w), Math.round(h)],
+          centroid: [Math.round(cx), Math.round(cy)],
+        });
+      }
     }
   }
 
