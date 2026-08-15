@@ -5,7 +5,7 @@ import { CCTVChannel } from "@/types/cctv";
 import { ALL_REGIONS } from "@/lib/cctv-utils";
 import { ClientAITacticalOverlay } from "@/components/ai-station/ClientAITacticalOverlay";
 import { AITrafficTelemetry } from "@/components/ai-station/AITrafficTelemetry";
-import { runClientVehicleInference } from "@/lib/ai/client-ai-engine";
+import { runClientVehicleInference, clearClientAICache } from "@/lib/ai/client-ai-engine";
 import {
   ClientVehicleTracker,
   TrackedVehicle,
@@ -406,6 +406,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
             confidence={confidence}
             onConfidenceChange={setConfidence}
             onResetCounts={handleResetCounts}
+            onClearCache={clearClientAICache}
           />
         </div>
       </div>

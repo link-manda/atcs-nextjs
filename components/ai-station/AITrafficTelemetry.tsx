@@ -12,6 +12,7 @@ import {
   Moon,
   Sun,
   Gauge,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VehicleCounts } from "@/lib/ai/client-vehicle-tracker";
@@ -30,6 +31,7 @@ interface AITrafficTelemetryProps {
   confidence: number;
   onConfidenceChange: (val: number) => void;
   onResetCounts: () => void;
+  onClearCache?: () => void;
 }
 
 export function AITrafficTelemetry({
@@ -46,6 +48,7 @@ export function AITrafficTelemetry({
   confidence,
   onConfidenceChange,
   onResetCounts,
+  onClearCache,
 }: AITrafficTelemetryProps) {
   const total = counts.total || 0;
   const carPercent = total > 0 ? Math.round((counts.cars / total) * 100) : 0;
@@ -73,20 +76,36 @@ export function AITrafficTelemetry({
           </div>
         </div>
 
-        <div className="flex items-baseline justify-between mt-1">
+        <div className="flex items-baseline justify-between mt-1 gap-2 flex-wrap">
           <div className="text-4xl sm:text-5xl font-black font-headline tracking-tight text-foreground">
             {total.toLocaleString("id-ID")}
           </div>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onResetCounts}
-            className="h-8 px-3 text-xs bg-background border-border hover:bg-muted font-semibold text-foreground shadow-sm flex items-center gap-1.5"
-          >
-            <RotateCcw className="w-3.5 h-3.5 text-muted-foreground" />
-            <span>Reset</span>
-          </Button>
+          <div className="flex items-center gap-1.5">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onResetCounts}
+              className="h-8 px-2.5 text-xs bg-background border-border hover:bg-muted font-semibold text-foreground shadow-sm flex items-center gap-1"
+              title="Reset Jumlah Hitungan Kendaraan"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-muted-foreground" />
+              <span>Reset</span>
+            </Button>
+
+            {onClearCache && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onClearCache}
+                className="h-8 px-2.5 text-xs bg-background border-border hover:bg-muted font-semibold text-muted-foreground hover:text-foreground shadow-sm flex items-center gap-1"
+                title="Hapus Cache Model AI & Muat Ulang"
+              >
+                <Trash2 className="w-3.5 h-3.5 text-muted-foreground" />
+                <span>Hapus Cache</span>
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 

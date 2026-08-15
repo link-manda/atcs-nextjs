@@ -80,4 +80,11 @@ describe("AIStationClient", () => {
     fireEvent.click(fps15Btn);
     expect(screen.getByText("15 FPS Target")).toBeInTheDocument();
   });
+
+  it("renders Hapus Cache button next to Reset button", () => {
+    render(<AIStationClient channels={mockChannels} />);
+
+    expect(screen.getByRole("button", { name: /Reset/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Hapus Cache/i })).toBeInTheDocument();
+  });
 });

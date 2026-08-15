@@ -61,6 +61,46 @@ export async function getClientAIModel(): Promise<cocoSsd.ObjectDetection> {
 }
 
 /**
+ * Clears cached TensorFlow.js IndexedDB models, CacheStorage, and reloads page
+ */
+export async function clearClientAICache(): Promise<void> {
+  try {
+    if (typeof window !== "undefined" && window.indexedDB && window.indexedDB.databases) {
+      try {
+        const dbs = await window.indexedDB.databases();
+        for (let i = 0; i < dbs.length; i++) {
+          if (dbs[i].name) {
+            window.indexedDB.deleteDatabase(dbs[i].name!);
+          }
+        }
+      } catch (e) {
+        console.warn("[ClientAI] IndexedDB enumeration skipped:", e);
+      }
+    }
+
+    if (typeof window !== "undefined" && "caches" in window) {
+      try {
+        const keys = await window.caches.keys();
+        for (let i = 0; i < keys.length; i++) {
+          await window.caches.delete(keys[i]);
+        }
+      } catch (e) {
+        console.warn("[ClientAI] CacheStorage clear skipped:", e);
+      }
+    }
+
+    if (typeof localStorage !== "undefined") localStorage.clear();
+    if (typeof sessionStorage !== "undefined") sessionStorage.clear();
+
+    if (typeof window !== "undefined") {
+      window.location.reload();
+    }
+  } catch (err) {
+    console.error("[ClientAI] Failed to clear AI cache:", err);
+  }
+}
+
+/**
  * Enhanced Bird's-Eye POV & Night-Vision Preprocessor:
  * 1. Edge & Contour Sharpening (enhances roof/windshield lines from top-down angles)
  * 2. Adaptive Gamma & Contrast Stretching for Night CCTV
