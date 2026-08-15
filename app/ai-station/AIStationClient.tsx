@@ -1,23 +1,26 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
-import { CCTVChannel, CCTVRegion } from "@/types/cctv";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { CCTVChannel } from "@/types/cctv";
 import { ALL_REGIONS } from "@/lib/cctv-utils";
-import { AIWebSocketOverlay, DetectionItem } from "@/components/ai-station/AIWebSocketOverlay";
-import { AITrafficTelemetry, VehicleCountsData } from "@/components/ai-station/AITrafficTelemetry";
+import { ClientAITacticalOverlay } from "@/components/ai-station/ClientAITacticalOverlay";
+import { AITrafficTelemetry } from "@/components/ai-station/AITrafficTelemetry";
+import { runClientVehicleInference } from "@/lib/ai/client-ai-engine";
+import {
+  ClientVehicleTracker,
+  TrackedVehicle,
+  VehicleCounts,
+} from "@/lib/ai/client-vehicle-tracker";
 import Hls from "hls.js";
 import {
   Camera,
   Search,
   Maximize2,
-  VideoOff,
   Radio,
-  SlidersHorizontal,
   ChevronDown,
-  Layers,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
 interface AIStationClientProps {
@@ -43,32 +46,26 @@ export function AIStationClient({ channels }: AIStationClientProps) {
   const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(null);
   const [videoKey, setVideoKey] = useState(0);
 
-  // 3. AI & WebSocket State
-  const [backendUrl, setBackendUrl] = useState<string>(
-    "wss://githadewi2002--bali-atcs-yolov12-serve.modal.run/ws/track"
-  );
-  const [connectionStatus, setConnectionStatus] = useState<
-    "connected" | "connecting" | "disconnected" | "error"
-  >("disconnected");
+  // 3. AI Detection & Tracking State (100% Client-Side WebGL)
   const [fps, setFps] = useState<number>(0);
+  const [inferenceTimeMs, setInferenceTimeMs] = useState<number>(0);
   const [tripwireYRatio, setTripwireYRatio] = useState<number>(0.55);
   const [confidence, setConfidence] = useState<number>(0.25);
-  const [counts, setCounts] = useState<VehicleCountsData>({
+  const [enableNightBoost, setEnableNightBoost] = useState<boolean>(true);
+  const [isNightScene, setIsNightScene] = useState<boolean>(false);
+
+  const [counts, setCounts] = useState<VehicleCounts>({
     total: 0,
     cars: 0,
     motorcycles: 0,
     buses: 0,
     trucks: 0,
   });
-  const [detections, setDetections] = useState<DetectionItem[]>([]);
+  const [trackedVehicles, setTrackedVehicles] = useState<TrackedVehicle[]>([]);
   const [lineCrossed, setLineCrossed] = useState<boolean>(false);
-  const [resolution, setResolution] = useState<{ width: number; height: number } | undefined>();
 
-  const wsRef = useRef<WebSocket | null>(null);
-  const tripwireRef = useRef(tripwireYRatio);
-  tripwireRef.current = tripwireYRatio;
-  const confidenceRef = useRef(confidence);
-  confidenceRef.current = confidence;
+  const trackerRef = useRef<ClientVehicleTracker>(new ClientVehicleTracker());
+  const isInferringRef = useRef<boolean>(false);
 
   // Filtered cameras list
   const filteredChannels = useMemo(() => {
@@ -82,7 +79,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
     });
   }, [channels, regionFilter, searchQuery]);
 
-  // Video Player Mount / Stream Setup
+  // Video Player Mount & HLS Setup
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !selectedChannel) return;
@@ -122,104 +119,74 @@ export function AIStationClient({ channels }: AIStationClientProps) {
     };
   }, [selectedChannel, videoKey]);
 
-  // Helper to extract clean upstream stream URL for cloud backend
-  const cleanStreamUrl = useMemo(() => {
-    if (!selectedChannel) return "";
-    let raw = selectedChannel.streaming_url;
-    if (raw.includes("url=")) {
-      try {
-        const parts = raw.split("url=");
-        if (parts[1]) {
-          return decodeURIComponent(parts[1]);
-        }
-      } catch (e) {
-        console.warn("[AIStation] Error decoding proxy url:", e);
-      }
-    }
-    return raw;
-  }, [selectedChannel]);
-
-  // WebSocket Live Tracking Lifecycle (Only reconnects if channel or backendUrl changes)
+  // 4. Real-Time Client-Side WebGL AI Inference Loop
   useEffect(() => {
-    if (!selectedChannel || !backendUrl || !cleanStreamUrl) return;
+    let animationFrameId: number;
+    let lastInferenceTime = 0;
+    let frameCount = 0;
+    let fpsCalcTime = performance.now();
 
-    let isSubscribed = true;
-    let ws: WebSocket | null = null;
+    const loop = async (timestamp: number) => {
+      const video = videoRef.current;
 
-    const connectWebSocket = () => {
-      try {
-        setConnectionStatus("connecting");
-        const encodedStreamUrl = encodeURIComponent(cleanStreamUrl);
-        const fullWsUrl = `${backendUrl}?stream_url=${encodedStreamUrl}&tripwire_y=${tripwireRef.current}&confidence=${confidenceRef.current}`;
+      // Throttle inference interval to ~35ms for stable 28 FPS broadcast quality
+      if (
+        video &&
+        video.readyState >= 2 &&
+        !video.paused &&
+        !isInferringRef.current &&
+        timestamp - lastInferenceTime >= 35
+      ) {
+        isInferringRef.current = true;
+        lastInferenceTime = timestamp;
 
-        ws = new WebSocket(fullWsUrl);
-        wsRef.current = ws;
+        try {
+          // Run WebGL inference on the video frame
+          const result = await runClientVehicleInference(
+            video,
+            confidence,
+            enableNightBoost
+          );
 
-        ws.onopen = () => {
-          if (!isSubscribed) return;
-          setConnectionStatus("connected");
-        };
+          // Update trajectory tracker
+          const trackerResult = trackerRef.current.update(
+            result.detections,
+            video.videoHeight || 480,
+            tripwireYRatio
+          );
 
-        ws.onmessage = (event) => {
-          if (!isSubscribed) return;
-          try {
-            const data = JSON.parse(event.data);
-            if (data.type === "init") {
-              setConnectionStatus("connected");
-              return;
-            }
-            if (data.fps !== undefined) setFps(data.fps);
-            if (data.counts) setCounts(data.counts);
-            if (data.detections) setDetections(data.detections);
-            if (data.line_crossed !== undefined) setLineCrossed(data.line_crossed);
-            if (data.resolution) setResolution(data.resolution);
-          } catch (parseErr) {
-            console.warn("[AIStation] WebSocket parse error:", parseErr);
+          setTrackedVehicles(trackerResult.trackedVehicles);
+          setCounts(trackerResult.counts);
+          setLineCrossed(trackerResult.lineCrossed);
+          setIsNightScene(result.isNightScene);
+          setInferenceTimeMs(result.inferenceTimeMs);
+
+          // Calculate actual FPS
+          frameCount++;
+          if (timestamp - fpsCalcTime >= 1000) {
+            setFps(Math.round((frameCount * 1000) / (timestamp - fpsCalcTime)));
+            frameCount = 0;
+            fpsCalcTime = timestamp;
           }
-        };
-
-        ws.onerror = () => {
-          if (!isSubscribed) return;
-          setConnectionStatus("error");
-        };
-
-        ws.onclose = () => {
-          if (!isSubscribed) return;
-          setConnectionStatus("disconnected");
-        };
-      } catch (err) {
-        console.error("[AIStation] WebSocket connection error:", err);
-        setConnectionStatus("error");
+        } catch (err) {
+          console.warn("[AIStation] Inference frame dropped:", err);
+        } finally {
+          isInferringRef.current = false;
+        }
       }
+
+      animationFrameId = requestAnimationFrame(loop);
     };
 
-    connectWebSocket();
+    animationFrameId = requestAnimationFrame(loop);
 
     return () => {
-      isSubscribed = false;
-      if (ws) {
-        ws.close();
-      }
+      cancelAnimationFrame(animationFrameId);
     };
-  }, [selectedChannel, backendUrl, cleanStreamUrl]);
+  }, [selectedChannel, confidence, tripwireYRatio, enableNightBoost]);
 
-  // Dynamic Slider Config Pusher (Sends without dropping WebSocket connection)
-  useEffect(() => {
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      wsRef.current.send(
-        JSON.stringify({
-          type: "config",
-          tripwire_y: tripwireYRatio,
-          confidence: confidence,
-        })
-      );
-    }
-  }, [tripwireYRatio, confidence]);
-
-  const handleResetCounts = () => {
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      wsRef.current.send("reset");
-    }
+  const handleResetCounts = useCallback(() => {
+    trackerRef.current.resetCounts();
     setCounts({
       total: 0,
       cars: 0,
@@ -227,7 +194,8 @@ export function AIStationClient({ channels }: AIStationClientProps) {
       buses: 0,
       trucks: 0,
     });
-  };
+    setTrackedVehicles([]);
+  }, []);
 
   const toggleFullScreen = () => {
     const el = document.getElementById("ai-viewport-container");
@@ -251,7 +219,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
               AI Traffic Vision Station
             </h1>
             <p className="text-[11px] font-sans text-muted-foreground">
-              Pemantauan Kendaraan Real-Time SOTA YOLOv12 + ByteTrack Multi-Object Tracking
+              Client-Side WebGL GPU • 0ms Latency • Adaptive Night-Vision Preprocessor
             </p>
           </div>
         </div>
@@ -327,6 +295,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                           setSelectedChannel(ch);
                           setShowCameraSelector(false);
                           setVideoKey((k) => k + 1);
+                          handleResetCounts();
                         }}
                         className={`p-2 rounded-lg text-left text-xs font-headline flex items-center justify-between transition-colors ${
                           selectedChannel.cctv_id === ch.cctv_id
@@ -377,12 +346,12 @@ export function AIStationClient({ channels }: AIStationClientProps) {
               crossOrigin="anonymous"
             />
 
-            {/* Real-time WebSocket Tactical Overlay */}
-            <AIWebSocketOverlay
-              detections={detections}
+            {/* Real-time 0ms Client-Side Tactical Overlay */}
+            <ClientAITacticalOverlay
+              trackedVehicles={trackedVehicles}
               tripwireYRatio={tripwireYRatio}
               lineCrossed={lineCrossed}
-              resolution={resolution}
+              isNightScene={isNightScene}
               videoElement={videoElement}
             />
 
@@ -401,21 +370,6 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                 </Badge>
               </div>
             </div>
-
-            {/* Connection Lost Notification */}
-            {(connectionStatus === "disconnected" || connectionStatus === "error") && (
-              <div className="absolute bottom-4 left-4 right-4 bg-black/90 border border-amber-500/40 rounded-lg p-3 z-30 flex items-center justify-between text-xs text-amber-300">
-                <div className="flex items-center gap-2">
-                  <Radio className="w-4 h-4 text-amber-400 animate-pulse" />
-                  <span>
-                    Backend Python YOLOv12 belum terhubung ({backendUrl}). Menunggu service...
-                  </span>
-                </div>
-                <span className="text-[10px] font-mono text-zinc-400">
-                  Jalankan: uvicorn app.main:app
-                </span>
-              </div>
-            )}
           </div>
         </div>
 
@@ -424,13 +378,14 @@ export function AIStationClient({ channels }: AIStationClientProps) {
           <AITrafficTelemetry
             counts={counts}
             fps={fps}
-            connectionStatus={connectionStatus}
+            inferenceTimeMs={inferenceTimeMs}
+            isNightScene={isNightScene}
+            enableNightBoost={enableNightBoost}
+            onToggleNightBoost={() => setEnableNightBoost((prev) => !prev)}
             tripwireYRatio={tripwireYRatio}
             onTripwireChange={setTripwireYRatio}
             confidence={confidence}
             onConfidenceChange={setConfidence}
-            backendUrl={backendUrl}
-            onBackendUrlChange={setBackendUrl}
             onResetCounts={handleResetCounts}
           />
         </div>

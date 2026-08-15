@@ -1,70 +1,54 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import {
   Car,
   Bike,
   Bus,
   Truck,
-  ArrowDown,
-  ArrowUp,
   Activity,
   RotateCcw,
   SlidersHorizontal,
-  Settings2,
-  Radio,
-  CheckCircle2,
-  AlertCircle,
-  TrendingUp,
+  Moon,
+  Sun,
+  Cpu,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-export interface VehicleCountsData {
-  total: number;
-  cars: number;
-  motorcycles: number;
-  buses: number;
-  trucks: number;
-}
+import { VehicleCounts } from "@/lib/ai/client-vehicle-tracker";
 
 interface AITrafficTelemetryProps {
-  counts: VehicleCountsData;
+  counts: VehicleCounts;
   fps: number;
-  connectionStatus: "connected" | "connecting" | "disconnected" | "error";
+  inferenceTimeMs: number;
+  isNightScene: boolean;
+  enableNightBoost: boolean;
+  onToggleNightBoost: () => void;
   tripwireYRatio: number;
   onTripwireChange: (val: number) => void;
   confidence: number;
   onConfidenceChange: (val: number) => void;
-  backendUrl: string;
-  onBackendUrlChange: (val: string) => void;
   onResetCounts: () => void;
 }
 
 export function AITrafficTelemetry({
   counts,
   fps,
-  connectionStatus,
+  inferenceTimeMs,
+  isNightScene,
+  enableNightBoost,
+  onToggleNightBoost,
   tripwireYRatio,
   onTripwireChange,
   confidence,
   onConfidenceChange,
-  backendUrl,
-  onBackendUrlChange,
   onResetCounts,
 }: AITrafficTelemetryProps) {
-  const [showConfig, setShowConfig] = useState(false);
-  const [tempUrl, setTempUrl] = useState(backendUrl);
-
   const total = counts.total || 0;
   const carPercent = total > 0 ? Math.round((counts.cars / total) * 100) : 0;
   const bikePercent = total > 0 ? Math.round((counts.motorcycles / total) * 100) : 0;
   const busPercent = total > 0 ? Math.round((counts.buses / total) * 100) : 0;
   const truckPercent = total > 0 ? Math.round((counts.trucks / total) * 100) : 0;
-
-  const handleSaveConfig = () => {
-    onBackendUrlChange(tempUrl);
-    setShowConfig(false);
-  };
 
   return (
     <div className="flex flex-col gap-4 w-full text-foreground">
@@ -79,24 +63,10 @@ export function AITrafficTelemetry({
           </div>
 
           <div className="flex items-center gap-2">
-            {connectionStatus === "connected" && (
-              <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-[10px] font-mono font-bold">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                YOLOv12 • {fps} FPS
-              </span>
-            )}
-            {connectionStatus === "connecting" && (
-              <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-950/80 border border-amber-500/40 text-amber-300 text-[10px] font-mono font-bold">
-                <Radio className="w-3 h-3 animate-spin text-amber-400" />
-                Menghubungkan...
-              </span>
-            )}
-            {(connectionStatus === "disconnected" || connectionStatus === "error") && (
-              <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-950/80 border border-red-500/40 text-red-300 text-[10px] font-mono font-bold">
-                <AlertCircle className="w-3 h-3 text-red-400" />
-                Offline
-              </span>
-            )}
+            <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-[10px] font-mono font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+              WebGL GPU • {fps} FPS ({inferenceTimeMs}ms)
+            </span>
           </div>
         </div>
 
@@ -124,7 +94,7 @@ export function AITrafficTelemetry({
             Klasifikasi Armada
           </span>
           <span className="text-[10px] font-mono text-muted-foreground">
-            Real-time ByteTrack
+            0ms Synchronized
           </span>
         </div>
 
@@ -187,22 +157,51 @@ export function AITrafficTelemetry({
         </div>
       </div>
 
-      {/* ─── 3. Calibration & Tripwire Controller ─── */}
+      {/* ─── 3. Calibration & Adaptive Night-Vision Controls ─── */}
       <div className="bg-surface-container rounded-xl p-4 border border-border/40 shadow-xl flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <SlidersHorizontal className="w-4 h-4 text-primary" />
             <span className="text-[11px] font-bold font-headline uppercase tracking-[0.2em] text-muted-foreground">
-              Kalibrasi Deteksi
+              Kalibrasi & Sensitivitas
             </span>
           </div>
-          <button
-            onClick={() => setShowConfig(!showConfig)}
-            className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+          <div className="flex items-center gap-1 text-[10px] font-mono text-cyan-400">
+            <Cpu className="w-3 h-3" />
+            <span>WebGL 6.8MB</span>
+          </div>
+        </div>
+
+        {/* Adaptive Night-Vision Toggle */}
+        <div className="p-3 rounded-lg bg-surface-container-high border border-border flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {enableNightBoost ? (
+              <Moon className="w-4 h-4 text-cyan-400 animate-pulse" />
+            ) : (
+              <Sun className="w-4 h-4 text-amber-400" />
+            )}
+            <div className="flex flex-col">
+              <span className="text-xs font-headline font-bold text-foreground">
+                Adaptive Night Vision
+              </span>
+              <span className="text-[10px] font-sans text-muted-foreground">
+                Auto-boost kontras & gamma pada kondisi gelap
+              </span>
+            </div>
+          </div>
+
+          <Button
+            size="sm"
+            variant={enableNightBoost ? "default" : "outline"}
+            onClick={onToggleNightBoost}
+            className={`h-7 px-3 text-[11px] font-headline font-bold ${
+              enableNightBoost
+                ? "bg-cyan-500 text-black hover:bg-cyan-400"
+                : "text-muted-foreground"
+            }`}
           >
-            <Settings2 className="w-3.5 h-3.5" />
-            Server
-          </button>
+            {enableNightBoost ? "Aktif" : "Nonaktif"}
+          </Button>
         </div>
 
         {/* Tripwire Height */}
@@ -238,47 +237,6 @@ export function AITrafficTelemetry({
             className="w-full h-1.5 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-emerald-400"
           />
         </div>
-
-        {/* Backend Configuration Form (Collapsible) */}
-        {showConfig && (
-          <div className="mt-3 p-3 rounded-lg bg-surface-container-highest border border-border flex flex-col gap-2.5">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-              WebSocket Endpoint Python YOLOv12
-            </span>
-            <input
-              type="text"
-              value={tempUrl}
-              onChange={(e) => setTempUrl(e.target.value)}
-              placeholder="ws://localhost:7860/ws/track"
-              className="w-full px-3 py-1.5 text-xs bg-background border border-border rounded text-foreground font-mono focus:outline-none focus:border-primary"
-            />
-            <div className="flex items-center gap-2 flex-wrap">
-              <Button
-                size="sm"
-                onClick={() => setTempUrl("ws://localhost:7860/ws/track")}
-                variant="outline"
-                className="h-7 text-[10px] flex-1 font-mono"
-              >
-                Local (7860)
-              </Button>
-              <Button
-                size="sm"
-                onClick={() => setTempUrl("wss://githadewi2002--bali-atcs-yolov12-serve.modal.run/ws/track")}
-                variant="outline"
-                className="h-7 text-[10px] flex-1 font-mono"
-              >
-                Modal.com (Live)
-              </Button>
-              <Button
-                size="sm"
-                onClick={handleSaveConfig}
-                className="h-7 text-[10px] px-3 bg-primary text-background font-bold hover:bg-primary/90"
-              >
-                Simpan
-              </Button>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

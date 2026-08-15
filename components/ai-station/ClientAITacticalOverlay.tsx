@@ -1,32 +1,24 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
+import { TrackedVehicle } from "@/lib/ai/client-vehicle-tracker";
+import { Moon, Sun } from "lucide-react";
 
-export interface DetectionItem {
-  id: number;
-  category: "car" | "motorcycle" | "bus" | "truck" | string;
-  confidence: number;
-  bbox: [number, number, number, number]; // [x, y, w, h]
-  centroid: [number, number]; // [cx, cy]
-  direction?: string;
-  counted?: boolean;
-}
-
-interface AIWebSocketOverlayProps {
-  detections: DetectionItem[];
+interface ClientAITacticalOverlayProps {
+  trackedVehicles: TrackedVehicle[];
   tripwireYRatio: number;
   lineCrossed: boolean;
-  resolution?: { width: number; height: number };
+  isNightScene: boolean;
   videoElement: HTMLVideoElement | null;
 }
 
-export function AIWebSocketOverlay({
-  detections,
+export function ClientAITacticalOverlay({
+  trackedVehicles,
   tripwireYRatio,
   lineCrossed,
-  resolution,
+  isNightScene,
   videoElement,
-}: AIWebSocketOverlayProps) {
+}: ClientAITacticalOverlayProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const lastCrossedTimeRef = useRef<number>(0);
 
@@ -51,10 +43,10 @@ export function AIWebSocketOverlay({
     const canvasHeight = canvas.height;
 
     // ── CALIBRATE LETTERBOX GEOMETRY (OBJECT-CONTAIN) ──
-    const nativeW = resolution?.width || videoElement.videoWidth || canvasWidth;
-    const nativeH = resolution?.height || videoElement.videoHeight || canvasHeight;
+    const nativeW = videoElement.videoWidth || canvasWidth;
+    const nativeH = videoElement.videoHeight || canvasHeight;
 
-    const videoRatio = nativeW / nativeH;
+    const videoRatio = nativeW / (nativeH || 1);
     const containerRatio = canvasWidth > 0 && canvasHeight > 0 ? canvasWidth / canvasHeight : 1;
 
     let renderW = canvasWidth;
@@ -69,13 +61,13 @@ export function AIWebSocketOverlay({
       offsetY = 0;
     } else {
       renderW = canvasWidth;
-      renderH = canvasWidth / videoRatio;
+      renderH = canvasWidth / (videoRatio || 1);
       offsetX = 0;
       offsetY = (canvasHeight - renderH) / 2;
     }
 
-    const scaleX = renderW / nativeW;
-    const scaleY = renderH / nativeH;
+    const scaleX = renderW / (nativeW || 1);
+    const scaleY = renderH / (nativeH || 1);
 
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
@@ -85,13 +77,13 @@ export function AIWebSocketOverlay({
     const isGlowing = now - lastCrossedTimeRef.current < 600;
     const tripwireY = offsetY + renderH * tripwireYRatio;
 
-    // 1. Draw Virtual Tripwire
+    // 1. Draw Virtual Tripwire Line
     ctx.save();
     ctx.lineWidth = isGlowing ? 3 : 2;
     ctx.strokeStyle = isGlowing ? "rgba(0, 240, 255, 1)" : "rgba(0, 227, 253, 0.6)";
     if (isGlowing) {
       ctx.shadowColor = "rgba(0, 240, 255, 1)";
-      ctx.shadowBlur = 16;
+      ctx.shadowBlur = 18;
     } else {
       ctx.setLineDash([8, 4]);
     }
@@ -105,12 +97,12 @@ export function AIWebSocketOverlay({
     ctx.setLineDash([]);
     ctx.font = "bold 10px 'Space Grotesk', sans-serif";
     ctx.fillStyle = isGlowing ? "#ffffff" : "rgba(0, 227, 253, 0.9)";
-    ctx.fillText("── VIRTUAL TRIPWIRE (YOLOv12) ──", offsetX + 14, tripwireY - 6);
+    ctx.fillText("── VIRTUAL TRIPWIRE (0ms WebGL) ──", offsetX + 14, tripwireY - 6);
     ctx.restore();
 
-    // 2. Draw Detections
-    detections.forEach((item) => {
-      const [rawX, rawY, rawW, rawH] = item.bbox;
+    // 2. Draw Tracked Vehicles
+    trackedVehicles.forEach((vehicle) => {
+      const [rawX, rawY, rawW, rawH] = vehicle.bbox;
       const x = offsetX + rawX * scaleX;
       const y = offsetY + rawY * scaleY;
       const w = rawW * scaleX;
@@ -120,23 +112,24 @@ export function AIWebSocketOverlay({
       let fillColor = "rgba(0, 240, 255, 0.12)";
       let labelCategory = "MOBIL";
 
-      if (item.category === "motorcycle") {
+      if (vehicle.category === "motorcycle") {
         color = "#10b981"; // Motor = Emerald
         fillColor = "rgba(16, 185, 129, 0.12)";
         labelCategory = "MOTOR";
-      } else if (item.category === "bus") {
+      } else if (vehicle.category === "bus") {
         color = "#f59e0b"; // Bus = Amber
         fillColor = "rgba(245, 158, 11, 0.15)";
         labelCategory = "BUS";
-      } else if (item.category === "truck") {
+      } else if (vehicle.category === "truck") {
         color = "#f97316"; // Truck = Orange
         fillColor = "rgba(249, 115, 22, 0.15)";
         labelCategory = "TRUK";
       }
 
-      const confPercent = Math.round(item.confidence * 100);
-      const idStr = item.id > 0 ? `#${item.id}` : "";
-      const label = `${labelCategory} ${idStr} (${confPercent}%)`;
+      const confPercent = Math.round(vehicle.confidence * 100);
+      const idStr = vehicle.id > 0 ? `#${vehicle.id}` : "";
+      const dirStr = vehicle.direction === "down" ? "↓" : vehicle.direction === "up" ? "↑" : "";
+      const label = `${labelCategory} ${idStr} ${dirStr} (${confPercent}%)`;
 
       ctx.save();
       // Box Fill
@@ -197,8 +190,8 @@ export function AIWebSocketOverlay({
       ctx.fillText(label, x + 5, badgeY + 11);
 
       // Draw Centroid Point
-      const cx = offsetX + item.centroid[0] * scaleX;
-      const cy = offsetY + item.centroid[1] * scaleY;
+      const cx = offsetX + vehicle.centroid[0] * scaleX;
+      const cy = offsetY + vehicle.centroid[1] * scaleY;
       ctx.beginPath();
       ctx.arc(cx, cy, 3, 0, 2 * Math.PI);
       ctx.fillStyle = color;
@@ -206,12 +199,29 @@ export function AIWebSocketOverlay({
 
       ctx.restore();
     });
-  }, [detections, tripwireYRatio, lineCrossed, resolution, videoElement]);
+  }, [trackedVehicles, tripwireYRatio, lineCrossed, isNightScene, videoElement]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 w-full h-full pointer-events-none z-20"
-    />
+    <div className="absolute inset-0 pointer-events-none z-20">
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full pointer-events-none"
+      />
+
+      {/* Vision Mode Indicator Badge */}
+      <div className="absolute bottom-3 left-3 flex items-center gap-2 bg-black/90 px-3 py-1 rounded-lg border border-white/15 shadow-xl text-[10px] font-headline font-bold">
+        {isNightScene ? (
+          <span className="flex items-center gap-1.5 text-cyan-300">
+            <Moon className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+            Adaptive Night Vision (Gamma Boost)
+          </span>
+        ) : (
+          <span className="flex items-center gap-1.5 text-amber-300">
+            <Sun className="w-3.5 h-3.5 text-amber-400" />
+            Standard Vision (Daylight)
+          </span>
+        )}
+      </div>
+    </div>
   );
 }

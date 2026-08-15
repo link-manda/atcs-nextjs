@@ -60,4 +60,14 @@ describe("AIStationClient", () => {
     expect(screen.getByPlaceholderText("Cari kamera atau wilayah...")).toBeInTheDocument();
     expect(screen.getByText("SIMPANG DEWA RUCI")).toBeInTheDocument();
   });
+
+  it("renders Adaptive Night Vision toggle and controls", () => {
+    render(<AIStationClient channels={mockChannels} />);
+
+    expect(screen.getByText("Adaptive Night Vision")).toBeInTheDocument();
+    const toggleBtn = screen.getByRole("button", { name: /Aktif/i });
+    expect(toggleBtn).toBeInTheDocument();
+    fireEvent.click(toggleBtn);
+    expect(screen.getByRole("button", { name: /Nonaktif/i })).toBeInTheDocument();
+  });
 });
