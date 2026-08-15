@@ -10,6 +10,7 @@ interface ClientAITacticalOverlayProps {
   lineCrossed: boolean;
   isNightScene: boolean;
   videoElement: HTMLVideoElement | null;
+  fitMode?: "contain" | "cover";
 }
 
 export function ClientAITacticalOverlay({
@@ -18,6 +19,7 @@ export function ClientAITacticalOverlay({
   lineCrossed,
   isNightScene,
   videoElement,
+  fitMode = "contain",
 }: ClientAITacticalOverlayProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const lastCrossedTimeRef = useRef<number>(0);
@@ -42,7 +44,7 @@ export function ClientAITacticalOverlay({
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
 
-    // ── CALIBRATE LETTERBOX GEOMETRY (OBJECT-CONTAIN) ──
+    // ── CALIBRATE GEOMETRY (OBJECT-CONTAIN VS OBJECT-COVER) ──
     const nativeW = videoElement.videoWidth || canvasWidth;
     const nativeH = videoElement.videoHeight || canvasHeight;
 
@@ -54,16 +56,31 @@ export function ClientAITacticalOverlay({
     let offsetX = 0;
     let offsetY = 0;
 
-    if (containerRatio > videoRatio) {
-      renderH = canvasHeight;
-      renderW = canvasHeight * videoRatio;
-      offsetX = (canvasWidth - renderW) / 2;
-      offsetY = 0;
+    if (fitMode === "cover") {
+      if (containerRatio > videoRatio) {
+        renderW = canvasWidth;
+        renderH = canvasWidth / (videoRatio || 1);
+        offsetX = 0;
+        offsetY = (canvasHeight - renderH) / 2;
+      } else {
+        renderH = canvasHeight;
+        renderW = canvasHeight * videoRatio;
+        offsetX = (canvasWidth - renderW) / 2;
+        offsetY = 0;
+      }
     } else {
-      renderW = canvasWidth;
-      renderH = canvasWidth / (videoRatio || 1);
-      offsetX = 0;
-      offsetY = (canvasHeight - renderH) / 2;
+      // fitMode === "contain"
+      if (containerRatio > videoRatio) {
+        renderH = canvasHeight;
+        renderW = canvasHeight * videoRatio;
+        offsetX = (canvasWidth - renderW) / 2;
+        offsetY = 0;
+      } else {
+        renderW = canvasWidth;
+        renderH = canvasWidth / (videoRatio || 1);
+        offsetX = 0;
+        offsetY = (canvasHeight - renderH) / 2;
+      }
     }
 
     const scaleX = renderW / (nativeW || 1);
@@ -80,7 +97,7 @@ export function ClientAITacticalOverlay({
     // 1. Draw Virtual Tripwire Line
     ctx.save();
     ctx.lineWidth = isGlowing ? 3 : 2;
-    ctx.strokeStyle = isGlowing ? "rgba(0, 240, 255, 1)" : "rgba(0, 227, 253, 0.6)";
+    ctx.strokeStyle = isGlowing ? "rgba(0, 240, 255, 1)" : "rgba(0, 227, 253, 0.7)";
     if (isGlowing) {
       ctx.shadowColor = "rgba(0, 240, 255, 1)";
       ctx.shadowBlur = 18;
@@ -96,7 +113,7 @@ export function ClientAITacticalOverlay({
     // Tripwire HUD Label
     ctx.setLineDash([]);
     ctx.font = "bold 10px 'Space Grotesk', sans-serif";
-    ctx.fillStyle = isGlowing ? "#ffffff" : "rgba(0, 227, 253, 0.9)";
+    ctx.fillStyle = isGlowing ? "#ffffff" : "rgba(0, 227, 253, 0.95)";
     ctx.fillText("── VIRTUAL TRIPWIRE (0ms WebGL) ──", offsetX + 14, tripwireY - 6);
     ctx.restore();
 
@@ -132,6 +149,10 @@ export function ClientAITacticalOverlay({
       const label = `${labelCategory} ${idStr} ${dirStr} (${confPercent}%)`;
 
       ctx.save();
+      if (vehicle.fading) {
+        ctx.globalAlpha = 0.65; // Smooth fading for coasted vehicle
+      }
+
       // Box Fill
       ctx.fillStyle = fillColor;
       ctx.fillRect(x, y, w, h);
@@ -199,7 +220,7 @@ export function ClientAITacticalOverlay({
 
       ctx.restore();
     });
-  }, [trackedVehicles, tripwireYRatio, lineCrossed, isNightScene, videoElement]);
+  }, [trackedVehicles, tripwireYRatio, lineCrossed, isNightScene, videoElement, fitMode]);
 
   return (
     <div className="absolute inset-0 pointer-events-none z-20">

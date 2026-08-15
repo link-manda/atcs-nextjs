@@ -12,6 +12,7 @@ export interface TrackedVehicle {
   direction: "down" | "up" | "unknown";
   counted: boolean;
   lastSeen: number;
+  fading?: boolean;
 }
 
 export interface VehicleCounts {
@@ -40,7 +41,7 @@ export class ClientVehicleTracker {
     trucks: 0,
   };
   private lastCrossedTimestamp: number = 0;
-  private maxDistanceThreshold: number = 90; // pixels Euclidean distance for tracking match
+  private maxDistanceThreshold: number = 110; // Expanded for bird's-eye POV fast motion
 
   public resetCounts(): void {
     this.counts = {
@@ -88,7 +89,7 @@ export class ClientVehicleTracker {
 
         const threshold = categoryMatch
           ? this.maxDistanceThreshold
-          : this.maxDistanceThreshold * 0.7;
+          : this.maxDistanceThreshold * 0.75;
 
         if (dist < threshold && dist < minDistance) {
           minDistance = dist;
@@ -107,6 +108,7 @@ export class ClientVehicleTracker {
         vehicle.confidence = det.confidence;
         vehicle.category = det.category;
         vehicle.lastSeen = now;
+        vehicle.fading = false;
         vehicle.history.push([cx, cy, now]);
 
         if (vehicle.history.length > 25) {
@@ -115,7 +117,7 @@ export class ClientVehicleTracker {
 
         // Calculate direction
         const dy = cy - prevCy;
-        if (Math.abs(dy) > 1.5) {
+        if (Math.abs(dy) > 1.2) {
           vehicle.direction = dy > 0 ? "down" : "up";
         }
 
@@ -157,14 +159,52 @@ export class ClientVehicleTracker {
           direction: "unknown",
           counted: false,
           lastSeen: now,
+          fading: false,
         };
 
+        matchedVehicleIds.add(newVehicle.id);
         this.vehicles.set(newVehicle.id, newVehicle);
         currentTrackedList.push({ ...newVehicle });
       }
     }
 
-    // 2. Remove stale vehicles not seen for > 2.5 seconds (2500ms)
+    // 2. Anti-Flicker Persistence Buffer: Coast recently seen vehicles for up to 450ms (missed frames)
+    this.vehicles.forEach((vehicle, id) => {
+      if (!matchedVehicleIds.has(id)) {
+        const timeSinceSeen = now - vehicle.lastSeen;
+        if (timeSinceSeen < 450) {
+          // Coast position slightly if history exists
+          if (vehicle.history.length >= 2) {
+            const h = vehicle.history;
+            const pPrev = h[h.length - 2];
+            const pLast = h[h.length - 1];
+            const dt = (pLast[2] - pPrev[2]) || 35;
+            const vx = (pLast[0] - pPrev[0]) / dt;
+            const vy = (pLast[1] - pPrev[1]) / dt;
+
+            // Extrapolate bounding box
+            const coastDx = vx * (timeSinceSeen * 0.15);
+            const coastDy = vy * (timeSinceSeen * 0.15);
+
+            vehicle.bbox = [
+              Math.round(vehicle.bbox[0] + coastDx),
+              Math.round(vehicle.bbox[1] + coastDy),
+              vehicle.bbox[2],
+              vehicle.bbox[3],
+            ];
+            vehicle.centroid = [
+              Math.round(vehicle.centroid[0] + coastDx),
+              Math.round(vehicle.centroid[1] + coastDy),
+            ];
+          }
+
+          vehicle.fading = true;
+          currentTrackedList.push({ ...vehicle });
+        }
+      }
+    });
+
+    // 3. Remove stale vehicles not seen for > 2.5 seconds (2500ms)
     const staleIds: number[] = [];
     this.vehicles.forEach((vehicle, id) => {
       if (now - vehicle.lastSeen > 2500) {

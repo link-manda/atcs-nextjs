@@ -18,7 +18,7 @@ import {
   Maximize2,
   Radio,
   ChevronDown,
-  Sparkles,
+  Scaling,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -40,6 +40,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
   const [regionFilter, setRegionFilter] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [showCameraSelector, setShowCameraSelector] = useState(false);
+  const [fitMode, setFitMode] = useState<"cover" | "contain">("cover");
 
   // 2. Video Player Ref
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -148,7 +149,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
             enableNightBoost
           );
 
-          // Update trajectory tracker
+          // Update trajectory tracker with anti-flicker coasting
           const trackerResult = trackerRef.current.update(
             result.detections,
             video.videoHeight || 480,
@@ -209,28 +210,37 @@ export function AIStationClient({ channels }: AIStationClientProps) {
   return (
     <div className="w-full max-w-[1800px] mx-auto p-4 md:p-6 flex flex-col gap-6">
       {/* ─── Top Control & Status Bar ─── */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-surface-container rounded-xl p-4 border border-border/40 shadow-xl">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-card rounded-xl p-4 border border-border shadow-md">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center">
             <Radio className="w-5 h-5 text-primary animate-pulse" />
           </div>
           <div>
-            <h1 className="text-base sm:text-lg font-black font-headline tracking-[0.2em] uppercase text-white">
+            <h1 className="text-base sm:text-lg font-black font-headline tracking-[0.2em] uppercase text-foreground">
               AI Traffic Vision Station
             </h1>
-            <p className="text-[11px] font-sans text-muted-foreground">
-              Client-Side WebGL GPU • 0ms Latency • Adaptive Night-Vision Preprocessor
-            </p>
           </div>
         </div>
 
         {/* Camera Selector & Region Filter Trigger */}
         <div className="flex items-center gap-2.5 flex-wrap">
+          {/* Fit Mode Toggle */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setFitMode((prev) => (prev === "cover" ? "contain" : "cover"))}
+            className="h-9 px-3 bg-background border-border text-foreground font-headline font-bold text-xs flex items-center gap-1.5 shadow-sm"
+            title="Ubah Mode Tampilan Video (Fill / Fit)"
+          >
+            <Scaling className="w-3.5 h-3.5 text-primary" />
+            <span>{fitMode === "cover" ? "Full Frame (Cover)" : "Fit Frame"}</span>
+          </Button>
+
           <div className="relative">
             <Button
               variant="outline"
               onClick={() => setShowCameraSelector(!showCameraSelector)}
-              className="h-9 px-3.5 bg-surface-container-high border-border text-foreground font-headline font-bold text-xs flex items-center gap-2"
+              className="h-9 px-3.5 bg-background border-border text-foreground font-headline font-bold text-xs flex items-center gap-2 shadow-sm"
             >
               <Camera className="w-3.5 h-3.5 text-primary" />
               <span className="max-w-[200px] truncate">{selectedChannel.ch_name}</span>
@@ -242,7 +252,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
 
             {/* Camera Dropdown Popover */}
             {showCameraSelector && (
-              <div className="absolute right-0 top-11 w-80 sm:w-96 bg-surface-container-highest border border-border rounded-xl p-3 shadow-2xl z-50 flex flex-col gap-2.5">
+              <div className="absolute right-0 top-11 w-80 sm:w-96 bg-card border border-border rounded-xl p-3 shadow-2xl z-50 flex flex-col gap-2.5">
                 <div className="flex items-center gap-2 px-2 py-1 bg-background rounded-md border border-border">
                   <Search className="w-3.5 h-3.5 text-muted-foreground" />
                   <input
@@ -260,8 +270,8 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                     onClick={() => setRegionFilter("ALL")}
                     className={`px-2 py-0.5 rounded font-headline font-bold ${
                       regionFilter === "ALL"
-                        ? "bg-primary text-background"
-                        : "bg-surface-container text-muted-foreground hover:text-foreground"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     Semua
@@ -272,8 +282,8 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                       onClick={() => setRegionFilter(r)}
                       className={`px-2 py-0.5 rounded font-headline font-bold whitespace-nowrap ${
                         regionFilter === r
-                          ? "bg-primary text-background"
-                          : "bg-surface-container text-muted-foreground hover:text-foreground"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       {r}
@@ -300,7 +310,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                         className={`p-2 rounded-lg text-left text-xs font-headline flex items-center justify-between transition-colors ${
                           selectedChannel.cctv_id === ch.cctv_id
                             ? "bg-primary/15 text-primary border border-primary/30"
-                            : "hover:bg-muted/40 text-foreground"
+                            : "hover:bg-muted text-foreground"
                         }`}
                       >
                         <span className="truncate max-w-[200px]">{ch.ch_name}</span>
@@ -319,7 +329,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
             variant="outline"
             size="icon"
             onClick={toggleFullScreen}
-            className="h-9 w-9 bg-surface-container-high border-border"
+            className="h-9 w-9 bg-background border-border shadow-sm"
             title="Fullscreen Viewport"
           >
             <Maximize2 className="w-4 h-4 text-muted-foreground" />
@@ -335,11 +345,13 @@ export function AIStationClient({ channels }: AIStationClientProps) {
             id="ai-viewport-container"
             className="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-border/40 shadow-2xl flex items-center justify-center isolate"
           >
-            {/* Live Video Feed */}
+            {/* Live Video Feed with Auto-Fit Cover/Contain */}
             <video
               ref={videoRef}
               key={videoKey}
-              className="w-full h-full object-contain pointer-events-none"
+              className={`w-full h-full pointer-events-none ${
+                fitMode === "cover" ? "object-cover" : "object-contain"
+              }`}
               autoPlay
               muted
               playsInline
@@ -353,6 +365,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
               lineCrossed={lineCrossed}
               isNightScene={isNightScene}
               videoElement={videoElement}
+              fitMode={fitMode}
             />
 
             {/* Viewport Top HUD */}
