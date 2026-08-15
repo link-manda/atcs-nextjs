@@ -35,14 +35,14 @@ describe("AIStationClient", () => {
   it("renders AI Traffic Station heading and initial channel name", () => {
     render(<AIStationClient channels={mockChannels} />);
 
-    expect(screen.getByText("AI Traffic Vision Station")).toBeInTheDocument();
+    expect(screen.getByText("Pantauan Cerdas AI")).toBeInTheDocument();
     expect(screen.getAllByText("PASAR SATRIA PTZ").length).toBeGreaterThan(0);
   });
 
   it("renders all vehicle categories with Lucide labels", () => {
     render(<AIStationClient channels={mockChannels} />);
 
-    expect(screen.getByText("Total Volume Kendaraan")).toBeInTheDocument();
+    expect(screen.getByText("Total Kendaraan Terhitung")).toBeInTheDocument();
     expect(screen.getByText("Mobil")).toBeInTheDocument();
     expect(screen.getByText("Motor")).toBeInTheDocument();
     expect(screen.getByText("Bus")).toBeInTheDocument();
@@ -57,14 +57,14 @@ describe("AIStationClient", () => {
     fireEvent.click(selectBtn);
 
     // Should see search input and second camera
-    expect(screen.getByPlaceholderText("Cari kamera atau wilayah...")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Cari nama jalan atau wilayah...")).toBeInTheDocument();
     expect(screen.getByText("SIMPANG DEWA RUCI")).toBeInTheDocument();
   });
 
   it("renders Adaptive Night Vision toggle and controls", () => {
     render(<AIStationClient channels={mockChannels} />);
 
-    expect(screen.getByText("Adaptive Night Vision")).toBeInTheDocument();
+    expect(screen.getByText("Mode Malam Otomatis")).toBeInTheDocument();
     const toggleBtn = screen.getByRole("button", { name: /Aktif/i });
     expect(toggleBtn).toBeInTheDocument();
     fireEvent.click(toggleBtn);

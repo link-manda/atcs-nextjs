@@ -11,7 +11,7 @@ import {
   SlidersHorizontal,
   Moon,
   Sun,
-  Cpu,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VehicleCounts } from "@/lib/ai/client-vehicle-tracker";
@@ -51,20 +51,20 @@ export function AITrafficTelemetry({
 
   return (
     <div className="flex flex-col gap-4 w-full text-foreground">
-      {/* ─── 1. Primary Volume Counter Header ─── */}
-      <div className="bg-card rounded-xl p-5 border border-border shadow-md relative overflow-hidden">
+      {/* ─── 1. Total Volume Card ─── */}
+      <div className="bg-card rounded-xl p-5 border border-border shadow-sm relative overflow-hidden">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <Activity className="w-4 h-4 text-primary animate-pulse" />
-            <span className="text-[11px] font-bold font-headline uppercase tracking-[0.2em] text-foreground/80">
-              Total Volume Kendaraan
+            <span className="text-xs font-semibold font-headline text-foreground/80">
+              Total Kendaraan Terhitung
             </span>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-300 text-[10px] font-mono font-bold">
+            <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-              WebGL GPU • {fps} FPS ({inferenceTimeMs}ms)
+              {fps} FPS • {inferenceTimeMs}ms
             </span>
           </div>
         </div>
@@ -78,22 +78,22 @@ export function AITrafficTelemetry({
             variant="outline"
             size="sm"
             onClick={onResetCounts}
-            className="h-8 px-3 text-[11px] bg-background border-border hover:bg-muted font-headline font-bold text-foreground shadow-sm"
+            className="h-8 px-3 text-xs bg-background border-border hover:bg-muted font-semibold text-foreground shadow-sm flex items-center gap-1.5"
           >
-            <RotateCcw className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />
-            Reset
+            <RotateCcw className="w-3.5 h-3.5 text-muted-foreground" />
+            <span>Reset</span>
           </Button>
         </div>
       </div>
 
-      {/* ─── 2. Categorical Distribution Breakdown ─── */}
-      <div className="bg-card rounded-xl p-4 border border-border shadow-md flex flex-col gap-3">
+      {/* ─── 2. Categorical Distribution ─── */}
+      <div className="bg-card rounded-xl p-4 border border-border shadow-sm flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <span className="text-[11px] font-bold font-headline uppercase tracking-[0.2em] text-foreground/80">
-            Klasifikasi Armada
+          <span className="text-xs font-semibold font-headline text-foreground/80">
+            Klasifikasi Jenis Kendaraan
           </span>
-          <span className="text-[10px] font-mono text-muted-foreground">
-            Real-time Track
+          <span className="text-[11px] font-normal text-muted-foreground">
+            Penghitungan Langsung
           </span>
         </div>
 
@@ -103,23 +103,23 @@ export function AITrafficTelemetry({
             <div className="flex items-center justify-between text-cyan-600 dark:text-cyan-400">
               <div className="flex items-center gap-1.5">
                 <Car className="w-4 h-4" />
-                <span className="text-xs font-bold font-headline uppercase">Mobil</span>
+                <span className="text-xs font-semibold font-headline">Mobil</span>
               </div>
-              <span className="text-[10px] font-mono font-semibold">{carPercent}%</span>
+              <span className="text-[11px] font-medium">{carPercent}%</span>
             </div>
             <div className="text-2xl font-black font-headline text-foreground mt-1.5">
               {counts.cars.toLocaleString("id-ID")}
             </div>
           </div>
 
-          {/* Motor / Roda Dua */}
+          {/* Sepeda Motor */}
           <div className="p-3 rounded-lg bg-background border border-emerald-500/30 shadow-sm flex flex-col justify-between">
             <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400">
               <div className="flex items-center gap-1.5">
                 <Bike className="w-4 h-4" />
-                <span className="text-xs font-bold font-headline uppercase">Motor</span>
+                <span className="text-xs font-semibold font-headline">Motor</span>
               </div>
-              <span className="text-[10px] font-mono font-semibold">{bikePercent}%</span>
+              <span className="text-[11px] font-medium">{bikePercent}%</span>
             </div>
             <div className="text-2xl font-black font-headline text-foreground mt-1.5">
               {counts.motorcycles.toLocaleString("id-ID")}
@@ -131,9 +131,9 @@ export function AITrafficTelemetry({
             <div className="flex items-center justify-between text-amber-600 dark:text-amber-400">
               <div className="flex items-center gap-1.5">
                 <Bus className="w-4 h-4" />
-                <span className="text-xs font-bold font-headline uppercase">Bus</span>
+                <span className="text-xs font-semibold font-headline">Bus</span>
               </div>
-              <span className="text-[10px] font-mono font-semibold">{busPercent}%</span>
+              <span className="text-[11px] font-medium">{busPercent}%</span>
             </div>
             <div className="text-2xl font-black font-headline text-foreground mt-1.5">
               {counts.buses.toLocaleString("id-ID")}
@@ -145,9 +145,9 @@ export function AITrafficTelemetry({
             <div className="flex items-center justify-between text-orange-600 dark:text-orange-400">
               <div className="flex items-center gap-1.5">
                 <Truck className="w-4 h-4" />
-                <span className="text-xs font-bold font-headline uppercase">Truk</span>
+                <span className="text-xs font-semibold font-headline">Truk</span>
               </div>
-              <span className="text-[10px] font-mono font-semibold">{truckPercent}%</span>
+              <span className="text-[11px] font-medium">{truckPercent}%</span>
             </div>
             <div className="text-2xl font-black font-headline text-foreground mt-1.5">
               {counts.trucks.toLocaleString("id-ID")}
@@ -156,35 +156,31 @@ export function AITrafficTelemetry({
         </div>
       </div>
 
-      {/* ─── 3. Calibration & Adaptive Night-Vision Controls ─── */}
-      <div className="bg-card rounded-xl p-4 border border-border shadow-md flex flex-col gap-3">
+      {/* ─── 3. Calibration & Settings ─── */}
+      <div className="bg-card rounded-xl p-4 border border-border shadow-sm flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <SlidersHorizontal className="w-4 h-4 text-primary" />
-            <span className="text-[11px] font-bold font-headline uppercase tracking-[0.2em] text-foreground/80">
-              Kalibrasi & Sensitivitas
+            <span className="text-xs font-semibold font-headline text-foreground/80">
+              Pengaturan & Sensitivitas Deteksi
             </span>
-          </div>
-          <div className="flex items-center gap-1 text-[10px] font-mono text-cyan-500 dark:text-cyan-400">
-            <Cpu className="w-3 h-3" />
-            <span>WebGL 6.8MB</span>
           </div>
         </div>
 
-        {/* Adaptive Night-Vision Toggle */}
+        {/* Mode Malam Otomatis Toggle */}
         <div className="p-3 rounded-lg bg-background border border-border flex items-center justify-between shadow-sm">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             {enableNightBoost ? (
-              <Moon className="w-4 h-4 text-cyan-500 dark:text-cyan-400 animate-pulse" />
+              <Moon className="w-4 h-4 text-cyan-600 dark:text-cyan-400 animate-pulse" />
             ) : (
-              <Sun className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+              <Sun className="w-4 h-4 text-amber-500" />
             )}
             <div className="flex flex-col">
-              <span className="text-xs font-headline font-bold text-foreground">
-                Adaptive Night Vision
+              <span className="text-xs font-semibold font-headline text-foreground">
+                Mode Malam Otomatis
               </span>
-              <span className="text-[10px] font-sans text-muted-foreground">
-                Auto-boost kontras & gamma pada kondisi gelap
+              <span className="text-[11px] font-normal text-muted-foreground">
+                Meningkatkan kejelasan di jalanan minim cahaya
               </span>
             </div>
           </div>
@@ -193,9 +189,9 @@ export function AITrafficTelemetry({
             size="sm"
             variant={enableNightBoost ? "default" : "outline"}
             onClick={onToggleNightBoost}
-            className={`h-7 px-3 text-[11px] font-headline font-bold ${
+            className={`h-7 px-3 text-xs font-semibold ${
               enableNightBoost
-                ? "bg-cyan-500 text-black hover:bg-cyan-400 font-black"
+                ? "bg-cyan-500 text-black hover:bg-cyan-400 font-bold"
                 : "text-muted-foreground"
             }`}
           >
@@ -205,9 +201,9 @@ export function AITrafficTelemetry({
 
         {/* Tripwire Height */}
         <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between text-xs font-headline font-bold">
-            <span className="text-muted-foreground">Posisi Garis Hitung (Tripwire)</span>
-            <span className="text-cyan-600 dark:text-cyan-400 font-mono">{Math.round(tripwireYRatio * 100)}%</span>
+          <div className="flex justify-between text-xs font-medium">
+            <span className="text-muted-foreground">Posisi Garis Hitung</span>
+            <span className="text-cyan-600 dark:text-cyan-400 font-semibold">{Math.round(tripwireYRatio * 100)}%</span>
           </div>
           <input
             type="range"
@@ -222,9 +218,9 @@ export function AITrafficTelemetry({
 
         {/* Confidence Threshold */}
         <div className="flex flex-col gap-1.5 mt-1">
-          <div className="flex justify-between text-xs font-headline font-bold">
-            <span className="text-muted-foreground">Ambang Batas Keyakinan (Confidence)</span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-mono">{Math.round(confidence * 100)}%</span>
+          <div className="flex justify-between text-xs font-medium">
+            <span className="text-muted-foreground">Tingkat Ketelitian (Sensitivitas)</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{Math.round(confidence * 100)}%</span>
           </div>
           <input
             type="range"

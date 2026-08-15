@@ -10,7 +10,7 @@ interface ClientAITacticalOverlayProps {
   lineCrossed: boolean;
   isNightScene: boolean;
   videoElement: HTMLVideoElement | null;
-  fitMode?: "contain" | "cover";
+  fitMode?: "cover" | "contain";
 }
 
 export function ClientAITacticalOverlay({
@@ -44,7 +44,7 @@ export function ClientAITacticalOverlay({
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
 
-    // ── CALIBRATE GEOMETRY (OBJECT-CONTAIN VS OBJECT-COVER) ──
+    // ── CALIBRATE GEOMETRY ──
     const nativeW = videoElement.videoWidth || canvasWidth;
     const nativeH = videoElement.videoHeight || canvasHeight;
 
@@ -69,7 +69,6 @@ export function ClientAITacticalOverlay({
         offsetY = 0;
       }
     } else {
-      // fitMode === "contain"
       if (containerRatio > videoRatio) {
         renderH = canvasHeight;
         renderW = canvasHeight * videoRatio;
@@ -94,15 +93,15 @@ export function ClientAITacticalOverlay({
     const isGlowing = now - lastCrossedTimeRef.current < 600;
     const tripwireY = offsetY + renderH * tripwireYRatio;
 
-    // 1. Draw Virtual Tripwire Line
+    // 1. Draw Virtual Tripwire Line (Cyan glowing)
     ctx.save();
     ctx.lineWidth = isGlowing ? 3 : 2;
-    ctx.strokeStyle = isGlowing ? "rgba(0, 240, 255, 1)" : "rgba(0, 227, 253, 0.7)";
+    ctx.strokeStyle = isGlowing ? "rgba(0, 240, 255, 1)" : "rgba(0, 227, 253, 0.75)";
     if (isGlowing) {
       ctx.shadowColor = "rgba(0, 240, 255, 1)";
-      ctx.shadowBlur = 18;
+      ctx.shadowBlur = 16;
     } else {
-      ctx.setLineDash([8, 4]);
+      ctx.setLineDash([6, 4]);
     }
 
     ctx.beginPath();
@@ -110,14 +109,16 @@ export function ClientAITacticalOverlay({
     ctx.lineTo(offsetX + renderW, tripwireY);
     ctx.stroke();
 
-    // Tripwire HUD Label
+    // Tripwire Clean Text Label
     ctx.setLineDash([]);
-    ctx.font = "bold 10px 'Space Grotesk', sans-serif";
-    ctx.fillStyle = isGlowing ? "#ffffff" : "rgba(0, 227, 253, 0.95)";
-    ctx.fillText("── VIRTUAL TRIPWIRE (0ms WebGL) ──", offsetX + 14, tripwireY - 6);
+    ctx.font = "600 11px sans-serif";
+    ctx.shadowColor = "rgba(0, 0, 0, 0.9)";
+    ctx.shadowBlur = 4;
+    ctx.fillStyle = isGlowing ? "#ffffff" : "rgba(0, 240, 255, 0.95)";
+    ctx.fillText("── Garis Penghitung Kendaraan ──", offsetX + 16, tripwireY - 6);
     ctx.restore();
 
-    // 2. Draw Tracked Vehicles
+    // 2. Draw Tracked Vehicles with Clean Transparent Labels
     trackedVehicles.forEach((vehicle) => {
       const [rawX, rawY, rawW, rawH] = vehicle.bbox;
       const x = offsetX + rawX * scaleX;
@@ -126,21 +127,21 @@ export function ClientAITacticalOverlay({
       const h = rawH * scaleY;
 
       let color = "#00f0ff"; // Car = Cyan
-      let fillColor = "rgba(0, 240, 255, 0.12)";
-      let labelCategory = "MOBIL";
+      let fillColor = "rgba(0, 240, 255, 0.08)";
+      let labelCategory = "Mobil";
 
       if (vehicle.category === "motorcycle") {
         color = "#10b981"; // Motor = Emerald
-        fillColor = "rgba(16, 185, 129, 0.12)";
-        labelCategory = "MOTOR";
+        fillColor = "rgba(16, 185, 129, 0.08)";
+        labelCategory = "Motor";
       } else if (vehicle.category === "bus") {
         color = "#f59e0b"; // Bus = Amber
-        fillColor = "rgba(245, 158, 11, 0.15)";
-        labelCategory = "BUS";
+        fillColor = "rgba(245, 158, 11, 0.1)";
+        labelCategory = "Bus";
       } else if (vehicle.category === "truck") {
         color = "#f97316"; // Truck = Orange
-        fillColor = "rgba(249, 115, 22, 0.15)";
-        labelCategory = "TRUK";
+        fillColor = "rgba(249, 115, 22, 0.1)";
+        labelCategory = "Truk";
       }
 
       const confPercent = Math.round(vehicle.confidence * 100);
@@ -150,7 +151,7 @@ export function ClientAITacticalOverlay({
 
       ctx.save();
       if (vehicle.fading) {
-        ctx.globalAlpha = 0.65; // Smooth fading for coasted vehicle
+        ctx.globalAlpha = 0.6;
       }
 
       // Box Fill
@@ -163,7 +164,7 @@ export function ClientAITacticalOverlay({
       ctx.strokeRect(x, y, w, h);
 
       // Tactical Corner Brackets
-      const cornerLen = Math.min(10, w / 4, h / 4);
+      const cornerLen = Math.min(8, w / 4, h / 4);
       ctx.lineWidth = 2.5;
       ctx.strokeStyle = color;
 
@@ -195,26 +196,22 @@ export function ClientAITacticalOverlay({
       ctx.lineTo(x + w, y + h - cornerLen);
       ctx.stroke();
 
-      // Solid Tactical Label Badge
-      ctx.font = "bold 9px 'Space Grotesk', sans-serif";
-      const textWidth = ctx.measureText(label).width;
-      const badgeHeight = 15;
-      const badgeY = Math.max(offsetY, y - badgeHeight);
+      // Clean Floating Label (Transparent with drop shadow, no solid black box)
+      ctx.font = "bold 10px sans-serif";
+      ctx.shadowColor = "rgba(0, 0, 0, 0.9)";
+      ctx.shadowBlur = 5;
+      ctx.shadowOffsetX = 1;
+      ctx.shadowOffsetY = 1;
 
-      ctx.fillStyle = "rgba(0, 0, 0, 0.92)";
-      ctx.fillRect(x, badgeY, textWidth + 10, badgeHeight);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1;
-      ctx.strokeRect(x, badgeY, textWidth + 10, badgeHeight);
-
+      const badgeY = Math.max(offsetY + 12, y - 4);
       ctx.fillStyle = color;
-      ctx.fillText(label, x + 5, badgeY + 11);
+      ctx.fillText(label, x + 2, badgeY);
 
-      // Draw Centroid Point
+      // Centroid Dot
       const cx = offsetX + vehicle.centroid[0] * scaleX;
       const cy = offsetY + vehicle.centroid[1] * scaleY;
       ctx.beginPath();
-      ctx.arc(cx, cy, 3, 0, 2 * Math.PI);
+      ctx.arc(cx, cy, 2.5, 0, 2 * Math.PI);
       ctx.fillStyle = color;
       ctx.fill();
 
@@ -229,17 +226,17 @@ export function ClientAITacticalOverlay({
         className="absolute inset-0 w-full h-full pointer-events-none"
       />
 
-      {/* Vision Mode Indicator Badge */}
-      <div className="absolute bottom-3 left-3 flex items-center gap-2 bg-black/90 px-3 py-1 rounded-lg border border-white/15 shadow-xl text-[10px] font-headline font-bold">
+      {/* Transparent Vision Mode Indicator */}
+      <div className="absolute bottom-3 left-3 flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 shadow-md text-xs font-semibold">
         {isNightScene ? (
           <span className="flex items-center gap-1.5 text-cyan-300">
             <Moon className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-            Adaptive Night Vision (Gamma Boost)
+            Mode Malam Aktif
           </span>
         ) : (
           <span className="flex items-center gap-1.5 text-amber-300">
             <Sun className="w-3.5 h-3.5 text-amber-400" />
-            Standard Vision (Daylight)
+            Siang Hari
           </span>
         )}
       </div>

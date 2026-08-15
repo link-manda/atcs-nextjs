@@ -16,9 +16,9 @@ import {
   Camera,
   Search,
   Maximize2,
-  Radio,
   ChevronDown,
   Scaling,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -130,7 +130,6 @@ export function AIStationClient({ channels }: AIStationClientProps) {
     const loop = async (timestamp: number) => {
       const video = videoRef.current;
 
-      // Throttle inference interval to ~35ms for stable 28 FPS broadcast quality
       if (
         video &&
         video.readyState >= 2 &&
@@ -142,14 +141,14 @@ export function AIStationClient({ channels }: AIStationClientProps) {
         lastInferenceTime = timestamp;
 
         try {
-          // Run WebGL inference on the video frame
+          // Run WebGL inference
           const result = await runClientVehicleInference(
             video,
             confidence,
             enableNightBoost
           );
 
-          // Update trajectory tracker with anti-flicker coasting
+          // Update trajectory tracker
           const trackerResult = trackerRef.current.update(
             result.detections,
             video.videoHeight || 480,
@@ -210,15 +209,18 @@ export function AIStationClient({ channels }: AIStationClientProps) {
   return (
     <div className="w-full max-w-[1800px] mx-auto p-4 md:p-6 flex flex-col gap-6">
       {/* ─── Top Control & Status Bar ─── */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-card rounded-xl p-4 border border-border shadow-md">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-card rounded-xl p-4 border border-border shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center">
-            <Radio className="w-5 h-5 text-primary animate-pulse" />
+          <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-base sm:text-lg font-black font-headline tracking-[0.2em] uppercase text-foreground">
-              AI Traffic Vision Station
+            <h1 className="text-base sm:text-lg font-bold font-headline text-foreground">
+              Pantauan Cerdas AI
             </h1>
+            <p className="text-xs text-muted-foreground">
+              Penghitungan dan pemantauan arus kendaraan otomatis
+            </p>
           </div>
         </div>
 
@@ -229,22 +231,21 @@ export function AIStationClient({ channels }: AIStationClientProps) {
             variant="outline"
             size="sm"
             onClick={() => setFitMode((prev) => (prev === "cover" ? "contain" : "cover"))}
-            className="h-9 px-3 bg-background border-border text-foreground font-headline font-bold text-xs flex items-center gap-1.5 shadow-sm"
-            title="Ubah Mode Tampilan Video (Fill / Fit)"
+            className="h-9 px-3 bg-background border-border text-foreground font-semibold text-xs flex items-center gap-1.5 shadow-sm"
           >
             <Scaling className="w-3.5 h-3.5 text-primary" />
-            <span>{fitMode === "cover" ? "Full Frame (Cover)" : "Fit Frame"}</span>
+            <span>{fitMode === "cover" ? "Tampilan Penuh" : "Sesuai Ukuran"}</span>
           </Button>
 
           <div className="relative">
             <Button
               variant="outline"
               onClick={() => setShowCameraSelector(!showCameraSelector)}
-              className="h-9 px-3.5 bg-background border-border text-foreground font-headline font-bold text-xs flex items-center gap-2 shadow-sm"
+              className="h-9 px-3.5 bg-background border-border text-foreground font-semibold text-xs flex items-center gap-2 shadow-sm"
             >
               <Camera className="w-3.5 h-3.5 text-primary" />
               <span className="max-w-[200px] truncate">{selectedChannel.ch_name}</span>
-              <Badge variant="secondary" className="text-[9px] px-1.5 py-0 font-mono">
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 font-medium">
                 {selectedChannel.region}
               </Badge>
               <ChevronDown className="w-3.5 h-3.5 text-muted-foreground ml-1" />
@@ -252,23 +253,23 @@ export function AIStationClient({ channels }: AIStationClientProps) {
 
             {/* Camera Dropdown Popover */}
             {showCameraSelector && (
-              <div className="absolute right-0 top-11 w-80 sm:w-96 bg-card border border-border rounded-xl p-3 shadow-2xl z-50 flex flex-col gap-2.5">
-                <div className="flex items-center gap-2 px-2 py-1 bg-background rounded-md border border-border">
+              <div className="absolute right-0 top-11 w-80 sm:w-96 bg-card border border-border rounded-xl p-3 shadow-xl z-50 flex flex-col gap-2.5">
+                <div className="flex items-center gap-2 px-2.5 py-1.5 bg-background rounded-lg border border-border">
                   <Search className="w-3.5 h-3.5 text-muted-foreground" />
                   <input
                     type="text"
-                    placeholder="Cari kamera atau wilayah..."
+                    placeholder="Cari nama jalan atau wilayah..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-transparent text-xs text-foreground focus:outline-none font-sans"
+                    className="w-full bg-transparent text-xs text-foreground focus:outline-none"
                   />
                 </div>
 
                 {/* Region Filter Chips */}
-                <div className="flex items-center gap-1 overflow-x-auto pb-1 text-[10px]">
+                <div className="flex items-center gap-1 overflow-x-auto pb-1 text-xs">
                   <button
                     onClick={() => setRegionFilter("ALL")}
-                    className={`px-2 py-0.5 rounded font-headline font-bold ${
+                    className={`px-2.5 py-1 rounded-md font-medium ${
                       regionFilter === "ALL"
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted text-muted-foreground hover:text-foreground"
@@ -280,7 +281,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                     <button
                       key={r}
                       onClick={() => setRegionFilter(r)}
-                      className={`px-2 py-0.5 rounded font-headline font-bold whitespace-nowrap ${
+                      className={`px-2.5 py-1 rounded-md font-medium whitespace-nowrap ${
                         regionFilter === r
                           ? "bg-primary text-primary-foreground"
                           : "bg-muted text-muted-foreground hover:text-foreground"
@@ -294,7 +295,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                 {/* Camera List */}
                 <div className="max-h-60 overflow-y-auto flex flex-col gap-1 pr-1">
                   {filteredChannels.length === 0 ? (
-                    <span className="text-xs text-muted-foreground text-center py-4 font-sans">
+                    <span className="text-xs text-muted-foreground text-center py-4">
                       Kamera tidak ditemukan
                     </span>
                   ) : (
@@ -307,14 +308,14 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                           setVideoKey((k) => k + 1);
                           handleResetCounts();
                         }}
-                        className={`p-2 rounded-lg text-left text-xs font-headline flex items-center justify-between transition-colors ${
+                        className={`p-2 rounded-lg text-left text-xs flex items-center justify-between transition-colors ${
                           selectedChannel.cctv_id === ch.cctv_id
-                            ? "bg-primary/15 text-primary border border-primary/30"
+                            ? "bg-primary/10 text-primary font-semibold border border-primary/20"
                             : "hover:bg-muted text-foreground"
                         }`}
                       >
                         <span className="truncate max-w-[200px]">{ch.ch_name}</span>
-                        <span className="text-[10px] font-mono text-muted-foreground">
+                        <span className="text-[11px] text-muted-foreground">
                           {ch.region}
                         </span>
                       </button>
@@ -330,7 +331,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
             size="icon"
             onClick={toggleFullScreen}
             className="h-9 w-9 bg-background border-border shadow-sm"
-            title="Fullscreen Viewport"
+            title="Layar Penuh"
           >
             <Maximize2 className="w-4 h-4 text-muted-foreground" />
           </Button>
@@ -343,9 +344,9 @@ export function AIStationClient({ channels }: AIStationClientProps) {
         <div className="lg:col-span-8 flex flex-col gap-4">
           <div
             id="ai-viewport-container"
-            className="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-border/40 shadow-2xl flex items-center justify-center isolate"
+            className="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-border shadow-lg flex items-center justify-center isolate"
           >
-            {/* Live Video Feed with Auto-Fit Cover/Contain */}
+            {/* Live Video Feed */}
             <video
               ref={videoRef}
               key={videoKey}
@@ -368,19 +369,20 @@ export function AIStationClient({ channels }: AIStationClientProps) {
               fitMode={fitMode}
             />
 
-            {/* Viewport Top HUD */}
+            {/* Viewport Top HUD with Transparent Badges (No Black Box) */}
             <div className="absolute top-3 left-3 right-3 flex items-start justify-between pointer-events-none z-30">
-              <div className="bg-black/90 px-3 py-1.5 rounded-lg border border-white/15 shadow-xl flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                <span className="text-xs font-black font-headline uppercase text-white tracking-wider">
+              <div className="flex items-center gap-2 drop-shadow-md">
+                <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" />
+                <span className="text-sm font-bold text-white tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
                   {selectedChannel.ch_name}
                 </span>
               </div>
 
-              <div className="flex items-center gap-1.5 bg-black/90 px-2.5 py-1 rounded-lg border border-white/15 shadow-xl">
-                <Badge variant="outline" className="bg-red-950/80 text-red-400 border-red-500/40 text-[10px] font-headline font-bold uppercase">
-                  Live ATCS
-                </Badge>
+              <div className="flex items-center gap-1.5 drop-shadow-md">
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                <span className="text-xs font-bold text-red-400 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+                  Siaran Langsung
+                </span>
               </div>
             </div>
           </div>

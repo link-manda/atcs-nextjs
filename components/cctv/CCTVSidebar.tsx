@@ -11,7 +11,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { Check, Search } from 'lucide-react';
+import { Check, Search, Camera } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 interface Props {
@@ -57,22 +57,25 @@ export default function CCTVSidebar({
   );
 
   return (
-    <div className="flex flex-col h-full bg-background/50 backdrop-blur-md">
-      <div className="p-4 border-b border-border/50 bg-muted/20 space-y-3">
-        <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground flex items-center justify-between">
-          Regional Nodes
-          <Badge variant="outline" className="ml-auto font-mono text-[9px] h-4 px-1.5 border-primary/30 text-primary">
-            {selectedCams.length}/{maxSlots}
+    <div className="flex flex-col h-full bg-card border-r border-border">
+      <div className="p-4 border-b border-border space-y-3">
+        <h2 className="text-xs font-bold font-headline text-foreground flex items-center justify-between">
+          <span className="flex items-center gap-1.5">
+            <Camera className="w-3.5 h-3.5 text-primary" />
+            Daftar Kamera Wilayah
+          </span>
+          <Badge variant="outline" className="ml-auto font-mono text-[10px] h-5 px-2 border-primary/30 text-primary">
+            {selectedCams.length}/{maxSlots} Terpilih
           </Badge>
         </h2>
 
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <Input 
-            placeholder="Search nodes..." 
+            placeholder="Cari kamera atau jalan..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-8 pl-8 text-[11px] bg-background border-border/50 focus:border-primary/50 shadow-sm"
+            className="h-8 pl-8 text-xs bg-background border-border focus:border-primary shadow-sm font-sans"
           />
         </div>
       </div>
@@ -81,14 +84,14 @@ export default function CCTVSidebar({
         <Accordion type="multiple" className="w-full px-2 py-2">
           {regions.map((region) => (
             <AccordionItem key={region} value={region} className="border-none mb-1">
-              <AccordionTrigger className="hover:no-underline py-2 px-3 hover:bg-muted/50 rounded-lg transition-all group data-[state=open]:bg-muted/30">
-                <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground group-data-[state=open]:text-foreground">
+              <AccordionTrigger className="hover:no-underline py-2 px-3 hover:bg-muted rounded-lg transition-all group data-[state=open]:bg-muted/60">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-xs font-semibold text-foreground">
                     {region}
                   </span>
                   <Badge 
                     variant="secondary" 
-                    className="h-4 px-1.5 text-[9px] font-bold bg-muted/80 text-muted-foreground group-data-[state=open]:bg-primary group-data-[state=open]:text-primary-foreground"
+                    className="h-4 px-1.5 text-[10px] font-medium bg-muted text-muted-foreground group-data-[state=open]:bg-primary group-data-[state=open]:text-primary-foreground"
                   >
                     {grouped[region].length}
                   </Badge>
@@ -98,38 +101,32 @@ export default function CCTVSidebar({
                 <div className="flex flex-col gap-1 mt-1 px-1">
                   {grouped[region].map((cam) => {
                     const isSelected = selectedIds.has(cam.cctv_id);
-                    const isFull = selectedCams.length >= maxSlots && !isSelected;
+                    const isFull = selectedCams.length >= maxSlots;
+                    const isDisabled = !isSelected && isFull;
 
                     return (
                       <button
                         key={cam.cctv_id}
-                        disabled={isFull}
-                        onClick={() =>
-                          isSelected ? onDeselect(cam.cctv_id) : onSelect(cam)
-                        }
+                        disabled={isDisabled}
+                        onClick={() => isSelected ? onDeselect(cam.cctv_id) : onSelect(cam)}
                         className={cn(
-                          "group relative flex items-center w-full h-8 px-2 rounded-md transition-all text-left overflow-hidden",
+                          "flex items-center justify-between p-2 rounded-lg text-left transition-all text-xs font-sans group/item",
                           isSelected 
-                            ? "bg-primary/10 text-primary ring-1 ring-primary/20" 
-                            : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-                          isFull && "opacity-40 cursor-not-allowed"
+                            ? "bg-primary/10 text-primary font-semibold border border-primary/20" 
+                            : "hover:bg-muted text-foreground border border-transparent",
+                          isDisabled && "opacity-40 cursor-not-allowed hover:bg-transparent"
                         )}
                       >
-                        <div className={cn(
-                          "flex-shrink-0 w-3.5 h-3.5 rounded-sm border flex items-center justify-center mr-2.5 transition-all",
-                          isSelected 
-                            ? "bg-primary border-primary shadow-[0_0_8px_rgba(var(--primary-rgb),0.5)]" 
-                            : "border-muted-foreground/30 group-hover:border-primary/50"
-                        )}>
-                          {isSelected && <Check className="w-2.5 h-2.5 text-primary-foreground stroke-[4]" />}
-                        </div>
-                        
-                        <span 
-                          title={cam.ch_name}
-                          className="flex-1 min-w-0 text-[11px] font-medium truncate py-1 transition-transform group-hover:translate-x-0.5"
-                        >
-                          {cam.ch_name}
-                        </span>
+                        <span className="truncate pr-2">{cam.ch_name}</span>
+                        {isSelected ? (
+                          <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                            <Check className="w-2.5 h-2.5 text-primary-foreground" />
+                          </div>
+                        ) : (
+                          <span className="text-[10px] text-muted-foreground font-mono opacity-0 group-hover/item:opacity-100 transition-opacity">
+                            +Pilih
+                          </span>
+                        )}
                       </button>
                     );
                   })}

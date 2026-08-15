@@ -15,11 +15,11 @@ import { cn } from "@/lib/utils";
 const CCTVMap = dynamic(() => import('@/components/cctv/CCTVMap'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full flex items-center justify-center bg-muted/30 rounded-xl border border-border/50">
+    <div className="w-full h-full flex items-center justify-center bg-muted/30 rounded-xl border border-border">
       <div className="text-center">
         <MapIcon className="w-8 h-8 text-primary animate-pulse mx-auto mb-3" />
-        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em]">
-          Initializing Tactical Map...
+        <p className="text-xs text-muted-foreground font-semibold">
+          Memuat Peta Kamera CCTV...
         </p>
       </div>
     </div>
@@ -91,7 +91,7 @@ export default function CCTVPageClient(props: Props) {
           isSidebarOpen ? "w-80 opacity-100" : "w-0 opacity-0 overflow-hidden"
         )}
       >
-        <div className="h-full w-80 rounded-xl overflow-hidden border border-border/50 shadow-2xl">
+        <div className="h-full w-80 rounded-xl overflow-hidden border border-border shadow-md">
           <CCTVSidebar
             channels={allChannels}
             selectedCams={selectedCams}
@@ -130,9 +130,9 @@ export default function CCTVPageClient(props: Props) {
             <Button
               variant="outline"
               size="icon"
-              className="hidden md:flex h-9 w-9 border-border/50"
+              className="hidden md:flex h-9 w-9 border-border"
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+              title={isSidebarOpen ? "Sembunyikan Sidebar" : "Buka Sidebar"}
             >
               {isSidebarOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeft className="w-4 h-4" />}
             </Button>
@@ -141,49 +141,49 @@ export default function CCTVPageClient(props: Props) {
               onValueChange={(v) => setViewMode(v as ViewMode)} 
               className="w-auto"
             >
-              <TabsList className="bg-muted/50 border border-border/50">
-                <TabsTrigger value="grid" className="gap-2 text-[10px] font-bold uppercase tracking-widest px-4">
+              <TabsList className="bg-muted border border-border">
+                <TabsTrigger value="grid" className="gap-2 text-xs font-semibold px-4">
                   <LayoutGrid className="w-3.5 h-3.5" />
-                  Grid View
+                  Tampilan Grid
                 </TabsTrigger>
-                <TabsTrigger value="map" className="gap-2 text-[10px] font-bold uppercase tracking-widest px-4">
+                <TabsTrigger value="map" className="gap-2 text-xs font-semibold px-4">
                   <MapIcon className="w-3.5 h-3.5" />
-                  Tactical Map
+                  Peta Sebaran
                 </TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
 
-          <div className="flex items-center gap-4">
-             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/30 border border-border/50">
-                <Activity className="w-3 h-3 text-secondary animate-pulse" />
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                  {allChannels.length} Nodes Operational
+          <div className="flex items-center gap-3">
+             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-xs font-semibold">
+                  {allChannels.length} Kamera Terhubung
                 </span>
              </div>
 
              {selectedCams.length > 0 && (
                <Button 
-                variant="destructive" 
+                variant="outline" 
                 size="sm" 
                 onClick={handleClearAll}
-                className="gap-2 text-[10px] font-bold uppercase tracking-widest h-9"
+                className="gap-2 text-xs font-semibold h-9 text-destructive border-border hover:bg-destructive/10"
                >
                  <Trash2 className="w-3.5 h-3.5" />
-                 Clear All ({selectedCams.length})
+                 Hapus Pilihan ({selectedCams.length})
                </Button>
              )}
           </div>
         </div>
 
         {/* Dynamic Display */}
-        <div className="flex-1 min-h-0 bg-background/30 rounded-xl overflow-hidden border border-border/50 shadow-inner">
+        <div className="flex-1 min-h-0 bg-card rounded-xl overflow-hidden border border-border shadow-sm">
           {viewMode === 'grid' ? (
             <CCTVGridView
-              selectedCams={selectedCams}
+              channels={selectedCams}
               layout={layout}
-              onRemove={handleDeselect}
               onLayoutChange={handleLayoutChange}
+              onRemove={handleDeselect}
             />
           ) : (
             <CCTVMap
