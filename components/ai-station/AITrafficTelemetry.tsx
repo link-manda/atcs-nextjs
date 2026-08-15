@@ -11,7 +11,7 @@ import {
   SlidersHorizontal,
   Moon,
   Sun,
-  Sparkles,
+  Gauge,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VehicleCounts } from "@/lib/ai/client-vehicle-tracker";
@@ -20,6 +20,8 @@ interface AITrafficTelemetryProps {
   counts: VehicleCounts;
   fps: number;
   inferenceTimeMs: number;
+  targetFps: number;
+  onTargetFpsChange: (fps: number) => void;
   isNightScene: boolean;
   enableNightBoost: boolean;
   onToggleNightBoost: () => void;
@@ -34,6 +36,8 @@ export function AITrafficTelemetry({
   counts,
   fps,
   inferenceTimeMs,
+  targetFps,
+  onTargetFpsChange,
   isNightScene,
   enableNightBoost,
   onToggleNightBoost,
@@ -157,7 +161,7 @@ export function AITrafficTelemetry({
       </div>
 
       {/* ─── 3. Calibration & Settings ─── */}
-      <div className="bg-card rounded-xl p-4 border border-border shadow-sm flex flex-col gap-3">
+      <div className="bg-card rounded-xl p-4 border border-border shadow-sm flex flex-col gap-3.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <SlidersHorizontal className="w-4 h-4 text-primary" />
@@ -167,8 +171,47 @@ export function AITrafficTelemetry({
           </div>
         </div>
 
+        {/* Laju Sampling FPS AI Selector */}
+        <div className="flex flex-col gap-1.5">
+          <div className="flex justify-between items-center text-xs font-medium">
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <Gauge className="w-3.5 h-3.5 text-primary" />
+              <span>Laju Analisis AI (FPS)</span>
+            </div>
+            <span className="text-primary font-semibold font-mono">{targetFps} FPS Target</span>
+          </div>
+
+          <div className="grid grid-cols-4 gap-1.5">
+            {[
+              { rate: 15, label: "15 FPS" },
+              { rate: 20, label: "20 FPS" },
+              { rate: 25, label: "25 FPS" },
+              { rate: 30, label: "30 FPS" },
+            ].map(({ rate, label }) => {
+              const isSelected = targetFps === rate;
+              return (
+                <button
+                  key={rate}
+                  type="button"
+                  onClick={() => onTargetFpsChange(rate)}
+                  className={`py-1.5 px-2 rounded-lg text-xs font-semibold font-headline transition-all text-center border ${
+                    isSelected
+                      ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                      : "bg-background text-muted-foreground hover:text-foreground border-border"
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+          <span className="text-[10px] text-muted-foreground">
+            {targetFps === 20 ? "💡 20 FPS: Rekomendasi seimbang untuk sudut kamera bird's-eye" : "Laju pengambilan frame gambar untuk inferensi AI"}
+          </span>
+        </div>
+
         {/* Mode Malam Otomatis Toggle */}
-        <div className="p-3 rounded-lg bg-background border border-border flex items-center justify-between shadow-sm">
+        <div className="p-3 rounded-lg bg-background border border-border flex items-center justify-between shadow-sm mt-0.5">
           <div className="flex items-center gap-2.5">
             {enableNightBoost ? (
               <Moon className="w-4 h-4 text-cyan-600 dark:text-cyan-400 animate-pulse" />
@@ -217,7 +260,7 @@ export function AITrafficTelemetry({
         </div>
 
         {/* Confidence Threshold */}
-        <div className="flex flex-col gap-1.5 mt-1">
+        <div className="flex flex-col gap-1.5">
           <div className="flex justify-between text-xs font-medium">
             <span className="text-muted-foreground">Tingkat Ketelitian (Sensitivitas)</span>
             <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{Math.round(confidence * 100)}%</span>

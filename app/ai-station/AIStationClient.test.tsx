@@ -70,4 +70,14 @@ describe("AIStationClient", () => {
     fireEvent.click(toggleBtn);
     expect(screen.getByRole("button", { name: /Nonaktif/i })).toBeInTheDocument();
   });
+
+  it("renders Target AI FPS buttons and allows changing rate", () => {
+    render(<AIStationClient channels={mockChannels} />);
+
+    expect(screen.getByText("Laju Analisis AI (FPS)")).toBeInTheDocument();
+    const fps15Btn = screen.getByRole("button", { name: "15 FPS" });
+    expect(fps15Btn).toBeInTheDocument();
+    fireEvent.click(fps15Btn);
+    expect(screen.getByText("15 FPS Target")).toBeInTheDocument();
+  });
 });

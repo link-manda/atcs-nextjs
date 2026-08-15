@@ -48,6 +48,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
   const [videoKey, setVideoKey] = useState(0);
 
   // 3. AI Detection & Tracking State (100% Client-Side WebGL)
+  const [targetFps, setTargetFps] = useState<number>(20); // Default 20 FPS sweet spot
   const [fps, setFps] = useState<number>(0);
   const [inferenceTimeMs, setInferenceTimeMs] = useState<number>(0);
   const [tripwireYRatio, setTripwireYRatio] = useState<number>(0.55);
@@ -120,12 +121,13 @@ export function AIStationClient({ channels }: AIStationClientProps) {
     };
   }, [selectedChannel, videoKey]);
 
-  // 4. Real-Time Client-Side WebGL AI Inference Loop
+  // 4. Real-Time Client-Side WebGL AI Inference Loop with Dynamic Throttle
   useEffect(() => {
     let animationFrameId: number;
     let lastInferenceTime = 0;
     let frameCount = 0;
     let fpsCalcTime = performance.now();
+    const throttleInterval = Math.round(1000 / targetFps);
 
     const loop = async (timestamp: number) => {
       const video = videoRef.current;
@@ -135,7 +137,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
         video.readyState >= 2 &&
         !video.paused &&
         !isInferringRef.current &&
-        timestamp - lastInferenceTime >= 35
+        timestamp - lastInferenceTime >= throttleInterval
       ) {
         isInferringRef.current = true;
         lastInferenceTime = timestamp;
@@ -183,7 +185,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [selectedChannel, confidence, tripwireYRatio, enableNightBoost]);
+  }, [selectedChannel, confidence, tripwireYRatio, enableNightBoost, targetFps]);
 
   const handleResetCounts = useCallback(() => {
     trackerRef.current.resetCounts();
@@ -369,7 +371,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
               fitMode={fitMode}
             />
 
-            {/* Viewport Top HUD with Transparent Badges (No Black Box) */}
+            {/* Viewport Top HUD with Transparent Badges */}
             <div className="absolute top-3 left-3 right-3 flex items-start justify-between pointer-events-none z-30">
               <div className="flex items-center gap-2 drop-shadow-md">
                 <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" />
@@ -394,6 +396,8 @@ export function AIStationClient({ channels }: AIStationClientProps) {
             counts={counts}
             fps={fps}
             inferenceTimeMs={inferenceTimeMs}
+            targetFps={targetFps}
+            onTargetFpsChange={setTargetFps}
             isNightScene={isNightScene}
             enableNightBoost={enableNightBoost}
             onToggleNightBoost={() => setEnableNightBoost((prev) => !prev)}
