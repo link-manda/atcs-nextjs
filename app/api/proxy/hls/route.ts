@@ -1,0 +1,89 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
+  const targetUrl = searchParams.get('url');
+
+  if (!targetUrl) {
+    return new NextResponse('Missing url parameter', { status: 400 });
+  }
+
+  try {
+    const upstreamResponse = await fetch(targetUrl, {
+      cache: 'no-store',
+      headers: {
+        'Accept': '*/*',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:150.0) Gecko/20100101 Firefox/150.0',
+        'Referer': targetUrl.startsWith('https://atcs.denpasarkota.go.id')
+          ? targetUrl.substring(0, targetUrl.lastIndexOf('/') + 1)
+          : 'https://atcs.denpasarkota.go.id/streaming',
+        'x-client-id': 'a194e6ae-d4dd-4b62-a0ac-388922f09303',
+        'x-client-secret': 'f430fde38a031fb657a2a7d6f84644a9aed767a4c22314d4b7c565648acc2396',
+      },
+    });
+
+    if (!upstreamResponse.ok) {
+      return new NextResponse(`Upstream returned ${upstreamResponse.status}`, {
+        status: upstreamResponse.status,
+      });
+    }
+
+    const contentType = upstreamResponse.headers.get('content-type') || '';
+    const isM3U8 =
+      targetUrl.includes('.m3u8') ||
+      contentType.includes('mpegurl') ||
+      contentType.includes('application/x-mpegURL');
+
+    if (isM3U8) {
+      const manifestText = await upstreamResponse.text();
+
+      // Rewrite relative URLs in the m3u8 playlist to point through this proxy
+      const rewrittenManifest = manifestText
+        .split('\n')
+        .map((line) => {
+          const trimmed = line.trim();
+          if (!trimmed || trimmed.startsWith('#')) {
+            return line;
+          }
+
+          // Line is a URI reference (e.g. stream.m3u8 or segment.ts)
+          try {
+            const absoluteUrl = new URL(trimmed, targetUrl).toString();
+            return `/api/proxy/hls?url=${encodeURIComponent(absoluteUrl)}`;
+          } catch {
+            return line;
+          }
+        })
+        .join('\n');
+
+      return new NextResponse(rewrittenManifest, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/vnd.apple.mpegurl',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, OPTIONS',
+          'Cache-Control': 'no-cache, no-store, max-age=0, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      });
+    }
+
+    // Binary stream chunk (.ts video segment)
+    const arrayBuffer = await upstreamResponse.arrayBuffer();
+    return new NextResponse(arrayBuffer, {
+      status: 200,
+      headers: {
+        'Content-Type': contentType || 'video/MP2T',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Cache-Control': 'public, max-age=3600, immutable',
+      },
+    });
+  } catch (error: any) {
+    console.error('[HLS Proxy] Fetch error:', error);
+    return new NextResponse('Error fetching HLS resource', { status: 500 });
+  }
+}

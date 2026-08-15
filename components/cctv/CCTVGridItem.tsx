@@ -31,35 +31,36 @@ export function CCTVGridItem({ channel, onRemove }: CCTVGridItemProps) {
       <CCTVPlayer channel={channel} />
 
       {/* HUD Overlays */}
-      <div className="absolute inset-0 pointer-events-none p-3 flex flex-col justify-between">
+      <div className="absolute inset-0 pointer-events-none p-3 flex flex-col justify-between z-10">
         {/* Top HUD */}
-        <div className="flex justify-between items-start w-full">
-          <div className="bg-background/30 backdrop-blur-md px-2 py-1 rounded flex items-center gap-2 border border-border/20">
-             <span className="font-headline font-bold text-[9px] uppercase tracking-wider text-white drop-shadow-md">
-               {channel.ch_name}
-             </span>
+        <div className="flex justify-between items-start w-full gap-2">
+          <div className="bg-black/90 px-2.5 py-1 rounded border border-white/15 shadow-md flex items-center gap-2 max-w-[65%]">
+            <span className="font-headline font-bold text-[10px] uppercase tracking-wider text-white truncate">
+              {channel.ch_name}
+            </span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="bg-red-500/10 text-red-500 border-red-500/30 flex items-center gap-1.5 py-0.5 px-2 bg-background/60 backdrop-blur-md">
+          <div className="flex items-center gap-1.5 bg-black/90 p-0.5 rounded border border-white/15 shadow-md">
+            <Badge variant="outline" className="bg-red-950/80 text-red-400 border-red-500/40 flex items-center gap-1.5 py-0.5 px-2">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
               </span>
-              <span className="text-[10px] font-bold uppercase tracking-tighter">Live</span>
+              <span className="text-[9px] font-bold uppercase tracking-wider font-headline">Live</span>
             </Badge>
           </div>
         </div>
       </div>
 
       {/* Interactive Layer (Hover) */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-background/40 backdrop-blur-[2px] flex items-center justify-center pointer-events-none">
-        <div className="pointer-events-auto flex items-center gap-4">
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 flex items-center justify-center pointer-events-none z-30">
+        <div className="pointer-events-auto flex items-center gap-3">
           <Button 
             variant="secondary" 
             size="icon" 
             className="h-10 w-10 rounded-full shadow-lg"
             onClick={toggleFullScreen}
+            title="Fullscreen"
           >
             <Maximize className="h-5 w-5" />
           </Button>
@@ -68,6 +69,7 @@ export function CCTVGridItem({ channel, onRemove }: CCTVGridItemProps) {
             size="icon" 
             className="h-10 w-10 rounded-full shadow-lg"
             onClick={() => onRemove(channel.cctv_id)}
+            title="Tutup Kamera"
           >
             <X className="h-5 w-5" />
           </Button>

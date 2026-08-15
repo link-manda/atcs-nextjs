@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { LayoutGrid, BarChart3, Map as MapIcon, Activity, Radio, Menu } from 'lucide-react';
+import { LayoutGrid, BarChart3, Map as MapIcon, Activity, Radio, Menu, Cpu } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 interface NavItemProps {
@@ -72,6 +72,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 active={pathname === '/cctv'} 
               />
               <NavItem 
+                href="/ai-station" 
+                label="AI Station" 
+                icon={Cpu} 
+                active={pathname === '/ai-station'} 
+              />
+              <NavItem 
                 href="/analytics" 
                 label="Analytics" 
                 icon={BarChart3} 
@@ -116,6 +122,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                   <nav className="p-4 flex flex-col gap-2">
                     <NavItem href="/" label="Dashboard" icon={MapIcon} active={pathname === '/'} />
                     <NavItem href="/cctv" label="Monitoring" icon={LayoutGrid} active={pathname === '/cctv'} />
+                    <NavItem href="/ai-station" label="AI Station" icon={Cpu} active={pathname === '/ai-station'} />
                     <NavItem href="/analytics" label="Analytics" icon={BarChart3} active={pathname === '/analytics'} />
                   </nav>
                 </SheetContent>

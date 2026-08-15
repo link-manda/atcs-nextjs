@@ -29,11 +29,13 @@ describe('CCTVPageClient', () => {
     // Default layout 3x3 (max 9)
     // Selected initial 9 (0-8)
     
+    // Open the Denpasar accordion
+    const regionTrigger = screen.getByRole('button', { name: /Denpasar/i });
+    fireEvent.click(regionTrigger);
+    
     // Check if Camera 9 is disabled in the sidebar
-    // Cameras are inside Accordion, might need to open it or mock it
-    // Actually CCTVSidebar renders them all if the Accordion is open.
-    // Let's just try to find the button for "Camera 9"
     const cam9Button = screen.getByRole('button', { name: /Camera 9/i });
     expect(cam9Button).toBeDisabled();
   });
 });
+

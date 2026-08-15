@@ -15,7 +15,13 @@ export const ALL_REGIONS: CCTVRegion[] = [
 ];
 
 export function detectPlayerType(url: string): 'iframe' | 'video' {
-  return url.endsWith('.mp4') || url.includes('/mp4/') ? 'video' : 'iframe';
+  const lower = url.toLowerCase();
+  return lower.endsWith('.mp4') ||
+    lower.includes('/mp4/') ||
+    lower.includes('.m3u8') ||
+    lower.includes('/api/proxy/hls')
+    ? 'video'
+    : 'iframe';
 }
 
 interface RawCCTV {

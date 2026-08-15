@@ -125,14 +125,18 @@ const loadDenpasarCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
       result.data.forEach((lokasi: any) => {
         if (lokasi.tb_device_lokasi && Array.isArray(lokasi.tb_device_lokasi)) {
           lokasi.tb_device_lokasi.forEach((cam: any, idx: number) => {
+            const rawUrl = (cam.url_proxy_hls || '').trim().replace(/\/+$/, '');
+            const m3u8Url = rawUrl ? `${rawUrl}/index.m3u8` : '';
+            const proxiedUrl = m3u8Url ? `/api/proxy/hls?url=${encodeURIComponent(m3u8Url)}` : (cam.url_proxy_hls || '').trim();
+
             channels.push({
               cctv_id: parseInt(`999${lokasi.id_lokasi}${idx}`),
               ch_id: `DPS-${lokasi.id_lokasi}-${idx}`,
               ch_name: cam.nama_alias || cam.nama || 'Denpasar CCTV',
               lat: toNullableNumber(lokasi.lat_lokasi),
               lng: toNullableNumber(lokasi.lon_lokasi),
-              streaming_url: (cam.url_proxy_hls || '').trim(),
-              player_type: 'iframe',
+              streaming_url: proxiedUrl,
+              player_type: 'video',
               region: 'Denpasar',
             });
           });
