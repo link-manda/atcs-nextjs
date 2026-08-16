@@ -19,7 +19,8 @@ export function detectPlayerType(url: string): 'iframe' | 'video' {
   return lower.endsWith('.mp4') ||
     lower.includes('/mp4/') ||
     lower.includes('.m3u8') ||
-    lower.includes('/api/proxy/hls')
+    lower.includes('/api/proxy/hls') ||
+    lower.includes('transcode.baliprov.go.id/cctv/')
     ? 'video'
     : 'iframe';
 }

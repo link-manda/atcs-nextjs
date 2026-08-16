@@ -376,11 +376,14 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                               : "hover:bg-muted text-foreground border border-transparent"
                           }`}
                         >
-                          <div className="flex flex-col min-w-0 flex-1 pr-2">
-                            <span className="truncate">{cam.ch_name}</span>
-                            <span className="text-[10px] text-muted-foreground">
-                              {cam.region}
-                            </span>
+                          <div className="flex items-center gap-2 min-w-0 flex-1 pr-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0 animate-pulse" />
+                            <div className="flex flex-col min-w-0 flex-1">
+                              <span className="truncate">{cam.ch_name}</span>
+                              <span className="text-[10px] text-muted-foreground">
+                                {cam.region}
+                              </span>
+                            </div>
                           </div>
                           {isSelected && <Check className="w-3.5 h-3.5 text-primary flex-shrink-0" />}
                         </button>

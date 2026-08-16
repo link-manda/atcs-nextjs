@@ -118,7 +118,13 @@ export default function CCTVSidebar({
                           isDisabled && "opacity-40 cursor-not-allowed hover:bg-transparent"
                         )}
                       >
-                        <span className="flex-1 min-w-0 truncate">{cam.ch_name}</span>
+                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                          <span
+                            className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0 animate-pulse"
+                            title="Live Stream"
+                          />
+                          <span className="truncate">{cam.ch_name}</span>
+                        </div>
                         {isSelected ? (
                           <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
                             <Check className="w-2.5 h-2.5 text-primary-foreground" />

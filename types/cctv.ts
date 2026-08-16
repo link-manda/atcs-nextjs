@@ -22,4 +22,5 @@ export interface CCTVChannel {
   streaming_url: string;
   player_type: PlayerType;
   region: CCTVRegion;
+  is_online?: boolean;
 }

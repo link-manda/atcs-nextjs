@@ -47,6 +47,13 @@ function mapToChannel(entry: RawCCTVEntry): CCTVChannel {
     throw new Error(`Invalid channel payload for CCTV ${cctvId}`);
   }
 
+  // Rewrite Bali Satu Data transcode iframe wrapper to direct native HLS m3u8
+  const transcodeMatch = streamingUrl.match(/transcode\.baliprov\.go\.id\/cctv-player\.html\?id=([^&]+)/i);
+  if (transcodeMatch) {
+    const camId = transcodeMatch[1];
+    streamingUrl = `https://transcode.baliprov.go.id/cctv/${camId}/index.m3u8`;
+  }
+
   // Rewrite Shinobi Buleleng MP4 pseudo-stream to native Shinobi iframe embed to fix AbortError / 504 timeouts
   // Pattern matches: [protocol]//[domain]/[token]/mp4/[group]/[monitor]/s.mp4
   const shinobiRegex = /^(https?:\/\/shinobi\.bulelengkab\.go\.id\/[^\/]+)\/mp4\/([^\/]+\/[^\/]+)\/s\.mp4$/i;

@@ -347,9 +347,12 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
                           }`}
                         >
                           <div className="flex items-center justify-between gap-1">
-                            <span className="text-[11px] font-semibold text-foreground truncate max-w-[130px]" title={cam.ch_name}>
-                              {cam.ch_name}
-                            </span>
+                            <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0 animate-pulse" />
+                              <span className="text-[11px] font-semibold text-foreground truncate" title={cam.ch_name}>
+                                {cam.ch_name}
+                              </span>
+                            </div>
                             <span className="text-[9px] px-1.5 py-0.2 rounded font-bold uppercase bg-background border border-border text-muted-foreground flex-shrink-0">
                               {isPanoramic ? 'Panoramic' : isPTZ ? 'PTZ' : 'Video'}
                             </span>
