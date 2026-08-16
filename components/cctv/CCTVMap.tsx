@@ -5,7 +5,7 @@ import { CCTVChannel } from '@/types/cctv';
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { Activity, Key, ExternalLink, X, Settings2, Check } from 'lucide-react';
+import { Activity, Key, ExternalLink, X, Settings2, Check, Video, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -15,36 +15,103 @@ interface CCTVMapProps {
   onCameraClick: (cam: CCTVChannel) => void;
 }
 
-// Custom icon factory
-const createIcon = (isSelected: boolean) => {
-  const colorClass = isSelected ? 'bg-primary' : 'bg-emerald-500';
-  const shadowClass = isSelected 
-    ? 'shadow-[0_0_10px_rgba(var(--primary-rgb),0.8)]' 
-    : 'shadow-[0_0_8px_rgba(16,185,129,0.7)]';
+export interface CCTVStation {
+  stationKey: string;
+  lat: number;
+  lng: number;
+  region: string;
+  title: string;
+  cameras: CCTVChannel[];
+}
+
+/**
+ * Groups cameras with matching coordinates (within ~10m) into single Station nodes
+ */
+function groupCamerasByLocation(cameras: CCTVChannel[]): CCTVStation[] {
+  const stationMap = new Map<string, CCTVStation>();
+
+  for (const cam of cameras) {
+    if (cam.lat === null || cam.lng === null) continue;
+    // Round to 4 decimal places (~10m precision) to cluster co-located cameras
+    const latKey = cam.lat.toFixed(4);
+    const lngKey = cam.lng.toFixed(4);
+    const key = `${latKey}_${lngKey}`;
+
+    if (!stationMap.has(key)) {
+      const cleanTitle = cam.ch_name
+        .replace(/\s*-\s*(ptz|panoramic|cam\s*\d+|cctv\s*\d+)\b/gi, '')
+        .replace(/\s+(ptz|panoramic)\b/gi, '')
+        .trim();
+
+      stationMap.set(key, {
+        stationKey: key,
+        lat: cam.lat,
+        lng: cam.lng,
+        region: cam.region,
+        title: cleanTitle || cam.ch_name,
+        cameras: [cam],
+      });
+    } else {
+      stationMap.get(key)!.cameras.push(cam);
+    }
+  }
+
+  return Array.from(stationMap.values());
+}
+
+/**
+ * Creates a Modern Teardrop CCTV Marker Icon with Multi-Cam Badge
+ */
+const createCCTVMarkerIcon = (station: CCTVStation, isAnySelected: boolean) => {
+  const count = station.cameras.length;
+  const isMulti = count > 1;
+  const pinColor = isAnySelected ? '#00f0ff' : '#10b981'; // Cyan if selected, Emerald if active
+  const glowClass = isAnySelected
+    ? 'filter drop-shadow-[0_0_8px_rgba(0,240,255,0.8)]'
+    : 'filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]';
+
+  const badgeHtml = isMulti
+    ? `<div class="absolute -top-1.5 -right-1.5 min-w-[17px] h-[17px] px-1 rounded-full bg-cyan-400 text-black text-[10px] font-black font-sans flex items-center justify-center border-2 border-[#13171f] shadow-md z-20">${count}</div>`
+    : '';
 
   return L.divIcon({
     className: 'bg-transparent border-none',
-    html: `<div class="relative flex items-center justify-center w-6 h-6 cursor-pointer">
-             <div class="absolute inset-0 rounded-full border ${isSelected ? 'border-primary' : 'border-emerald-500'} animate-ping opacity-40"></div>
-             <div class="w-3 h-3 rounded-full ${colorClass} ${shadowClass}"></div>
-           </div>`,
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
-    popupAnchor: [0, -12],
+    html: `
+      <div class="relative flex items-center justify-center w-8 h-9 cursor-pointer transition-transform duration-200 hover:scale-115">
+        ${badgeHtml}
+        <svg width="32" height="36" viewBox="0 0 32 36" fill="none" xmlns="http://www.w3.org/2000/svg" class="${glowClass}">
+          <!-- Teardrop Pin Base -->
+          <path d="M16 35C16 35 30 22.5 30 14C30 6.26801 23.732 0 16 0C8.26801 0 2 6.26801 2 14C2 22.5 16 35 16 35Z" fill="#13171f" stroke="${pinColor}" stroke-width="2"/>
+          <!-- CCTV Security Camera Glyph -->
+          <g transform="translate(8.5, 6.5)" fill="${pinColor}">
+            <!-- Camera Body -->
+            <path d="M1 3.5C1 2.67157 1.67157 2 2.5 2H9C9.82843 2 10.5 2.67157 10.5 3.5V8C10.5 8.82843 9.82843 9.5 9 9.5H2.5C1.67157 9.5 1 8.82843 1 8V3.5Z"/>
+            <!-- Camera Lens / Viewing Cone -->
+            <path d="M10.5 4.5L14 2.5V9L10.5 7V4.5Z"/>
+            <!-- Base Stand -->
+            <path d="M5 9.5V11.5H7V9.5H5Z"/>
+            <path d="M3.5 11.5H8.5V12.5H3.5V11.5Z"/>
+          </g>
+        </svg>
+      </div>
+    `,
+    iconSize: [32, 36],
+    iconAnchor: [16, 35],
+    popupAnchor: [0, -32],
   });
 };
 
 // Component to handle map bounds
-function MapBounds({ cameras }: { cameras: CCTVChannel[] }) {
+function MapBounds({ stations }: { stations: CCTVStation[] }) {
   const map = useMap();
   
   useEffect(() => {
-    if (cameras.length === 0) return;
+    if (stations.length === 0) return;
     const bounds = L.latLngBounds(
-      cameras.map(c => [c.lat as number, c.lng as number])
+      stations.map(s => [s.lat, s.lng])
     );
     map.fitBounds(bounds, { padding: [50, 50] });
-  }, [cameras, map]);
+  }, [stations, map]);
 
   return null;
 }
@@ -91,12 +158,10 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
     }
   };
 
-  const withGps = useMemo(
-    () => cameras.filter((c) => c.lat !== null && c.lng !== null),
-    [cameras]
-  );
+  // Group cameras into stations to eliminate overlapping pins
+  const stations = useMemo(() => groupCamerasByLocation(cameras), [cameras]);
 
-  if (withGps.length === 0) {
+  if (stations.length === 0) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-card">
         <p className="text-sm font-semibold text-muted-foreground">
@@ -238,34 +303,91 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
           />
         )}
         
-        {withGps.map((cam) => {
-          const isSelected = selectedIds.has(cam.cctv_id);
+        {/* Render Station Pins (Grouped Co-located Cameras) */}
+        {stations.map((station) => {
+          const isAnySelected = station.cameras.some((cam) => selectedIds.has(cam.cctv_id));
+          const icon = createCCTVMarkerIcon(station, isAnySelected);
+
           return (
             <Marker
-              key={cam.cctv_id}
-              position={[cam.lat as number, cam.lng as number]}
-              icon={createIcon(isSelected)}
-              eventHandlers={{
-                click: () => onCameraClick(cam),
-              }}
+              key={station.stationKey}
+              position={[station.lat, station.lng]}
+              icon={icon}
             >
               <Popup className="tactical-popup">
-                <div className="flex flex-col gap-1 min-w-[120px]">
-                  <span className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1 border-b border-border/50 pb-1">
-                    {cam.region}
-                  </span>
-                  <span className="text-xs font-bold text-foreground leading-tight">
-                    {cam.ch_name}
-                  </span>
-                  <span className="text-[9px] font-mono text-muted-foreground mt-1">
-                    {cam.lat?.toFixed(5)}, {cam.lng?.toFixed(5)}
+                <div className="flex flex-col gap-2 min-w-[200px] max-w-[260px] p-1 font-sans">
+                  {/* Station Header */}
+                  <div className="flex items-center justify-between border-b border-border/40 pb-1.5">
+                    <span className="text-[10px] font-bold text-primary uppercase tracking-wider">
+                      {station.region}
+                    </span>
+                    <span className="text-[9px] font-mono text-muted-foreground">
+                      {station.cameras.length} Kamera
+                    </span>
+                  </div>
+
+                  <div className="text-xs font-bold text-foreground leading-tight">
+                    {station.title}
+                  </div>
+
+                  {/* List of Cameras at this Station (PTZ + Panoramic) */}
+                  <div className="flex flex-col gap-1.5 mt-1">
+                    {station.cameras.map((cam) => {
+                      const isSelected = selectedIds.has(cam.cctv_id);
+                      const isPanoramic = cam.ch_name.toLowerCase().includes('panoramic');
+                      const isPTZ = cam.ch_name.toLowerCase().includes('ptz');
+
+                      return (
+                        <div
+                          key={cam.cctv_id}
+                          className={`p-2 rounded-lg border flex flex-col gap-1.5 transition-colors ${
+                            isSelected
+                              ? 'bg-primary/10 border-primary/30'
+                              : 'bg-muted/40 border-border/50'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="text-[11px] font-semibold text-foreground truncate max-w-[130px]" title={cam.ch_name}>
+                              {cam.ch_name}
+                            </span>
+                            <span className="text-[9px] px-1.5 py-0.2 rounded font-bold uppercase bg-background border border-border text-muted-foreground flex-shrink-0">
+                              {isPanoramic ? 'Panoramic' : isPTZ ? 'PTZ' : 'Video'}
+                            </span>
+                          </div>
+
+                          <button
+                            onClick={() => onCameraClick(cam)}
+                            className={`w-full py-1 px-2 rounded text-[10px] font-bold uppercase tracking-wider flex items-center justify-center gap-1 transition-colors ${
+                              isSelected
+                                ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                                : 'bg-background hover:bg-muted text-foreground border border-border'
+                            }`}
+                          >
+                            {isSelected ? (
+                              <>
+                                <Check className="w-3 h-3" />
+                                <span>Terpilih di Grid</span>
+                              </>
+                            ) : (
+                              <>
+                                <span>+ Tambah ke Grid</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <span className="text-[9px] font-mono text-muted-foreground/80 mt-0.5 text-center">
+                    {station.lat.toFixed(5)}, {station.lng.toFixed(5)}
                   </span>
                 </div>
               </Popup>
             </Marker>
           );
         })}
-        <MapBounds cameras={withGps} />
+        <MapBounds stations={stations} />
       </MapContainer>
     </div>
   );
