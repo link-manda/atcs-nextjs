@@ -17,7 +17,6 @@ import {
   Search,
   Maximize2,
   ChevronDown,
-  Scaling,
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -40,7 +39,6 @@ export function AIStationClient({ channels }: AIStationClientProps) {
   const [regionFilter, setRegionFilter] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [showCameraSelector, setShowCameraSelector] = useState(false);
-  const [fitMode, setFitMode] = useState<"cover" | "contain">("cover");
 
   // 2. Video Player Ref
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -228,17 +226,6 @@ export function AIStationClient({ channels }: AIStationClientProps) {
 
         {/* Camera Selector & Region Filter Trigger */}
         <div className="flex items-center gap-2.5 flex-wrap">
-          {/* Fit Mode Toggle */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setFitMode((prev) => (prev === "cover" ? "contain" : "cover"))}
-            className="h-9 px-3 bg-background border-border text-foreground font-semibold text-xs flex items-center gap-1.5 shadow-sm"
-          >
-            <Scaling className="w-3.5 h-3.5 text-primary" />
-            <span>{fitMode === "cover" ? "Tampilan Penuh" : "Sesuai Ukuran"}</span>
-          </Button>
-
           <div className="relative">
             <Button
               variant="outline"
@@ -310,14 +297,15 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                           setVideoKey((k) => k + 1);
                           handleResetCounts();
                         }}
-                        className={`p-2 rounded-lg text-left text-xs flex items-center justify-between transition-colors ${
+                        title={ch.ch_name}
+                        className={`w-full min-w-0 p-2 rounded-lg text-left text-xs flex items-center justify-between gap-2 transition-colors ${
                           selectedChannel.cctv_id === ch.cctv_id
                             ? "bg-primary/10 text-primary font-semibold border border-primary/20"
                             : "hover:bg-muted text-foreground"
                         }`}
                       >
-                        <span className="truncate max-w-[200px]">{ch.ch_name}</span>
-                        <span className="text-[11px] text-muted-foreground">
+                        <span className="flex-1 min-w-0 truncate">{ch.ch_name}</span>
+                        <span className="text-[11px] text-muted-foreground flex-shrink-0">
                           {ch.region}
                         </span>
                       </button>
@@ -348,13 +336,11 @@ export function AIStationClient({ channels }: AIStationClientProps) {
             id="ai-viewport-container"
             className="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-border shadow-lg flex items-center justify-center isolate"
           >
-            {/* Live Video Feed */}
+            {/* Live Video Feed (100% Full Autofit - No Black Bars, No Cropping) */}
             <video
               ref={videoRef}
               key={videoKey}
-              className={`w-full h-full pointer-events-none ${
-                fitMode === "cover" ? "object-cover" : "object-contain"
-              }`}
+              className="w-full h-full object-fill pointer-events-none"
               autoPlay
               muted
               playsInline
@@ -368,7 +354,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
               lineCrossed={lineCrossed}
               isNightScene={isNightScene}
               videoElement={videoElement}
-              fitMode={fitMode}
+              fitMode="fill"
             />
 
             {/* Viewport Top HUD with Transparent Badges */}

@@ -10,7 +10,7 @@ interface ClientAITacticalOverlayProps {
   lineCrossed: boolean;
   isNightScene: boolean;
   videoElement: HTMLVideoElement | null;
-  fitMode?: "cover" | "contain";
+  fitMode?: "fill" | "cover" | "contain";
 }
 
 export function ClientAITacticalOverlay({
@@ -19,7 +19,7 @@ export function ClientAITacticalOverlay({
   lineCrossed,
   isNightScene,
   videoElement,
-  fitMode = "contain",
+  fitMode = "fill",
 }: ClientAITacticalOverlayProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const lastCrossedTimeRef = useRef<number>(0);
@@ -56,7 +56,12 @@ export function ClientAITacticalOverlay({
     let offsetX = 0;
     let offsetY = 0;
 
-    if (fitMode === "cover") {
+    if (fitMode === "fill") {
+      renderW = canvasWidth;
+      renderH = canvasHeight;
+      offsetX = 0;
+      offsetY = 0;
+    } else if (fitMode === "cover") {
       if (containerRatio > videoRatio) {
         renderW = canvasWidth;
         renderH = canvasWidth / (videoRatio || 1);

@@ -148,7 +148,7 @@ export function CCTVPlayer({ channel }: CCTVPlayerProps) {
       <video
         ref={videoRef}
         key={key}
-        className="w-full h-full object-contain pointer-events-none"
+        className="w-full h-full object-fill pointer-events-none"
         autoPlay
         muted
         playsInline

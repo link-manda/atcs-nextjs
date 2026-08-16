@@ -109,21 +109,22 @@ export default function CCTVSidebar({
                         key={cam.cctv_id}
                         disabled={isDisabled}
                         onClick={() => isSelected ? onDeselect(cam.cctv_id) : onSelect(cam)}
+                        title={cam.ch_name}
                         className={cn(
-                          "flex items-center justify-between p-2 rounded-lg text-left transition-all text-xs font-sans group/item",
+                          "w-full min-w-0 flex items-center justify-between gap-2 p-2 rounded-lg text-left transition-all text-xs font-sans group/item",
                           isSelected 
                             ? "bg-primary/10 text-primary font-semibold border border-primary/20" 
                             : "hover:bg-muted text-foreground border border-transparent",
                           isDisabled && "opacity-40 cursor-not-allowed hover:bg-transparent"
                         )}
                       >
-                        <span className="truncate pr-2">{cam.ch_name}</span>
+                        <span className="flex-1 min-w-0 truncate">{cam.ch_name}</span>
                         {isSelected ? (
                           <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
                             <Check className="w-2.5 h-2.5 text-primary-foreground" />
                           </div>
                         ) : (
-                          <span className="text-[10px] text-muted-foreground font-mono opacity-0 group-hover/item:opacity-100 transition-opacity">
+                          <span className="text-[10px] text-muted-foreground font-mono opacity-0 group-hover/item:opacity-100 transition-opacity flex-shrink-0">
                             +Pilih
                           </span>
                         )}
