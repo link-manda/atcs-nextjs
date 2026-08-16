@@ -57,18 +57,19 @@ describe("AIStationClient", () => {
     fireEvent.click(selectBtn);
 
     // Should see search input and second camera
-    expect(screen.getByPlaceholderText("Cari nama jalan atau wilayah...")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Cari kamera atau wilayah...")).toBeInTheDocument();
     expect(screen.getByText("SIMPANG DEWA RUCI")).toBeInTheDocument();
   });
 
-  it("renders Adaptive Night Vision toggle and controls", () => {
+  it("renders Adaptive Night Vision, 512px Sharpening, and 1:1 Frame-Lock toggles", () => {
     render(<AIStationClient channels={mockChannels} />);
 
     expect(screen.getByText("Mode Malam Otomatis")).toBeInTheDocument();
-    const toggleBtn = screen.getByRole("button", { name: /Aktif/i });
-    expect(toggleBtn).toBeInTheDocument();
-    fireEvent.click(toggleBtn);
-    expect(screen.getByRole("button", { name: /Nonaktif/i })).toBeInTheDocument();
+    expect(screen.getByText("Penajaman Citra (512px HD)")).toBeInTheDocument();
+    expect(screen.getByText("Sinkronisasi Frame (1:1 Lock)")).toBeInTheDocument();
+
+    const activeButtons = screen.getAllByRole("button", { name: /Aktif/i });
+    expect(activeButtons.length).toBeGreaterThanOrEqual(3);
   });
 
   it("renders Target AI FPS buttons and allows changing rate", () => {

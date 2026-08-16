@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { TrackedVehicle } from "@/lib/ai/client-vehicle-tracker";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, Sparkles, Lock } from "lucide-react";
 
 interface ClientAITacticalOverlayProps {
   trackedVehicles: TrackedVehicle[];
@@ -11,6 +11,9 @@ interface ClientAITacticalOverlayProps {
   isNightScene: boolean;
   videoElement: HTMLVideoElement | null;
   fitMode?: "fill" | "cover" | "contain";
+  syncFrameLock?: boolean;
+  enableSharpening?: boolean;
+  processedCanvas?: HTMLCanvasElement | null;
 }
 
 export function ClientAITacticalOverlay({
@@ -20,6 +23,9 @@ export function ClientAITacticalOverlay({
   isNightScene,
   videoElement,
   fitMode = "fill",
+  syncFrameLock = true,
+  enableSharpening = true,
+  processedCanvas = null,
 }: ClientAITacticalOverlayProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const lastCrossedTimeRef = useRef<number>(0);
@@ -94,11 +100,16 @@ export function ClientAITacticalOverlay({
 
     if (canvasWidth <= 0 || canvasHeight <= 0 || renderW <= 0 || renderH <= 0) return;
 
+    // 1. Draw Synchronized High-Resolution Frame (1:1 Frame-Lock)
+    if (syncFrameLock && processedCanvas) {
+      ctx.drawImage(processedCanvas, 0, 0, processedCanvas.width, processedCanvas.height, offsetX, offsetY, renderW, renderH);
+    }
+
     const now = Date.now();
     const isGlowing = now - lastCrossedTimeRef.current < 600;
     const tripwireY = offsetY + renderH * tripwireYRatio;
 
-    // 1. Draw Virtual Tripwire Line (Cyan glowing)
+    // 2. Draw Virtual Tripwire Line (Cyan glowing)
     ctx.save();
     ctx.lineWidth = isGlowing ? 3 : 2;
     ctx.strokeStyle = isGlowing ? "rgba(0, 240, 255, 1)" : "rgba(0, 227, 253, 0.75)";
@@ -123,7 +134,7 @@ export function ClientAITacticalOverlay({
     ctx.fillText("── Garis Penghitung Kendaraan ──", offsetX + 16, tripwireY - 6);
     ctx.restore();
 
-    // 2. Draw Tracked Vehicles with Clean Transparent Labels
+    // 3. Draw Tracked Vehicles with Clean Transparent Labels
     trackedVehicles.forEach((vehicle) => {
       const [rawX, rawY, rawW, rawH] = vehicle.bbox;
       const x = offsetX + rawX * scaleX;
@@ -201,7 +212,7 @@ export function ClientAITacticalOverlay({
       ctx.lineTo(x + w, y + h - cornerLen);
       ctx.stroke();
 
-      // Clean Floating Label (Transparent with drop shadow, no solid black box)
+      // Clean Floating Label
       ctx.font = "bold 10px sans-serif";
       ctx.shadowColor = "rgba(0, 0, 0, 0.9)";
       ctx.shadowBlur = 5;
@@ -222,7 +233,7 @@ export function ClientAITacticalOverlay({
 
       ctx.restore();
     });
-  }, [trackedVehicles, tripwireYRatio, lineCrossed, isNightScene, videoElement, fitMode]);
+  }, [trackedVehicles, tripwireYRatio, lineCrossed, isNightScene, videoElement, fitMode, syncFrameLock, enableSharpening, processedCanvas]);
 
   return (
     <div className="absolute inset-0 pointer-events-none z-20">
@@ -231,18 +242,37 @@ export function ClientAITacticalOverlay({
         className="absolute inset-0 w-full h-full pointer-events-none"
       />
 
-      {/* Transparent Vision Mode Indicator */}
-      <div className="absolute bottom-3 left-3 flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 shadow-md text-xs font-semibold">
-        {isNightScene ? (
-          <span className="flex items-center gap-1.5 text-cyan-300">
-            <Moon className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-            Mode Malam Aktif
-          </span>
-        ) : (
-          <span className="flex items-center gap-1.5 text-amber-300">
-            <Sun className="w-3.5 h-3.5 text-amber-400" />
-            Siang Hari
-          </span>
+      {/* Badges Overlay */}
+      <div className="absolute bottom-3 left-3 flex items-center gap-2">
+        {/* Day/Night Vision Indicator */}
+        <div className="flex items-center gap-2 bg-black/50 backdrop-blur-md px-3 py-1 rounded-full border border-white/15 shadow-md text-xs font-semibold">
+          {isNightScene ? (
+            <span className="flex items-center gap-1.5 text-cyan-300">
+              <Moon className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+              Mode Malam
+            </span>
+          ) : (
+            <span className="flex items-center gap-1.5 text-amber-300">
+              <Sun className="w-3.5 h-3.5 text-amber-400" />
+              Siang Hari
+            </span>
+          )}
+        </div>
+
+        {/* 512px Sharpening Badge */}
+        {enableSharpening && (
+          <div className="flex items-center gap-1 bg-cyan-950/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-cyan-500/30 text-[11px] font-bold text-cyan-300 shadow-md">
+            <Sparkles className="w-3 h-3 text-cyan-400" />
+            <span>512px Tajam</span>
+          </div>
+        )}
+
+        {/* 1:1 Frame-Lock Badge */}
+        {syncFrameLock && (
+          <div className="flex items-center gap-1 bg-emerald-950/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-emerald-500/30 text-[11px] font-bold text-emerald-300 shadow-md">
+            <Lock className="w-3 h-3 text-emerald-400" />
+            <span>1:1 Frame-Lock</span>
+          </div>
         )}
       </div>
     </div>

@@ -2,25 +2,28 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { CCTVChannel } from "@/types/cctv";
-import { ALL_REGIONS } from "@/lib/cctv-utils";
-import { ClientAITacticalOverlay } from "@/components/ai-station/ClientAITacticalOverlay";
-import { AITrafficTelemetry } from "@/components/ai-station/AITrafficTelemetry";
-import { runClientVehicleInference, clearClientAICache } from "@/lib/ai/client-ai-engine";
+import {
+  runClientVehicleInference,
+  clearClientAICache,
+} from "@/lib/ai/client-ai-engine";
 import {
   ClientVehicleTracker,
-  TrackedVehicle,
   VehicleCounts,
+  TrackedVehicle,
 } from "@/lib/ai/client-vehicle-tracker";
+import { ClientAITacticalOverlay } from "@/components/ai-station/ClientAITacticalOverlay";
+import { AITrafficTelemetry } from "@/components/ai-station/AITrafficTelemetry";
+import { ALL_REGIONS } from "@/lib/cctv-utils";
 import Hls from "hls.js";
 import {
-  Camera,
+  ChevronDown,
   Search,
   Maximize2,
-  ChevronDown,
-  Sparkles,
+  Video,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 
 interface AIStationClientProps {
   channels: CCTVChannel[];
@@ -52,7 +55,10 @@ export function AIStationClient({ channels }: AIStationClientProps) {
   const [tripwireYRatio, setTripwireYRatio] = useState<number>(0.55);
   const [confidence, setConfidence] = useState<number>(0.25);
   const [enableNightBoost, setEnableNightBoost] = useState<boolean>(true);
+  const [enableSharpening, setEnableSharpening] = useState<boolean>(true);
+  const [syncFrameLock, setSyncFrameLock] = useState<boolean>(true);
   const [isNightScene, setIsNightScene] = useState<boolean>(false);
+  const [processedCanvas, setProcessedCanvas] = useState<HTMLCanvasElement | null>(null);
 
   const [counts, setCounts] = useState<VehicleCounts>({
     total: 0,
@@ -66,6 +72,52 @@ export function AIStationClient({ channels }: AIStationClientProps) {
 
   const trackerRef = useRef<ClientVehicleTracker>(new ClientVehicleTracker());
   const isInferringRef = useRef<boolean>(false);
+
+  // Load camera-specific AI settings from localStorage
+  useEffect(() => {
+    if (!selectedChannel) return;
+    try {
+      const saved = localStorage.getItem(`ai_cam_pref_${selectedChannel.cctv_id}`);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.targetFps) setTargetFps(parsed.targetFps);
+        if (typeof parsed.enableSharpening === "boolean") setEnableSharpening(parsed.enableSharpening);
+        if (typeof parsed.syncFrameLock === "boolean") setSyncFrameLock(parsed.syncFrameLock);
+      }
+    } catch {}
+  }, [selectedChannel]);
+
+  // Save camera-specific settings
+  const saveCameraPreference = useCallback((key: string, value: any) => {
+    if (!selectedChannel) return;
+    try {
+      const storageKey = `ai_cam_pref_${selectedChannel.cctv_id}`;
+      const existing = JSON.parse(localStorage.getItem(storageKey) || "{}");
+      existing[key] = value;
+      localStorage.setItem(storageKey, JSON.stringify(existing));
+    } catch {}
+  }, [selectedChannel]);
+
+  const handleTargetFpsChange = (newFps: number) => {
+    setTargetFps(newFps);
+    saveCameraPreference("targetFps", newFps);
+  };
+
+  const handleToggleSharpening = () => {
+    setEnableSharpening((prev) => {
+      const next = !prev;
+      saveCameraPreference("enableSharpening", next);
+      return next;
+    });
+  };
+
+  const handleToggleSyncFrameLock = () => {
+    setSyncFrameLock((prev) => {
+      const next = !prev;
+      saveCameraPreference("syncFrameLock", next);
+      return next;
+    });
+  };
 
   // Filtered cameras list
   const filteredChannels = useMemo(() => {
@@ -107,6 +159,18 @@ export function AIStationClient({ channels }: AIStationClientProps) {
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         video.play().catch(() => {});
       });
+
+      hls.on(Hls.Events.ERROR, (_, data) => {
+        if (data.details === Hls.ErrorDetails.BUFFER_STALLED_ERROR) {
+          if (video.paused) video.play().catch(() => {});
+        } else if (data.fatal) {
+          if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+            hls?.startLoad();
+          } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+            hls?.recoverMediaError();
+          }
+        }
+      });
     } else {
       video.src = url;
       video.play().catch(() => {});
@@ -119,7 +183,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
     };
   }, [selectedChannel, videoKey]);
 
-  // 4. Real-Time Client-Side WebGL AI Inference Loop with Dynamic Throttle
+  // 4. Real-Time Client-Side WebGL AI Inference Loop with Dynamic Throttle & 512px Frame Lock
   useEffect(() => {
     let animationFrameId: number;
     let lastInferenceTime = 0;
@@ -141,11 +205,12 @@ export function AIStationClient({ channels }: AIStationClientProps) {
         lastInferenceTime = timestamp;
 
         try {
-          // Run WebGL inference
+          // Run 512px WebGL inference with unsharp masking filter
           const result = await runClientVehicleInference(
             video,
             confidence,
-            enableNightBoost
+            enableNightBoost,
+            enableSharpening
           );
 
           // Update trajectory tracker
@@ -160,6 +225,9 @@ export function AIStationClient({ channels }: AIStationClientProps) {
           setLineCrossed(trackerResult.lineCrossed);
           setIsNightScene(result.isNightScene);
           setInferenceTimeMs(result.inferenceTimeMs);
+          if (result.processedCanvas) {
+            setProcessedCanvas(result.processedCanvas);
+          }
 
           // Calculate actual FPS
           frameCount++;
@@ -183,7 +251,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [selectedChannel, confidence, tripwireYRatio, enableNightBoost, targetFps]);
+  }, [selectedChannel, confidence, tripwireYRatio, enableNightBoost, enableSharpening, targetFps]);
 
   const handleResetCounts = useCallback(() => {
     trackerRef.current.resetCounts();
@@ -208,72 +276,75 @@ export function AIStationClient({ channels }: AIStationClientProps) {
 
   return (
     <div className="w-full max-w-[1800px] mx-auto p-4 md:p-6 flex flex-col gap-6">
-      {/* ─── Top Control & Status Bar ─── */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-card rounded-xl p-4 border border-border shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-primary" />
+      {/* ─── Header & Camera Selection Bar ─── */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card rounded-2xl p-5 border border-border shadow-sm">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2">
+            <span className="px-2.5 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-[11px] font-bold text-primary font-headline uppercase tracking-wider">
+              {selectedChannel.region}
+            </span>
+            <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+              <Video className="w-3.5 h-3.5 text-primary" />
+              {selectedChannel.ch_name}
+            </span>
           </div>
-          <div>
-            <h1 className="text-base sm:text-lg font-bold font-headline text-foreground">
-              Pantauan Cerdas AI
-            </h1>
-            <p className="text-xs text-muted-foreground">
-              Penghitungan dan pemantauan arus kendaraan otomatis
-            </p>
-          </div>
+          <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight text-foreground">
+            Pantauan Cerdas AI
+          </h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            Analisis arus kendaraan, klasifikasi objek, dan deteksi kepadatan real-time berbasis WebGL GPU.
+          </p>
         </div>
 
-        {/* Camera Selector & Region Filter Trigger */}
-        <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="flex items-center gap-2 self-start md:self-auto relative">
+          {/* Camera Selector Dropdown Button */}
           <div className="relative">
             <Button
               variant="outline"
               onClick={() => setShowCameraSelector(!showCameraSelector)}
-              className="h-9 px-3.5 bg-background border-border text-foreground font-semibold text-xs flex items-center gap-2 shadow-sm"
+              className="flex items-center gap-2 h-9 px-3 text-xs bg-background border-border hover:bg-muted font-semibold text-foreground shadow-sm min-w-[200px] sm:min-w-[240px] max-w-[280px]"
             >
-              <Camera className="w-3.5 h-3.5 text-primary" />
-              <span className="max-w-[200px] truncate">{selectedChannel.ch_name}</span>
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 font-medium">
-                {selectedChannel.region}
-              </Badge>
-              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground ml-1" />
+              <Video className="w-4 h-4 text-primary flex-shrink-0" />
+              <span className="truncate flex-1 text-left">{selectedChannel.ch_name}</span>
+              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0 ml-1" />
             </Button>
 
-            {/* Camera Dropdown Popover */}
+            {/* Dropdown Menu Modal */}
             {showCameraSelector && (
-              <div className="absolute right-0 top-11 w-80 sm:w-96 bg-card border border-border rounded-xl p-3 shadow-xl z-50 flex flex-col gap-2.5">
-                <div className="flex items-center gap-2 px-2.5 py-1.5 bg-background rounded-lg border border-border">
-                  <Search className="w-3.5 h-3.5 text-muted-foreground" />
-                  <input
+              <div className="absolute right-0 top-11 w-80 sm:w-96 bg-card border border-border rounded-xl shadow-2xl z-50 p-3 flex flex-col gap-2.5 animate-in fade-in zoom-in-95">
+                {/* Search Bar */}
+                <div className="relative">
+                  <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <Input
                     type="text"
-                    placeholder="Cari nama jalan atau wilayah..."
+                    placeholder="Cari kamera atau wilayah..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-transparent text-xs text-foreground focus:outline-none"
+                    className="pl-8 h-8 text-xs bg-background border-border"
+                    autoFocus
                   />
                 </div>
 
-                {/* Region Filter Chips */}
-                <div className="flex items-center gap-1 overflow-x-auto pb-1 text-xs">
+                {/* Region Chips */}
+                <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
                   <button
                     onClick={() => setRegionFilter("ALL")}
-                    className={`px-2.5 py-1 rounded-md font-medium ${
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold whitespace-nowrap border transition-colors ${
                       regionFilter === "ALL"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground hover:text-foreground"
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background text-muted-foreground border-border hover:text-foreground"
                     }`}
                   >
-                    Semua
+                    Semua Wilayah
                   </button>
                   {ALL_REGIONS.map((r) => (
                     <button
                       key={r}
                       onClick={() => setRegionFilter(r)}
-                      className={`px-2.5 py-1 rounded-md font-medium whitespace-nowrap ${
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-semibold whitespace-nowrap border transition-colors ${
                         regionFilter === r
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-muted-foreground hover:text-foreground"
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background text-muted-foreground border-border hover:text-foreground"
                       }`}
                     >
                       {r}
@@ -284,38 +355,44 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                 {/* Camera List */}
                 <div className="max-h-60 overflow-y-auto flex flex-col gap-1 pr-1">
                   {filteredChannels.length === 0 ? (
-                    <span className="text-xs text-muted-foreground text-center py-4">
-                      Kamera tidak ditemukan
-                    </span>
+                    <div className="p-4 text-center text-xs text-muted-foreground">
+                      Tidak ada kamera yang cocok
+                    </div>
                   ) : (
-                    filteredChannels.map((ch) => (
-                      <button
-                        key={ch.cctv_id}
-                        onClick={() => {
-                          setSelectedChannel(ch);
-                          setShowCameraSelector(false);
-                          setVideoKey((k) => k + 1);
-                          handleResetCounts();
-                        }}
-                        title={ch.ch_name}
-                        className={`w-full min-w-0 p-2 rounded-lg text-left text-xs flex items-center justify-between gap-2 transition-colors ${
-                          selectedChannel.cctv_id === ch.cctv_id
-                            ? "bg-primary/10 text-primary font-semibold border border-primary/20"
-                            : "hover:bg-muted text-foreground"
-                        }`}
-                      >
-                        <span className="flex-1 min-w-0 truncate">{ch.ch_name}</span>
-                        <span className="text-[11px] text-muted-foreground flex-shrink-0">
-                          {ch.region}
-                        </span>
-                      </button>
-                    ))
+                    filteredChannels.map((cam) => {
+                      const isSelected = cam.cctv_id === selectedChannel.cctv_id;
+                      return (
+                        <button
+                          key={cam.cctv_id}
+                          onClick={() => {
+                            setSelectedChannel(cam);
+                            setShowCameraSelector(false);
+                            setVideoKey((k) => k + 1);
+                            handleResetCounts();
+                          }}
+                          className={`w-full flex items-center justify-between p-2 rounded-lg text-left text-xs transition-colors ${
+                            isSelected
+                              ? "bg-primary/10 text-primary font-bold border border-primary/20"
+                              : "hover:bg-muted text-foreground border border-transparent"
+                          }`}
+                        >
+                          <div className="flex flex-col min-w-0 flex-1 pr-2">
+                            <span className="truncate">{cam.ch_name}</span>
+                            <span className="text-[10px] text-muted-foreground">
+                              {cam.region}
+                            </span>
+                          </div>
+                          {isSelected && <Check className="w-3.5 h-3.5 text-primary flex-shrink-0" />}
+                        </button>
+                      );
+                    })
                   )}
                 </div>
               </div>
             )}
           </div>
 
+          {/* Fullscreen Button */}
           <Button
             variant="outline"
             size="icon"
@@ -336,11 +413,13 @@ export function AIStationClient({ channels }: AIStationClientProps) {
             id="ai-viewport-container"
             className="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-border shadow-lg flex items-center justify-center isolate"
           >
-            {/* Live Video Feed (100% Full Autofit - No Black Bars, No Cropping) */}
+            {/* Live Video Feed (100% Full Autofit - Hidden in background if 1:1 Frame-Lock is active) */}
             <video
               ref={videoRef}
               key={videoKey}
-              className="w-full h-full object-fill pointer-events-none"
+              className={`w-full h-full object-fill pointer-events-none ${
+                syncFrameLock ? "opacity-0 absolute inset-0" : "opacity-100"
+              }`}
               autoPlay
               muted
               playsInline
@@ -355,6 +434,9 @@ export function AIStationClient({ channels }: AIStationClientProps) {
               isNightScene={isNightScene}
               videoElement={videoElement}
               fitMode="fill"
+              syncFrameLock={syncFrameLock}
+              enableSharpening={enableSharpening}
+              processedCanvas={processedCanvas}
             />
 
             {/* Viewport Top HUD with Transparent Badges */}
@@ -383,10 +465,14 @@ export function AIStationClient({ channels }: AIStationClientProps) {
             fps={fps}
             inferenceTimeMs={inferenceTimeMs}
             targetFps={targetFps}
-            onTargetFpsChange={setTargetFps}
+            onTargetFpsChange={handleTargetFpsChange}
             isNightScene={isNightScene}
             enableNightBoost={enableNightBoost}
             onToggleNightBoost={() => setEnableNightBoost((prev) => !prev)}
+            enableSharpening={enableSharpening}
+            onToggleSharpening={handleToggleSharpening}
+            syncFrameLock={syncFrameLock}
+            onToggleSyncFrameLock={handleToggleSyncFrameLock}
             tripwireYRatio={tripwireYRatio}
             onTripwireChange={setTripwireYRatio}
             confidence={confidence}

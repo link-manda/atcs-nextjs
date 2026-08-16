@@ -13,6 +13,8 @@ import {
   Sun,
   Gauge,
   Trash2,
+  Sparkles,
+  Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VehicleCounts } from "@/lib/ai/client-vehicle-tracker";
@@ -26,6 +28,10 @@ interface AITrafficTelemetryProps {
   isNightScene: boolean;
   enableNightBoost: boolean;
   onToggleNightBoost: () => void;
+  enableSharpening: boolean;
+  onToggleSharpening: () => void;
+  syncFrameLock: boolean;
+  onToggleSyncFrameLock: () => void;
   tripwireYRatio: number;
   onTripwireChange: (val: number) => void;
   confidence: number;
@@ -43,6 +49,10 @@ export function AITrafficTelemetry({
   isNightScene,
   enableNightBoost,
   onToggleNightBoost,
+  enableSharpening,
+  onToggleSharpening,
+  syncFrameLock,
+  onToggleSyncFrameLock,
   tripwireYRatio,
   onTripwireChange,
   confidence,
@@ -229,8 +239,64 @@ export function AITrafficTelemetry({
           </span>
         </div>
 
+        {/* Sinkronisasi Frame Video AI (1:1 Frame-Lock) */}
+        <div className="p-3 rounded-lg bg-background border border-border flex items-center justify-between shadow-sm">
+          <div className="flex items-center gap-2.5">
+            <Lock className={`w-4 h-4 ${syncFrameLock ? "text-emerald-500" : "text-muted-foreground"}`} />
+            <div className="flex flex-col">
+              <span className="text-xs font-semibold font-headline text-foreground">
+                Sinkronisasi Frame (1:1 Lock)
+              </span>
+              <span className="text-[11px] font-normal text-muted-foreground">
+                Kunci visual video selaras dengan analisis AI
+              </span>
+            </div>
+          </div>
+
+          <Button
+            size="sm"
+            variant={syncFrameLock ? "default" : "outline"}
+            onClick={onToggleSyncFrameLock}
+            className={`h-7 px-3 text-xs font-semibold ${
+              syncFrameLock
+                ? "bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
+                : "text-muted-foreground"
+            }`}
+          >
+            {syncFrameLock ? "Aktif" : "Nonaktif"}
+          </Button>
+        </div>
+
+        {/* Penajaman Citra AI (512px High-Def) */}
+        <div className="p-3 rounded-lg bg-background border border-border flex items-center justify-between shadow-sm">
+          <div className="flex items-center gap-2.5">
+            <Sparkles className={`w-4 h-4 ${enableSharpening ? "text-cyan-500 animate-pulse" : "text-muted-foreground"}`} />
+            <div className="flex flex-col">
+              <span className="text-xs font-semibold font-headline text-foreground">
+                Penajaman Citra (512px HD)
+              </span>
+              <span className="text-[11px] font-normal text-muted-foreground">
+                Perjelas kontur kap mobil & bodi motor
+              </span>
+            </div>
+          </div>
+
+          <Button
+            size="sm"
+            variant={enableSharpening ? "default" : "outline"}
+            onClick={onToggleSharpening}
+            className={`h-7 px-3 text-xs font-semibold ${
+              enableSharpening
+                ? "bg-cyan-500 text-black hover:bg-cyan-400 font-bold"
+                : "text-muted-foreground"
+            }`}
+          >
+            {enableSharpening ? "Aktif" : "Nonaktif"}
+          </Button>
+        </div>
+
         {/* Mode Malam Otomatis Toggle */}
-        <div className="p-3 rounded-lg bg-background border border-border flex items-center justify-between shadow-sm mt-0.5">
+        <div className="p-3 rounded-lg bg-background border border-border flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-2.5">
             {enableNightBoost ? (
               <Moon className="w-4 h-4 text-cyan-600 dark:text-cyan-400 animate-pulse" />

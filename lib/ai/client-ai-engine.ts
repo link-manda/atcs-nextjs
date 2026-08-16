@@ -17,6 +17,7 @@ export interface EngineInferenceResult {
   isNightScene: boolean;
   averageLuminance: number;
   inferenceTimeMs: number;
+  processedCanvas: HTMLCanvasElement | null;
 }
 
 // Vehicle class mapping for COCO SSD
@@ -32,7 +33,8 @@ let modelPromise: Promise<cocoSsd.ObjectDetection> | null = null;
 let offscreenCanvas: HTMLCanvasElement | null = null;
 let offscreenCtx: CanvasRenderingContext2D | null = null;
 
-const CANVAS_SIZE = 384; // High-detail resolution for small distant bird's-eye vehicles
+// High-detail 512px resolution for small distant bird's-eye vehicles and bikes
+export const CANVAS_SIZE = 512;
 
 /**
  * Initializes TensorFlow.js with WebGL GPU shader acceleration and loads MobileNet V2 (~6.8 MB)
@@ -101,18 +103,16 @@ export async function clearClientAICache(): Promise<void> {
 }
 
 /**
- * Enhanced Bird's-Eye POV & Night-Vision Preprocessor:
- * 1. Edge & Contour Sharpening (enhances roof/windshield lines from top-down angles)
- * 2. Adaptive Gamma & Contrast Stretching for Night CCTV
+ * Enhanced Bird's-Eye POV & High-Resolution Preprocessor:
+ * 1. 512px High-Density Extraction
+ * 2. Spatial Unsharp Masking (High-Pass Kernel Sharpening) for vehicle contours
+ * 3. Adaptive Gamma & Contrast Stretching for Night CCTV
  */
 export function preprocessAdaptiveVision(
   video: HTMLVideoElement,
-  enableNightBoost: boolean = true
-): { inputSource: HTMLVideoElement | HTMLCanvasElement; isNight: boolean; luminance: number } {
-  if (video.videoWidth === 0 || video.videoHeight === 0) {
-    return { inputSource: video, isNight: false, luminance: 128 };
-  }
-
+  enableNightBoost: boolean = true,
+  enableSharpening: boolean = true
+): { inputSource: HTMLCanvasElement; isNight: boolean; luminance: number; canvas: HTMLCanvasElement } {
   if (!offscreenCanvas) {
     offscreenCanvas = document.createElement("canvas");
     offscreenCanvas.width = CANVAS_SIZE;
@@ -121,7 +121,7 @@ export function preprocessAdaptiveVision(
   }
 
   if (!offscreenCtx) {
-    return { inputSource: video, isNight: false, luminance: 128 };
+    return { inputSource: offscreenCanvas, isNight: false, luminance: 128, canvas: offscreenCanvas };
   }
 
   // Draw scaled video frame to offscreen canvas
@@ -131,7 +131,7 @@ export function preprocessAdaptiveVision(
   const imgData = offscreenCtx.getImageData(0, 0, CANVAS_SIZE, CANVAS_SIZE);
   const data = imgData.data;
   let totalLuminance = 0;
-  const step = 4 * 16; // Sample every 16th pixel for blazing speed
+  const step = 4 * 16; // Fast sampling
   let samples = 0;
 
   for (let i = 0; i < data.length; i += step) {
@@ -145,6 +145,8 @@ export function preprocessAdaptiveVision(
   const avgLuminance = totalLuminance / (samples || 1);
   const isNight = avgLuminance < 80;
 
+  let modified = false;
+
   // 1. Night Vision Gamma Boost (if night scene and enabled)
   if (isNight && enableNightBoost) {
     const gamma = 0.65;
@@ -153,6 +155,45 @@ export function preprocessAdaptiveVision(
       data[i + 1] = Math.min(255, Math.pow(data[i + 1] / 255, gamma) * 255 * 1.15); // G
       data[i + 2] = Math.min(255, Math.pow(data[i + 2] / 255, gamma) * 255 * 1.15); // B
     }
+    modified = true;
+  }
+
+  // 2. High-Pass Spatial Unsharp Masking Kernel (Sharpening Filter)
+  if (enableSharpening) {
+    const copy = new Uint8ClampedArray(data);
+    const w = CANVAS_SIZE;
+    const h = CANVAS_SIZE;
+
+    // Fast 3x3 kernel convolution on RGB channels
+    for (let y = 1; y < h - 1; y += 1) {
+      const rowOffset = y * w;
+      const topOffset = (y - 1) * w;
+      const bottomOffset = (y + 1) * w;
+
+      for (let x = 1; x < w - 1; x += 1) {
+        const idx = (rowOffset + x) * 4;
+        const topIdx = (topOffset + x) * 4;
+        const btmIdx = (bottomOffset + x) * 4;
+        const leftIdx = (rowOffset + x - 1) * 4;
+        const rightIdx = (rowOffset + x + 1) * 4;
+
+        for (let c = 0; c < 3; c++) {
+          const center = copy[idx + c];
+          const top = copy[topIdx + c];
+          const bottom = copy[btmIdx + c];
+          const left = copy[leftIdx + c];
+          const right = copy[rightIdx + c];
+
+          // High-pass filter boost
+          const sharpVal = center * 2.4 - (top + bottom + left + right) * 0.35;
+          data[idx + c] = sharpVal < 0 ? 0 : sharpVal > 255 ? 255 : sharpVal;
+        }
+      }
+    }
+    modified = true;
+  }
+
+  if (modified) {
     offscreenCtx.putImageData(imgData, 0, 0);
   }
 
@@ -160,23 +201,26 @@ export function preprocessAdaptiveVision(
     inputSource: offscreenCanvas,
     isNight,
     luminance: Math.round(avgLuminance),
+    canvas: offscreenCanvas,
   };
 }
 
 /**
- * Runs WebGL GPU vehicle detection inference on a video frame with Bird's-Eye POV optimizations
+ * Runs WebGL GPU vehicle detection inference on a video frame with 512px High-Def & Sharpening
  */
 export async function runClientVehicleInference(
   video: HTMLVideoElement,
   confidenceThreshold: number = 0.25,
-  enableNightBoost: boolean = true
+  enableNightBoost: boolean = true,
+  enableSharpening: boolean = true
 ): Promise<EngineInferenceResult> {
   const startTime = performance.now();
   const model = await getClientAIModel();
 
-  const { inputSource, isNight, luminance } = preprocessAdaptiveVision(
+  const { inputSource, isNight, luminance, canvas } = preprocessAdaptiveVision(
     video,
-    enableNightBoost
+    enableNightBoost,
+    enableSharpening
   );
 
   // Run COCO-SSD prediction with lower baseline for distant bird's-eye objects
@@ -228,5 +272,6 @@ export async function runClientVehicleInference(
     isNightScene: isNight,
     averageLuminance: luminance,
     inferenceTimeMs,
+    processedCanvas: canvas,
   };
 }
