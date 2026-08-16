@@ -44,16 +44,26 @@ export async function GET(req: NextRequest) {
     if (isM3U8) {
       const manifestText = await upstreamResponse.text();
 
-      // Rewrite relative URLs in the m3u8 playlist to point through this proxy
+      // Rewrite relative URLs in the m3u8 playlist to point through this proxy (including fMP4 Low-Latency tags)
       const rewrittenManifest = manifestText
         .split('\n')
         .map((line) => {
           const trimmed = line.trim();
-          if (!trimmed || trimmed.startsWith('#')) {
-            return line;
+          if (!trimmed) return line;
+
+          // 1. Rewrite URI="..." attributes in HLS tags (#EXT-X-MAP, #EXT-X-PART, #EXT-X-PRELOAD-HINT, etc.)
+          if (trimmed.startsWith('#')) {
+            return line.replace(/URI="([^"]+)"/g, (match, uri) => {
+              try {
+                const absoluteUrl = new URL(uri, targetUrl).toString();
+                return `URI="/api/proxy/hls?url=${encodeURIComponent(absoluteUrl)}"`;
+              } catch {
+                return match;
+              }
+            });
           }
 
-          // Line is a URI reference (e.g. stream.m3u8 or segment.ts)
+          // 2. Line is a plain URI reference (e.g. stream.m3u8, segment.ts, or segment.mp4)
           try {
             const absoluteUrl = new URL(trimmed, targetUrl).toString();
             return `/api/proxy/hls?url=${encodeURIComponent(absoluteUrl)}`;
@@ -76,12 +86,13 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Binary stream chunk (.ts video segment)
+    // Binary stream chunk (.ts video segment or .mp4 fragment)
     const arrayBuffer = await upstreamResponse.arrayBuffer();
+    const defaultContentType = targetUrl.endsWith('.mp4') ? 'video/mp4' : 'video/MP2T';
     return new NextResponse(arrayBuffer, {
       status: 200,
       headers: {
-        'Content-Type': contentType || 'video/MP2T',
+        'Content-Type': contentType || defaultContentType,
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, OPTIONS',
         'Cache-Control': 'public, max-age=3600, immutable',
