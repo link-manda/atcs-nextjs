@@ -11,17 +11,22 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    const headers: Record<string, string> = {
+      'Accept': '*/*',
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:150.0) Gecko/20100101 Firefox/150.0',
+    };
+
+    if (targetUrl.startsWith('https://atcs.denpasarkota.go.id')) {
+      headers['Referer'] = targetUrl.substring(0, targetUrl.lastIndexOf('/') + 1);
+      headers['x-client-id'] = 'a194e6ae-d4dd-4b62-a0ac-388922f09303';
+      headers['x-client-secret'] = 'f430fde38a031fb657a2a7d6f84644a9aed767a4c22314d4b7c565648acc2396';
+    } else if (targetUrl.startsWith('https://transcode.baliprov.go.id')) {
+      headers['Referer'] = 'https://transcode.baliprov.go.id/';
+    }
+
     const upstreamResponse = await fetch(targetUrl, {
       cache: 'no-store',
-      headers: {
-        'Accept': '*/*',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:150.0) Gecko/20100101 Firefox/150.0',
-        'Referer': targetUrl.startsWith('https://atcs.denpasarkota.go.id')
-          ? targetUrl.substring(0, targetUrl.lastIndexOf('/') + 1)
-          : 'https://atcs.denpasarkota.go.id/streaming',
-        'x-client-id': 'a194e6ae-d4dd-4b62-a0ac-388922f09303',
-        'x-client-secret': 'f430fde38a031fb657a2a7d6f84644a9aed767a4c22314d4b7c565648acc2396',
-      },
+      headers,
     });
 
     if (!upstreamResponse.ok) {
