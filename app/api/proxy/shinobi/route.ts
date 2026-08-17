@@ -27,10 +27,7 @@ export async function GET(req: NextRequest) {
 
     let html = await response.text();
 
-    // 1. Sanitize urlPrefix in Shinobi embed script so websocketPath evaluates to relative '/socket.io'
-    html = html.replace(/var urlPrefix = `[^`]*`;/g, 'var urlPrefix = `/`;');
-
-    // 2. Inject local state-machine mock for socket.io to trigger Shinobi video initialization
+    // 1. Inject local state-machine mock for socket.io to trigger Shinobi video initialization
     const injection = `
 <style>
   html, body, #monitors_live, .stream-element-container, .monitor_item, .stream-block {
