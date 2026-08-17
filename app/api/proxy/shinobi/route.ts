@@ -30,16 +30,20 @@ export async function GET(req: NextRequest) {
     // 1. Sanitize urlPrefix in Shinobi embed script so websocketPath evaluates to relative '/socket.io'
     html = html.replace(/var urlPrefix = `[^`]*`;/g, 'var urlPrefix = `/`;');
 
-    // 2. Inject bulletproof interceptor for window.io to enforce valid path and domain
+    // 2. Neutralize socket.io in Shinobi embed script since server disables WebSockets on 443
     const injection = `
 <script>
   (function() {
-    var _origIo = window.io;
-    window.io = function(url, opts) {
-      opts = opts || {};
-      opts.path = '/socket.io';
-      url = 'https://shinobi.bulelengkab.go.id';
-      return _origIo(url, opts);
+    window.io = function() {
+      var dummy = {
+        on: function() { return dummy; },
+        emit: function() { return dummy; },
+        off: function() { return dummy; },
+        f: function(data, cb) { if (cb) cb({ ok: true }); return dummy; },
+        disconnect: function() { return dummy; },
+        connected: false,
+      };
+      return dummy;
     };
   })();
 </script>
