@@ -55,15 +55,6 @@ function mapToChannel(entry: RawCCTVEntry): CCTVChannel {
     streamingUrl = `/api/proxy/hls?url=${encodeURIComponent(m3u8Url)}`;
   }
 
-  // Rewrite Shinobi Buleleng MP4 pseudo-stream to native Shinobi iframe embed via proxy
-  // Pattern matches: [protocol]//[domain]/[token]/mp4/[group]/[monitor]/s.mp4
-  const shinobiRegex = /^(https?:\/\/shinobi\.bulelengkab\.go\.id\/[^\/]+)\/mp4\/([^\/]+\/[^\/]+)\/s\.mp4$/i;
-  const match = streamingUrl.match(shinobiRegex);
-  if (match) {
-    const embedUrl = `${match[1]}/embed/${match[2]}/fullscreen%7Cjquery%7Chd`;
-    streamingUrl = `/api/proxy/shinobi?url=${encodeURIComponent(embedUrl)}`;
-  }
-
   return {
     cctv_id: cctvId,
     ch_id: entry.ch_id ?? null,
@@ -209,9 +200,8 @@ const loadBulelengCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
       const lat = meta?.lat ?? -8.112;
       const lng = meta?.lng ?? 115.088;
 
-      // Shinobi embed stream routed through our proxy to sanitize urlPrefix and intercept window.io
-      const embedUrl = `https://shinobi.bulelengkab.go.id/${BULELENG_API_KEY}/embed/${BULELENG_GROUP}/${mid}/fullscreen%7Cjquery%7Chd`;
-      const proxiedUrl = `/api/proxy/shinobi?url=${encodeURIComponent(embedUrl)}`;
+      // Direct native s.mp4 stream enables native video decoding & AI detection compatibility
+      const mp4Url = `https://shinobi.bulelengkab.go.id/${BULELENG_API_KEY}/mp4/${BULELENG_GROUP}/${mid}/s.mp4`;
 
       // Generate consistent numeric ID for Buleleng (888 + index)
       const cctvId = parseInt(`888${idx.toString().padStart(2, '0')}`);
@@ -222,8 +212,8 @@ const loadBulelengCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
         ch_name: chName,
         lat,
         lng,
-        streaming_url: proxiedUrl,
-        player_type: 'iframe',
+        streaming_url: mp4Url,
+        player_type: 'video',
         region: 'Buleleng' as CCTVRegion,
         is_online: monitor.mode !== 'stop',
       };
