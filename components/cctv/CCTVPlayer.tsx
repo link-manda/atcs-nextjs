@@ -122,7 +122,7 @@ export function CCTVPlayer({ channel }: CCTVPlayerProps) {
           key={key}
           src={channel.streaming_url}
           className="w-full h-full border-0"
-          allow="autoplay; encrypted-media"
+          allow="fullscreen; picture-in-picture"
           allowFullScreen
           onError={handleError}
         />
