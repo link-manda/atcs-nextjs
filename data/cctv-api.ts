@@ -2,7 +2,7 @@ import 'server-only';
 
 import { cache } from 'react';
 import { detectPlayerType, detectRegion } from '@/lib/cctv-utils';
-import type { CCTVChannel } from '@/types/cctv';
+import type { CCTVChannel, CCTVRegion } from '@/types/cctv';
 
 const DEFAULT_CCTV_API_URL = 'https://balisatudata.baliprov.go.id/api/v1/report-cctv';
 const CCTV_REVALIDATE_SECONDS = 900;
@@ -104,7 +104,9 @@ const loadCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
     throw new Error('CCTV API payload contains no channels');
   }
 
-  return entries.map(mapToChannel);
+  return entries
+    .map(mapToChannel)
+    .filter((c) => !c.streaming_url.includes('shinobi.bulelengkab.go.id') && c.region !== 'Buleleng');
 });
 
 export async function getCCTVChannels(): Promise<CCTVChannel[]> {
@@ -159,20 +161,98 @@ const loadDenpasarCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
   }
 });
 
+const BULELENG_MONITOR_METADATA: Record<string, { name: string; lat: number; lng: number }> = {
+  lkRSReT3h580: { name: 'Taman Bung Karno (TBK)', lat: -8.1188, lng: 115.1052 },
+  qQxLmg544p80: { name: 'Taman Kota Singaraja', lat: -8.1147, lng: 115.0881 },
+  edROyIUx2v80: { name: 'Simpang Seririt', lat: -8.1963, lng: 114.9332 },
+  '8HbHNfGypg80': { name: 'Simpang Penarukan', lat: -8.1118, lng: 115.1114 },
+  J7gwj3VUE280: { name: 'Pertigaan Penarukan', lat: -8.1125, lng: 115.1130 },
+  MVXokBuNsO80: { name: 'Simpang Penarungan', lat: -8.1210, lng: 115.1080 },
+  isOvCBwVIA80: { name: 'Taman Yuwana Asri', lat: -8.1235, lng: 115.0920 },
+  '44Z85N153j80': { name: 'Pasar Anyar Singaraja', lat: -8.1119, lng: 115.0911 },
+  jRuL9udZUp80: { name: 'Simpang Udayana', lat: -8.1252, lng: 115.0827 },
+  VmqTvLw4ki80: { name: 'Simpang Diponegoro', lat: -8.1145, lng: 115.0935 },
+  '0RRzM22qNF80': { name: 'PTZ Gedung Kesenian Gde Manik', lat: -8.1158, lng: 115.0890 },
+  d4LXaKRi2380: { name: 'Barat Tugu Singa Ambara Raja', lat: -8.1165, lng: 115.0885 },
+  XB9YtCug4880: { name: 'Simpang Yudistira', lat: -8.1205, lng: 115.0910 },
+  hw5JUl3wFQ: { name: 'Matasinga Singaraja', lat: -8.1170, lng: 115.0900 },
+  qhxKZHlnKs80: { name: 'Ruas Jalan Singaraja', lat: -8.1190, lng: 115.0950 },
+};
+
+interface BulelengMonitor {
+  mid: string;
+  name: string;
+  mode: string;
+  status?: string;
+}
+
+const loadBulelengCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
+  const BULELENG_API_KEY = 'Amk60KFacq87lQMvTCMHu17u00ONuC';
+  const BULELENG_GROUP = 'admin';
+  const BULELENG_API_URL = `https://shinobi.bulelengkab.go.id/${BULELENG_API_KEY}/monitor/${BULELENG_GROUP}`;
+
+  try {
+    const response = await fetch(BULELENG_API_URL, {
+      next: { revalidate: CCTV_REVALIDATE_SECONDS },
+      headers: {
+        Accept: 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:150.0) Gecko/20100101 Firefox/150.0',
+      },
+    });
+
+    if (!response.ok) return [];
+
+    const data = (await response.json()) as BulelengMonitor[];
+    if (!Array.isArray(data)) return [];
+
+    return data.map((monitor, idx) => {
+      const mid = monitor.mid;
+      const meta = BULELENG_MONITOR_METADATA[mid];
+      const chName = meta?.name || monitor.name || `Buleleng CCTV ${mid}`;
+      const lat = meta?.lat ?? -8.112;
+      const lng = meta?.lng ?? 115.088;
+
+      // Shinobi embed stream routed through our proxy to fix socket.io duplicates
+      const embedUrl = `https://shinobi.bulelengkab.go.id/${BULELENG_API_KEY}/embed/${BULELENG_GROUP}/${mid}/fullscreen%7Cjquery%7Chd`;
+      const proxiedUrl = `/api/proxy/shinobi?url=${encodeURIComponent(embedUrl)}`;
+
+      // Generate consistent numeric ID for Buleleng (888 + index)
+      const cctvId = parseInt(`888${idx.toString().padStart(2, '0')}`);
+
+      return {
+        cctv_id: cctvId,
+        ch_id: `BLL-${mid}`,
+        ch_name: chName,
+        lat,
+        lng,
+        streaming_url: proxiedUrl,
+        player_type: 'iframe',
+        region: 'Buleleng' as CCTVRegion,
+        is_online: monitor.mode !== 'stop',
+      };
+    });
+  } catch (error) {
+    console.error('Failed to load Buleleng CCTV:', error);
+    return [];
+  }
+});
+
+export async function getBulelengCCTVs(): Promise<CCTVChannel[]> {
+  return loadBulelengCCTVChannels();
+}
+
 export async function getDenpasarCCTVs(): Promise<CCTVChannel[]> {
   return loadDenpasarCCTVChannels();
 }
 
 export async function getAllCCTVChannels(): Promise<CCTVChannel[]> {
-  const [provincial, denpasar] = await Promise.all([
+  const [provincial, denpasar, buleleng] = await Promise.all([
     getCCTVChannels().catch(() => [] as CCTVChannel[]),
-    getDenpasarCCTVs()
+    getDenpasarCCTVs().catch(() => [] as CCTVChannel[]),
+    getBulelengCCTVs().catch(() => [] as CCTVChannel[]),
   ]);
   
-  // We no longer blindly filter out all provincial Denpasar cameras 
-  // because the provincial API contains unique cameras (e.g. Padang Galak)
-  // that the Denpasar API does not have.
-  return [...provincial, ...denpasar];
+  return [...provincial, ...denpasar, ...buleleng];
 }
 
 export async function getCCTVByRegion(): Promise<Record<string, CCTVChannel[]>> {
@@ -185,7 +265,7 @@ export async function getCCTVByRegion(): Promise<Record<string, CCTVChannel[]>> 
 }
 
 export async function getCCTVById(id: number): Promise<CCTVChannel | undefined> {
-  const channels = await getCCTVChannels();
+  const channels = await getAllCCTVChannels();
   return channels.find((c) => c.cctv_id === id);
 }
 
