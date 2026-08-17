@@ -16,6 +16,9 @@ export const ALL_REGIONS: CCTVRegion[] = [
 
 export function detectPlayerType(url: string): 'iframe' | 'video' {
   const lower = url.toLowerCase();
+  if (lower.includes('shinobi.bulelengkab.go.id')) {
+    return 'iframe';
+  }
   return lower.endsWith('.mp4') ||
     lower.includes('/mp4/') ||
     lower.includes('.m3u8') ||

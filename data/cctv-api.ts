@@ -55,14 +55,7 @@ function mapToChannel(entry: RawCCTVEntry): CCTVChannel {
     streamingUrl = `/api/proxy/hls?url=${encodeURIComponent(m3u8Url)}`;
   }
 
-  // Rewrite Shinobi Buleleng MP4 pseudo-stream to native Shinobi iframe embed via proxy
-  // Pattern matches: [protocol]//[domain]/[token]/mp4/[group]/[monitor]/s.mp4
-  const shinobiRegex = /^(https?:\/\/shinobi\.bulelengkab\.go.id\/[^\/]+)\/mp4\/([^\/]+\/[^\/]+)\/s\.mp4$/i;
-  const match = streamingUrl.match(shinobiRegex);
-  if (match) {
-    const embedUrl = `${match[1]}/embed/${match[2]}/fullscreen%7Cjquery%7Chd`;
-    streamingUrl = `/api/proxy/shinobi?url=${encodeURIComponent(embedUrl)}`;
-  }
+
 
   return {
     cctv_id: cctvId,
@@ -159,21 +152,23 @@ const loadDenpasarCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
 });
 
 const BULELENG_MONITOR_METADATA: Record<string, { name: string; lat: number; lng: number }> = {
-  lkRSReT3h580: { name: 'Taman Bung Karno (TBK)', lat: -8.1188, lng: 115.1052 },
-  qQxLmg544p80: { name: 'Taman Kota Singaraja', lat: -8.1147, lng: 115.0881 },
-  edROyIUx2v80: { name: 'Simpang Seririt', lat: -8.1963, lng: 114.9332 },
-  '8HbHNfGypg80': { name: 'Simpang Penarukan', lat: -8.1118, lng: 115.1114 },
-  J7gwj3VUE280: { name: 'Pertigaan Penarukan', lat: -8.1125, lng: 115.1130 },
-  MVXokBuNsO80: { name: 'Simpang Penarungan', lat: -8.1210, lng: 115.1080 },
-  isOvCBwVIA80: { name: 'Taman Yuwana Asri', lat: -8.1235, lng: 115.0920 },
-  '44Z85N153j80': { name: 'Pasar Anyar Singaraja', lat: -8.1119, lng: 115.0911 },
-  jRuL9udZUp80: { name: 'Simpang Udayana', lat: -8.1252, lng: 115.0827 },
-  VmqTvLw4ki80: { name: 'Simpang Diponegoro', lat: -8.1145, lng: 115.0935 },
-  '0RRzM22qNF80': { name: 'PTZ Gedung Kesenian Gde Manik', lat: -8.1158, lng: 115.0890 },
-  d4LXaKRi2380: { name: 'Barat Tugu Singa Ambara Raja', lat: -8.1165, lng: 115.0885 },
-  XB9YtCug4880: { name: 'Simpang Yudistira', lat: -8.1205, lng: 115.0910 },
-  hw5JUl3wFQ: { name: 'Matasinga Singaraja', lat: -8.1170, lng: 115.0900 },
-  qhxKZHlnKs80: { name: 'Ruas Jalan Singaraja', lat: -8.1190, lng: 115.0950 },
+  jRuL9udZUp80: { name: 'Simpang Udayana', lat: -8.1148627, lng: 115.0910133 },
+  '3JFbU8gu4j80': { name: 'Catus Pata', lat: -8.124527, lng: 115.096989 },
+  '0RRzM22qNF80': { name: 'PTZ Laksmigraha', lat: -8.124449, lng: 115.09272 },
+  d4LXaKRi2380: { name: 'Barat Tugu Singa', lat: -8.12486, lng: 115.092519 },
+  VmqTvLw4ki80: { name: 'Simpang Ponogoro', lat: -8.109503, lng: 115.089716 },
+  '44Z85N153j80': { name: 'Pasar Anyar', lat: -8.107835, lng: 115.088853 },
+  '1eB6RDETQG80': { name: 'Pasar Anyar 2', lat: -8.108402, lng: 115.089164 },
+  isOvCBwVIA80: { name: 'Yuwana Asri', lat: -8.115619, lng: 115.07944 },
+  XB9YtCug4880: { name: 'Yudistira', lat: -8.119656, lng: 115.093449 },
+  lkRSReT3h580: { name: 'CCTV Taman Bungkarno (TBK)', lat: -8.134957, lng: 115.100849 },
+  qQxLmg544p80: { name: 'CCTV Taman Kota', lat: -8.11703, lng: 115.090968 },
+  '8HbHNfGypg80': { name: 'CCTV Simpang Penarukan', lat: -8.093357, lng: 115.116053 },
+  edROyIUx2v80: { name: 'CCTV Simpang Seririt', lat: -8.19305, lng: 114.933679 },
+  hw5JUl3wFQ: { name: 'CCTV Simpang Pantai Penimbangan', lat: -8.125135, lng: 115.068071 },
+  qhxKZHlnKs80: { name: 'TBK Taman Bermain', lat: -8.134373, lng: 115.099321 },
+  J7gwj3VUE280: { name: 'Pertigaan Penarukan', lat: -8.102778, lng: 115.120243 },
+  MVXokBuNsO80: { name: 'Simpang Penarungan', lat: -8.111461, lng: 115.110933 },
 };
 
 interface BulelengMonitor {
@@ -209,9 +204,8 @@ const loadBulelengCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
       const lat = meta?.lat ?? -8.112;
       const lng = meta?.lng ?? 115.088;
 
-      // Shinobi embed stream routed through our proxy with Turbo JPEG mode to eliminate infinite-pipe stalls
-      const embedUrl = `https://shinobi.bulelengkab.go.id/${BULELENG_API_KEY}/embed/${BULELENG_GROUP}/${mid}/fullscreen%7Cjquery%7Chd`;
-      const proxiedUrl = `/api/proxy/shinobi?url=${encodeURIComponent(embedUrl)}`;
+      // Official Buleleng Satu Data stream structure: Direct s.mp4 rendered inside iframe
+      const streamUrl = `https://shinobi.bulelengkab.go.id/${BULELENG_API_KEY}/mp4/${BULELENG_GROUP}/${mid}/s.mp4`;
 
       // Generate consistent numeric ID for Buleleng (888 + index)
       const cctvId = parseInt(`888${idx.toString().padStart(2, '0')}`);
@@ -222,7 +216,7 @@ const loadBulelengCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
         ch_name: chName,
         lat,
         lng,
-        streaming_url: proxiedUrl,
+        streaming_url: streamUrl,
         player_type: 'iframe',
         region: 'Buleleng' as CCTVRegion,
         is_online: monitor.mode !== 'stop',
