@@ -1,47 +1,43 @@
-[CCTVPlayer] Rendering Taman Bung Karno (TBK) with URL: /api/proxy/shinobi?url=https%3A%2F%2Fshinobi.bulelengkab.go.id%2FAmk60KFacq87lQMvTCMHu17u00ONuC%2Fembed%2Fadmin%2FlkRSReT3h580%2Ffullscreen%257Cjquery%257Chd (Type: iframe) CCTVPlayer.tsx:23:13
-[CCTVPlayer] Rendering Taman Bung Karno (TBK) with URL: /api/proxy/shinobi?url=https%3A%2F%2Fshinobi.bulelengkab.go.id%2FAmk60KFacq87lQMvTCMHu17u00ONuC%2Fembed%2Fadmin%2FlkRSReT3h580%2Ffullscreen%257Cjquery%257Chd (Type: iframe) CCTVPlayer.tsx:23:13
+[CCTVPlayer] Rendering Taman Kota Singaraja with URL: /api/proxy/shinobi?url=https%3A%2F%2Fshinobi.bulelengkab.go.id%2FAmk60KFacq87lQMvTCMHu17u00ONuC%2Fembed%2Fadmin%2FqQxLmg544p80%2Ffullscreen%257Cjquery%257Chd (Type: iframe) CCTVPlayer.tsx:23:13
+[CCTVPlayer] Rendering Taman Kota Singaraja with URL: /api/proxy/shinobi?url=https%3A%2F%2Fshinobi.bulelengkab.go.id%2FAmk60KFacq87lQMvTCMHu17u00ONuC%2Fembed%2Fadmin%2FqQxLmg544p80%2Ffullscreen%257Cjquery%257Chd (Type: iframe) CCTVPlayer.tsx:23:13
 GET
-http://localhost:3000/api/proxy/shinobi?url=https://shinobi.bulelengkab.go.id/Amk60KFacq87lQMvTCMHu17u00ONuC/embed/admin/lkRSReT3h580/fullscreen%7Cjquery%7Chd
-[HTTP/1.1 200 OK 1620ms]
-[CCTVPlayer] Rendering Taman Bung Karno (TBK) with URL: /api/proxy/shinobi?url=https%3A%2F%2Fshinobi.bulelengkab.go.id%2FAmk60KFacq87lQMvTCMHu17u00ONuC%2Fembed%2Fadmin%2FlkRSReT3h580%2Ffullscreen%257Cjquery%257Chd (Type: iframe) 2 CCTVPlayer.tsx:23:13
+http://localhost:3000/api/proxy/shinobi?url=https://shinobi.bulelengkab.go.id/Amk60KFacq87lQMvTCMHu17u00ONuC/embed/admin/qQxLmg544p80/fullscreen%7Cjquery%7Chd
+[HTTP/1.1 200 OK 2634ms]
+[CCTVPlayer] Rendering Taman Kota Singaraja with URL: /api/proxy/shinobi?url=https%3A%2F%2Fshinobi.bulelengkab.go.id%2FAmk60KFacq87lQMvTCMHu17u00ONuC%2Fembed%2Fadmin%2FqQxLmg544p80%2Ffullscreen%257Cjquery%257Chd (Type: iframe) 2 CCTVPlayer.tsx:23:13
 This page is in Quirks Mode. Page layout may be impacted. For Standards Mode use “<!DOCTYPE html>”. shinobi
 The character encoding of a framed document was not declared. The document may appear different if viewed without the document framing it. shinobi
 GET
-https://shinobi.bulelengkab.go.id/assets/vendor/js/poseidon.js
-[HTTP/2 200  175ms]
-GET
 https://shinobi.bulelengkab.go.id/assets/vendor/js/socket.io.min.js
-[HTTP/2 200  166ms]
-GET
-https://shinobi.bulelengkab.go.id/assets/vendor/js/jquery.min.js
-[HTTP/2 200  330ms]
+[HTTP/2 200  331ms]
 GET
 https://shinobi.bulelengkab.go.id/assets/vendor/js/flv.min.js
-[HTTP/2 200  719ms]
+[HTTP/2 200  3111ms]
 GET
 https://shinobi.bulelengkab.go.id/assets/vendor/js/hls.min.js
-[HTTP/2 200  1871ms]
+[HTTP/2 200  4284ms]
 GET
-https://shinobi.bulelengkab.go.id/assets/js/bs5.embed.utils.js
-[HTTP/2 200  173ms]
-GET
-https://shinobi.bulelengkab.go.id/assets/js/bs5.embed.fullscreen.js
-[HTTP/2 200  173ms]
+https://shinobi.bulelengkab.go.id/assets/vendor/js/poseidon.js
+[HTTP/2 200  653ms]
 GET
 https://shinobi.bulelengkab.go.id/assets/css/bs5.embed.fullscreen.css
-[HTTP/2 200  174ms]
+[HTTP/2 200  1560ms]
 GET
-https://shinobi.bulelengkab.go.id/assets/js/bs5.embed.js
-[HTTP/2 200  1058ms]
+https://shinobi.bulelengkab.go.id/assets/vendor/js/jquery.min.js
+[HTTP/2 200  2204ms]
 GET
 https://shinobi.bulelengkab.go.id/assets/js/bs5.websocket.js
-[HTTP/2 200  173ms]
-Layout was forced before the page was fully loaded. If stylesheets are not yet loaded this may cause a flash of unstyled content. shinobi
+[HTTP/2 200  2203ms]
+GET
+https://shinobi.bulelengkab.go.id/assets/js/bs5.embed.utils.js
+[HTTP/2 200  2946ms]
+GET
+https://shinobi.bulelengkab.go.id/assets/js/bs5.embed.fullscreen.js
+[HTTP/2 200  1559ms]
+GET
+https://shinobi.bulelengkab.go.id/assets/js/bs5.embed.js
+[HTTP/2 200  3218ms]
 Connected to Websocket! bs5.websocket.js:38:17
 Authenticated to Websocket! bs5.websocket.js:49:25
 GET
-http://localhost:3000/Amk60KFacq87lQMvTCMHu17u00ONuC/mp4/admin/lkRSReT3h580/s.mp4?time=1786975424953
-NS_BINDING_ABORTED
-HTTP load failed with status 404. Load of media resource http://localhost:3000/Amk60KFacq87lQMvTCMHu17u00ONuC/mp4/admin/lkRSReT3h580/s.mp4?time=1786975424953 failed. shinobi
-error { target: video.stream-element, isTrusted: true, srcElement: video.stream-element, currentTarget: video.stream-element, eventPhase: 2, bubbles: false, cancelable: false, returnValue: true, defaultPrevented: false, composed: false, … }
-bs5.embed.js:226:29
+https://shinobi.bulelengkab.go.id/Amk60KFacq87lQMvTCMHu17u00ONuC/mp4/admin/qQxLmg544p80/s.mp4?time=1786975775334
+[HTTP/2 200 ]

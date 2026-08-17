@@ -61,6 +61,12 @@ export async function GET(req: NextRequest) {
 </style>
 <script>
   (function() {
+    // Enable Turbo JPEG Stream Mode to eliminate video buffer underrun/stalling on low-FPS feeds
+    window.jpegModeOn = true;
+    if (typeof monitorConfig !== 'undefined' && monitorConfig.details) {
+      monitorConfig.details.jpegInterval = 2;
+    }
+
     window.io = function() {
       var listeners = {};
       var socket = {
