@@ -27,25 +27,28 @@ export async function GET(req: NextRequest) {
 
     let html = await response.text();
 
-    // Inject our fix for the socket.io duplicate URL bug in bs5.embed.js
+    // 1. Sanitize urlPrefix in Shinobi embed script so websocketPath evaluates to relative '/socket.io'
+    html = html.replace(/var urlPrefix = `[^`]*`;/g, 'var urlPrefix = `/`;');
+
+    // 2. Inject bulletproof interceptor for window.io to enforce valid path and domain
     const injection = `
 <script>
-  // ATCS Next Fix: Intercept socket.io initialization to fix duplicate URL from absolute path bug
-  const _origIo = window.io;
-  window.io = function(url, opts) {
-    if (opts && opts.path && opts.path.startsWith('http')) {
-      opts.path = '/socket.io'; // Force relative path
-      url = 'https://shinobi.bulelengkab.go.id'; // Set correct origin
-    }
-    return _origIo(url, opts);
-  };
+  (function() {
+    var _origIo = window.io;
+    window.io = function(url, opts) {
+      opts = opts || {};
+      opts.path = '/socket.io';
+      url = 'https://shinobi.bulelengkab.go.id';
+      return _origIo(url, opts);
+    };
+  })();
 </script>
     `;
 
     // Inject immediately after the socket.io script loads
     html = html.replace(
       '<script src="https://shinobi.bulelengkab.go.id/assets/vendor/js/socket.io.min.js"></script>',
-      '<script src="https://shinobi.bulelengkab.go.id/assets/vendor/js/socket.io.min.js"></script>\\n' + injection
+      '<script src="https://shinobi.bulelengkab.go.id/assets/vendor/js/socket.io.min.js"></script>\n' + injection
     );
 
     return new NextResponse(html, {

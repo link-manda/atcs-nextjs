@@ -55,13 +55,13 @@ function mapToChannel(entry: RawCCTVEntry): CCTVChannel {
     streamingUrl = `/api/proxy/hls?url=${encodeURIComponent(m3u8Url)}`;
   }
 
-  // Rewrite Shinobi Buleleng MP4 pseudo-stream to native Shinobi iframe embed
+  // Rewrite Shinobi Buleleng MP4 pseudo-stream to native Shinobi iframe embed via proxy
   // Pattern matches: [protocol]//[domain]/[token]/mp4/[group]/[monitor]/s.mp4
   const shinobiRegex = /^(https?:\/\/shinobi\.bulelengkab\.go\.id\/[^\/]+)\/mp4\/([^\/]+\/[^\/]+)\/s\.mp4$/i;
   const match = streamingUrl.match(shinobiRegex);
   if (match) {
-    // Direct embed URL allows same-origin WebSocket connection inside iframe
-    streamingUrl = `${match[1]}/embed/${match[2]}/fullscreen%7Cjquery%7Chd`;
+    const embedUrl = `${match[1]}/embed/${match[2]}/fullscreen%7Cjquery%7Chd`;
+    streamingUrl = `/api/proxy/shinobi?url=${encodeURIComponent(embedUrl)}`;
   }
 
   return {
@@ -209,8 +209,9 @@ const loadBulelengCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
       const lat = meta?.lat ?? -8.112;
       const lng = meta?.lng ?? 115.088;
 
-      // Direct Shinobi embed stream enables native same-origin WebSocket inside iframe
+      // Shinobi embed stream routed through our proxy to sanitize urlPrefix and intercept window.io
       const embedUrl = `https://shinobi.bulelengkab.go.id/${BULELENG_API_KEY}/embed/${BULELENG_GROUP}/${mid}/fullscreen%7Cjquery%7Chd`;
+      const proxiedUrl = `/api/proxy/shinobi?url=${encodeURIComponent(embedUrl)}`;
 
       // Generate consistent numeric ID for Buleleng (888 + index)
       const cctvId = parseInt(`888${idx.toString().padStart(2, '0')}`);
@@ -221,7 +222,7 @@ const loadBulelengCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
         ch_name: chName,
         lat,
         lng,
-        streaming_url: embedUrl,
+        streaming_url: proxiedUrl,
         player_type: 'iframe',
         region: 'Buleleng' as CCTVRegion,
         is_online: monitor.mode !== 'stop',
