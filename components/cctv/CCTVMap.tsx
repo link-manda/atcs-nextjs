@@ -177,21 +177,21 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
       <div className="absolute top-4 right-4 z-[1000] flex items-center gap-2">
         <button
           onClick={handleToggleTraffic}
-          className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold font-headline transition-all duration-300 shadow-md backdrop-blur-md border ${
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium font-sans transition-all shadow-md backdrop-blur-md border ${
             showTraffic 
-              ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/30' 
-              : 'bg-card/90 border-border text-muted-foreground hover:text-foreground hover:bg-card'
+              ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 ring-1 ring-emerald-500/30' 
+              : 'bg-zinc-950/90 border-white/[0.1] text-zinc-300 hover:text-white hover:bg-zinc-900'
           }`}
           title="Pantauan Kepadatan Arus Lalu Lintas Real-Time"
         >
-          <Activity className={`w-3.5 h-3.5 ${showTraffic ? 'animate-pulse text-emerald-500' : ''}`} />
+          <Activity className={`w-3.5 h-3.5 ${showTraffic ? 'animate-pulse text-emerald-400' : 'text-zinc-400'}`} />
           <span>Live Traffic</span>
         </button>
 
         {showTraffic && (
           <button
             onClick={() => setShowKeyModal(true)}
-            className="p-2 rounded-xl bg-card/90 border border-border text-muted-foreground hover:text-foreground shadow-md backdrop-blur-md"
+            className="p-1.5 rounded-md bg-zinc-950/90 border border-white/[0.1] text-zinc-400 hover:text-zinc-100 shadow-md backdrop-blur-md"
             title="Pengaturan API Key TomTom"
           >
             <Settings2 className="w-3.5 h-3.5" />
@@ -201,71 +201,68 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
 
       {/* ─── API Key Modal Dialog ─── */}
       {showKeyModal && (
-        <div className="absolute inset-0 z-[1001] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-card border border-border rounded-2xl p-6 max-w-md w-full shadow-2xl flex flex-col gap-4 relative animate-in fade-in zoom-in-95">
+        <div className="absolute inset-0 z-[1001] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-zinc-950 border border-white/[0.12] rounded-xl p-5 max-w-md w-full shadow-2xl flex flex-col gap-4 relative animate-in fade-in zoom-in-95 font-sans">
             <button
               onClick={() => setShowKeyModal(false)}
-              className="absolute top-4 right-4 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted"
+              className="absolute top-4 right-4 p-1.5 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06]"
             >
               <X className="w-4 h-4" />
             </button>
 
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                <Activity className="w-5 h-5 text-emerald-500" />
+              <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
+                <Activity className="w-4 h-4 text-emerald-400" />
               </div>
               <div>
-                <h3 className="text-base font-bold font-headline text-foreground">
+                <h3 className="text-sm font-bold text-white">
                   Aktifkan Live Traffic Bali
                 </h3>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-[11px] text-zinc-400">
                   Lapisan visualisasi kepadatan lalu lintas real-time (TomTom Flow)
                 </p>
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-medium text-foreground flex items-center justify-between">
+              <label className="text-xs font-medium text-zinc-200 flex items-center justify-between">
                 <span>TomTom API Key</span>
                 <a
                   href="https://developer.tomtom.com/"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-[11px] text-primary hover:underline flex items-center gap-1"
+                  className="text-[11px] text-emerald-400 hover:underline flex items-center gap-1 font-mono"
                 >
-                  Dapatkan Key Gratis (1 Menit)
+                  Dapatkan Key Gratis
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </label>
               <div className="relative">
-                <Key className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Key className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
                 <Input
                   type="text"
-                  placeholder="Masukkan API Key TomTom Anda..."
+                  placeholder="Masukkan API Key TomTom..."
                   value={inputKey}
                   onChange={(e) => setInputKey(e.target.value)}
-                  className="pl-9 text-xs font-mono"
+                  className="pl-9 text-xs font-mono bg-white/[0.04] border-white/[0.1] text-zinc-100 placeholder:text-zinc-400 rounded-md"
                 />
               </div>
-              <p className="text-[11px] text-muted-foreground leading-relaxed">
-                💡 TomTom menyediakan tier gratis 2.500 request/hari. Kunci ini akan disimpan dengan aman di browser Anda.
+              <p className="text-[10px] text-zinc-400 leading-relaxed">
+                💡 TomTom menyediakan tier gratis 2.500 request/hari. Kunci ini disimpan di browser lokal Anda.
               </p>
             </div>
 
-            <div className="flex items-center justify-end gap-2 mt-2">
-              <Button
-                variant="outline"
-                size="sm"
+            <div className="flex items-center justify-end gap-2 mt-1">
+              <button
                 onClick={() => setShowKeyModal(false)}
-                className="text-xs"
+                className="px-3 py-1.5 rounded-md text-xs font-medium bg-white/[0.04] border border-white/[0.08] text-zinc-300 hover:bg-white/[0.08] transition-colors"
               >
                 Batal
-              </Button>
-              <Button
-                size="sm"
+              </button>
+              <button
                 onClick={handleSaveKey}
                 disabled={!inputKey.trim()}
-                className="text-xs bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-md text-xs font-medium bg-emerald-500 hover:bg-emerald-400 text-zinc-950 flex items-center gap-1.5 transition-colors disabled:opacity-40"
               >
                 {keySaved ? (
                   <>
@@ -275,7 +272,7 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
                 ) : (
                   <span>Simpan & Aktifkan</span>
                 )}
-              </Button>
+              </button>
             </div>
           </div>
         </div>
@@ -290,7 +287,7 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         />
         
         {/* TomTom Real-Time Traffic Flow Layer */}

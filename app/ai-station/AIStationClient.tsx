@@ -42,6 +42,28 @@ export function AIStationClient({ channels }: AIStationClientProps) {
   const [regionFilter, setRegionFilter] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [showCameraSelector, setShowCameraSelector] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  // Close dropdown on click outside or Escape
+  useEffect(() => {
+    if (!showCameraSelector) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowCameraSelector(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setShowCameraSelector(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showCameraSelector]);
 
   // 2. Video Player Ref
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -277,7 +299,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
   return (
     <div className="w-full max-w-[1800px] mx-auto p-3 md:p-5 flex flex-col gap-4 bg-zinc-950 text-zinc-100 font-sans">
       {/* ─── Header & Camera Selection Bar ─── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-zinc-900/40 rounded-lg p-4 border border-white/[0.08] backdrop-blur-md">
+      <div className="relative z-40 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-zinc-900/40 rounded-lg p-4 border border-white/[0.08] backdrop-blur-md">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
             <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono font-medium text-emerald-400 uppercase">
@@ -298,7 +320,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
 
         <div className="flex items-center gap-2 self-start md:self-auto relative">
           {/* Camera Selector Dropdown Button */}
-          <div className="relative">
+          <div ref={dropdownRef} className="relative">
             <button
               onClick={() => setShowCameraSelector(!showCameraSelector)}
               className="flex items-center gap-2 h-8 px-3 text-xs bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] font-medium text-zinc-200 rounded-md shadow-sm min-w-[200px] sm:min-w-[240px] max-w-[280px] transition-colors"
@@ -310,7 +332,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
 
             {/* Dropdown Menu Modal */}
             {showCameraSelector && (
-              <div className="absolute right-0 top-10 w-80 sm:w-96 bg-zinc-950 border border-white/[0.1] rounded-lg shadow-2xl z-50 p-3 flex flex-col gap-2.5 animate-in fade-in zoom-in-95">
+              <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-[calc(100vw-2.5rem)] sm:w-96 max-w-sm bg-zinc-950/98 border border-white/[0.15] rounded-lg shadow-[0_16px_40px_rgba(0,0,0,0.85)] z-50 p-3 flex flex-col gap-2.5 animate-in fade-in zoom-in-95 backdrop-blur-xl">
                 {/* Search Bar */}
                 <div className="relative">
                   <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400" />
