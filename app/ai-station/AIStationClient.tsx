@@ -332,7 +332,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
 
             {/* Dropdown Menu Modal */}
             {showCameraSelector && (
-              <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-[calc(100vw-2.5rem)] sm:w-96 max-w-sm bg-zinc-950/98 border border-white/[0.15] rounded-lg shadow-[0_16px_40px_rgba(0,0,0,0.85)] z-50 p-3 flex flex-col gap-2.5 animate-in fade-in zoom-in-95 backdrop-blur-xl">
+              <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-[calc(100vw-2.5rem)] sm:w-96 max-w-sm bg-[#09090b] border border-white/[0.15] ring-1 ring-white/[0.08] rounded-lg shadow-[0_25px_60px_rgba(0,0,0,0.95)] z-50 p-3 flex flex-col gap-2.5 animate-in fade-in zoom-in-95">
                 {/* Search Bar */}
                 <div className="relative">
                   <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400" />
@@ -341,7 +341,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                     placeholder="Cari kamera atau wilayah..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-8 h-7 text-xs bg-white/[0.03] border-white/[0.08] text-zinc-200 placeholder:text-zinc-400 rounded"
+                    className="pl-8 h-8 text-xs bg-zinc-900 border-white/[0.1] text-zinc-100 placeholder:text-zinc-500 rounded-md focus-visible:ring-1 focus-visible:ring-emerald-500/50"
                     autoFocus
                   />
                 </div>
@@ -353,7 +353,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                     className={`px-2 py-0.5 rounded text-[10px] font-mono whitespace-nowrap border transition-colors ${
                       regionFilter === "ALL"
                         ? "bg-emerald-500 text-zinc-950 font-bold border-emerald-400"
-                        : "bg-white/[0.03] text-zinc-400 border-white/[0.06] hover:text-zinc-200"
+                        : "bg-zinc-900 text-zinc-400 border-white/[0.06] hover:text-zinc-200 hover:bg-zinc-800"
                     }`}
                   >
                     Semua
@@ -365,7 +365,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                       className={`px-2 py-0.5 rounded text-[10px] font-mono whitespace-nowrap border transition-colors ${
                         regionFilter === r
                           ? "bg-emerald-500 text-zinc-950 font-bold border-emerald-400"
-                          : "bg-white/[0.03] text-zinc-400 border-white/[0.06] hover:text-zinc-200"
+                          : "bg-zinc-900 text-zinc-400 border-white/[0.06] hover:text-zinc-200 hover:bg-zinc-800"
                       }`}
                     >
                       {r}
@@ -374,9 +374,9 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                 </div>
 
                 {/* Camera List */}
-                <div className="max-h-60 overflow-y-auto flex flex-col gap-1 pr-1 no-scrollbar">
+                <div className="max-h-64 overflow-y-auto flex flex-col gap-1 pr-1 divide-y divide-white/[0.04]">
                   {filteredChannels.length === 0 ? (
-                    <div className="p-4 text-center text-xs text-zinc-400">
+                    <div className="p-4 text-center text-xs text-zinc-400 font-mono">
                       Tidak ada kamera yang cocok
                     </div>
                   ) : (
@@ -394,13 +394,13 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                           className={`w-full flex items-center justify-between p-2 rounded text-left text-xs transition-colors ${
                             isSelected
                               ? "bg-emerald-500/15 text-emerald-300 font-medium border border-emerald-500/30"
-                              : "hover:bg-white/[0.04] text-zinc-300 border border-transparent"
+                              : "hover:bg-zinc-900 text-zinc-200 border border-transparent"
                           }`}
                         >
                           <div className="flex items-center gap-2 min-w-0 flex-1 pr-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0 animate-pulse" />
                             <div className="flex flex-col min-w-0 flex-1">
-                              <span className="truncate">{cam.ch_name}</span>
+                              <span className="truncate text-zinc-100 font-medium">{cam.ch_name}</span>
                               <span className="text-[10px] font-mono text-zinc-400">
                                 {cam.region}
                               </span>
