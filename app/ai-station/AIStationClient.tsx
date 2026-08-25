@@ -275,76 +275,75 @@ export function AIStationClient({ channels }: AIStationClientProps) {
   };
 
   return (
-    <div className="w-full max-w-[1800px] mx-auto p-4 md:p-6 flex flex-col gap-6">
+    <div className="w-full max-w-[1800px] mx-auto p-3 md:p-5 flex flex-col gap-4 bg-zinc-950 text-zinc-100 font-sans">
       {/* ─── Header & Camera Selection Bar ─── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card rounded-2xl p-5 border border-border shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-zinc-900/40 rounded-lg p-4 border border-white/[0.08] backdrop-blur-md">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-[11px] font-bold text-primary font-headline uppercase tracking-wider">
+            <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono font-medium text-emerald-400 uppercase">
               {selectedChannel.region}
             </span>
-            <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
-              <Video className="w-3.5 h-3.5 text-primary" />
+            <span className="text-xs font-mono text-zinc-400 flex items-center gap-1">
+              <Video className="w-3 h-3 text-emerald-400" />
               {selectedChannel.ch_name}
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight text-foreground">
+          <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white">
             Pantauan Cerdas AI
           </h1>
-          <p className="text-xs sm:text-sm text-muted-foreground">
-            Analisis arus kendaraan, klasifikasi objek, dan deteksi kepadatan real-time berbasis WebGL GPU.
+          <p className="text-xs text-zinc-400">
+            Analisis arus kendaraan real-time, estimasi volume per menit, dan inferensi neural vision berbasis WebGL.
           </p>
         </div>
 
         <div className="flex items-center gap-2 self-start md:self-auto relative">
           {/* Camera Selector Dropdown Button */}
           <div className="relative">
-            <Button
-              variant="outline"
+            <button
               onClick={() => setShowCameraSelector(!showCameraSelector)}
-              className="flex items-center gap-2 h-9 px-3 text-xs bg-background border-border hover:bg-muted font-semibold text-foreground shadow-sm min-w-[200px] sm:min-w-[240px] max-w-[280px]"
+              className="flex items-center gap-2 h-8 px-3 text-xs bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] font-medium text-zinc-200 rounded-md shadow-sm min-w-[200px] sm:min-w-[240px] max-w-[280px] transition-colors"
             >
-              <Video className="w-4 h-4 text-primary flex-shrink-0" />
+              <Video className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
               <span className="truncate flex-1 text-left">{selectedChannel.ch_name}</span>
-              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0 ml-1" />
-            </Button>
+              <ChevronDown className="w-3 h-3 text-zinc-400 flex-shrink-0 ml-1" />
+            </button>
 
             {/* Dropdown Menu Modal */}
             {showCameraSelector && (
-              <div className="absolute right-0 top-11 w-80 sm:w-96 bg-card border border-border rounded-xl shadow-2xl z-50 p-3 flex flex-col gap-2.5 animate-in fade-in zoom-in-95">
+              <div className="absolute right-0 top-10 w-80 sm:w-96 bg-zinc-950 border border-white/[0.1] rounded-lg shadow-2xl z-50 p-3 flex flex-col gap-2.5 animate-in fade-in zoom-in-95">
                 {/* Search Bar */}
                 <div className="relative">
-                  <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400" />
                   <Input
                     type="text"
                     placeholder="Cari kamera atau wilayah..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-8 h-8 text-xs bg-background border-border"
+                    className="pl-8 h-7 text-xs bg-white/[0.03] border-white/[0.08] text-zinc-200 placeholder:text-zinc-400 rounded"
                     autoFocus
                   />
                 </div>
 
                 {/* Region Chips */}
-                <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+                <div className="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar">
                   <button
                     onClick={() => setRegionFilter("ALL")}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold whitespace-nowrap border transition-colors ${
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono whitespace-nowrap border transition-colors ${
                       regionFilter === "ALL"
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-background text-muted-foreground border-border hover:text-foreground"
+                        ? "bg-emerald-500 text-zinc-950 font-bold border-emerald-400"
+                        : "bg-white/[0.03] text-zinc-400 border-white/[0.06] hover:text-zinc-200"
                     }`}
                   >
-                    Semua Wilayah
+                    Semua
                   </button>
                   {ALL_REGIONS.map((r) => (
                     <button
                       key={r}
                       onClick={() => setRegionFilter(r)}
-                      className={`px-2.5 py-1 rounded-md text-[11px] font-semibold whitespace-nowrap border transition-colors ${
+                      className={`px-2 py-0.5 rounded text-[10px] font-mono whitespace-nowrap border transition-colors ${
                         regionFilter === r
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-background text-muted-foreground border-border hover:text-foreground"
+                          ? "bg-emerald-500 text-zinc-950 font-bold border-emerald-400"
+                          : "bg-white/[0.03] text-zinc-400 border-white/[0.06] hover:text-zinc-200"
                       }`}
                     >
                       {r}
@@ -353,9 +352,9 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                 </div>
 
                 {/* Camera List */}
-                <div className="max-h-60 overflow-y-auto flex flex-col gap-1 pr-1">
+                <div className="max-h-60 overflow-y-auto flex flex-col gap-1 pr-1 no-scrollbar">
                   {filteredChannels.length === 0 ? (
-                    <div className="p-4 text-center text-xs text-muted-foreground">
+                    <div className="p-4 text-center text-xs text-zinc-400">
                       Tidak ada kamera yang cocok
                     </div>
                   ) : (
@@ -370,22 +369,22 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                             setVideoKey((k) => k + 1);
                             handleResetCounts();
                           }}
-                          className={`w-full flex items-center justify-between p-2 rounded-lg text-left text-xs transition-colors ${
+                          className={`w-full flex items-center justify-between p-2 rounded text-left text-xs transition-colors ${
                             isSelected
-                              ? "bg-primary/10 text-primary font-bold border border-primary/20"
-                              : "hover:bg-muted text-foreground border border-transparent"
+                              ? "bg-emerald-500/15 text-emerald-300 font-medium border border-emerald-500/30"
+                              : "hover:bg-white/[0.04] text-zinc-300 border border-transparent"
                           }`}
                         >
                           <div className="flex items-center gap-2 min-w-0 flex-1 pr-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0 animate-pulse" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0 animate-pulse" />
                             <div className="flex flex-col min-w-0 flex-1">
                               <span className="truncate">{cam.ch_name}</span>
-                              <span className="text-[10px] text-muted-foreground">
+                              <span className="text-[10px] font-mono text-zinc-400">
                                 {cam.region}
                               </span>
                             </div>
                           </div>
-                          {isSelected && <Check className="w-3.5 h-3.5 text-primary flex-shrink-0" />}
+                          {isSelected && <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />}
                         </button>
                       );
                     })
@@ -396,27 +395,25 @@ export function AIStationClient({ channels }: AIStationClientProps) {
           </div>
 
           {/* Fullscreen Button */}
-          <Button
-            variant="outline"
-            size="icon"
+          <button
             onClick={toggleFullScreen}
-            className="h-9 w-9 bg-background border-border shadow-sm"
+            className="h-8 w-8 bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-zinc-300 rounded-md flex items-center justify-center transition-colors"
             title="Layar Penuh"
           >
-            <Maximize2 className="w-4 h-4 text-muted-foreground" />
-          </Button>
+            <Maximize2 className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
 
       {/* ─── Main Content Layout ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
         {/* Left / Center Viewport (8 Columns) */}
-        <div className="lg:col-span-8 flex flex-col gap-4">
+        <div className="lg:col-span-8 flex flex-col gap-3">
           <div
             id="ai-viewport-container"
-            className="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-border shadow-lg flex items-center justify-center isolate"
+            className="relative w-full aspect-video bg-black rounded-lg overflow-hidden border border-white/[0.08] shadow-2xl flex items-center justify-center isolate"
           >
-            {/* Live Video Feed (100% Full Autofit - Hidden in background if 1:1 Frame-Lock is active) */}
+            {/* Live Video Feed */}
             <video
               ref={videoRef}
               key={videoKey}
@@ -442,27 +439,25 @@ export function AIStationClient({ channels }: AIStationClientProps) {
               processedCanvas={processedCanvas}
             />
 
-            {/* Viewport Top HUD with Transparent Badges */}
-            <div className="absolute top-3 left-3 right-3 flex items-start justify-between pointer-events-none z-30">
-              <div className="flex items-center gap-2 drop-shadow-md">
-                <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" />
-                <span className="text-sm font-bold text-white tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+            {/* Viewport Top HUD */}
+            <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start justify-between pointer-events-none z-30">
+              <div className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded border border-white/[0.1]">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-xs font-medium text-white tracking-tight">
                   {selectedChannel.ch_name}
                 </span>
               </div>
 
-              <div className="flex items-center gap-1.5 drop-shadow-md">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-                <span className="text-xs font-bold text-red-400 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
-                  Siaran Langsung
-                </span>
+              <div className="flex items-center gap-1.5 bg-emerald-500/20 backdrop-blur-sm px-2 py-1 rounded border border-emerald-500/30 font-mono text-[10px] text-emerald-300">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                <span>LIVE TRACKER</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Right Side Telemetry & Controls (4 Columns) */}
-        <div className="lg:col-span-4 flex flex-col gap-4">
+        <div className="lg:col-span-4 flex flex-col gap-3">
           <AITrafficTelemetry
             counts={counts}
             fps={fps}

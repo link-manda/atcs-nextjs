@@ -76,9 +76,10 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
-        headline: ["Space Grotesk", "sans-serif"],
-        body: ["Inter", "sans-serif"],
+        sans: ["var(--font-geist-sans)", ...fontFamily.sans],
+        mono: ["var(--font-geist-mono)", ...fontFamily.mono],
+        headline: ["var(--font-geist-sans)", ...fontFamily.sans],
+        body: ["var(--font-geist-sans)", ...fontFamily.sans],
       },
       keyframes: {
         "accordion-down": {

@@ -16,7 +16,6 @@ import {
   Sparkles,
   Lock,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { VehicleCounts } from "@/lib/ai/client-vehicle-tracker";
 
 interface AITrafficTelemetryProps {
@@ -67,122 +66,116 @@ export function AITrafficTelemetry({
   const truckPercent = total > 0 ? Math.round((counts.trucks / total) * 100) : 0;
 
   return (
-    <div className="flex flex-col gap-4 w-full text-foreground">
+    <div className="flex flex-col gap-3 w-full text-zinc-100 font-sans">
       {/* ─── 1. Total Volume Card ─── */}
-      <div className="bg-card rounded-xl p-5 border border-border shadow-sm relative overflow-hidden">
-        <div className="flex items-center justify-between mb-2">
+      <div className="bg-zinc-950/90 rounded-lg p-4 border border-white/[0.08] relative overflow-hidden backdrop-blur-md">
+        <div className="flex items-center justify-between mb-1.5">
           <div className="flex items-center gap-2">
-            <Activity className="w-4 h-4 text-primary animate-pulse" />
-            <span className="text-xs font-semibold font-headline text-foreground/80">
+            <Activity className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+            <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
               Total Kendaraan Terhitung
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-              {fps} FPS • {inferenceTimeMs}ms
-            </span>
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-[10px]">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+            <span>{fps} FPS • {inferenceTimeMs}ms</span>
           </div>
         </div>
 
         <div className="flex items-baseline justify-between mt-1 gap-2 flex-wrap">
-          <div className="text-4xl sm:text-5xl font-black font-headline tracking-tight text-foreground">
+          <div className="text-3xl sm:text-4xl font-bold font-mono tracking-tight text-white">
             {total.toLocaleString("id-ID")}
           </div>
 
           <div className="flex items-center gap-1.5">
-            <Button
-              variant="outline"
-              size="sm"
+            <button
               onClick={onResetCounts}
-              className="h-8 px-2.5 text-xs bg-background border-border hover:bg-muted font-semibold text-foreground shadow-sm flex items-center gap-1"
+              className="h-7 px-2.5 text-xs bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-zinc-300 rounded flex items-center gap-1 font-medium transition-colors"
               title="Reset Jumlah Hitungan Kendaraan"
             >
-              <RotateCcw className="w-3.5 h-3.5 text-muted-foreground" />
+              <RotateCcw className="w-3 h-3 text-zinc-400" />
               <span>Reset</span>
-            </Button>
+            </button>
 
             {onClearCache && (
-              <Button
-                variant="outline"
-                size="sm"
+              <button
                 onClick={onClearCache}
-                className="h-8 px-2.5 text-xs bg-background border-border hover:bg-muted font-semibold text-muted-foreground hover:text-foreground shadow-sm flex items-center gap-1"
+                className="h-7 px-2.5 text-xs bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-zinc-400 hover:text-zinc-200 rounded flex items-center gap-1 font-medium transition-colors"
                 title="Hapus Cache Model AI & Muat Ulang"
               >
-                <Trash2 className="w-3.5 h-3.5 text-muted-foreground" />
+                <Trash2 className="w-3 h-3 text-zinc-400" />
                 <span>Hapus Cache</span>
-              </Button>
+              </button>
             )}
           </div>
         </div>
       </div>
 
       {/* ─── 2. Categorical Distribution ─── */}
-      <div className="bg-card rounded-xl p-4 border border-border shadow-sm flex flex-col gap-3">
+      <div className="bg-zinc-950/90 rounded-lg p-3.5 border border-white/[0.08] flex flex-col gap-2.5">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold font-headline text-foreground/80">
-            Klasifikasi Jenis Kendaraan
+          <span className="text-xs font-semibold text-zinc-200">
+            Klasifikasi Arus Kendaraan
           </span>
-          <span className="text-[11px] font-normal text-muted-foreground">
-            Penghitungan Langsung
+          <span className="text-[10px] font-mono text-zinc-400">
+            Real-time Tracker
           </span>
         </div>
 
-        <div className="grid grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-2 gap-2">
           {/* Mobil */}
-          <div className="p-3 rounded-lg bg-background border border-cyan-500/30 shadow-sm flex flex-col justify-between">
-            <div className="flex items-center justify-between text-cyan-600 dark:text-cyan-400">
+          <div className="p-2.5 rounded-md bg-white/[0.02] border border-cyan-500/20 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-cyan-400">
               <div className="flex items-center gap-1.5">
-                <Car className="w-4 h-4" />
-                <span className="text-xs font-semibold font-headline">Mobil</span>
+                <Car className="w-3.5 h-3.5" />
+                <span className="text-xs font-medium">Mobil</span>
               </div>
-              <span className="text-[11px] font-medium">{carPercent}%</span>
+              <span className="text-[10px] font-mono font-medium">{carPercent}%</span>
             </div>
-            <div className="text-2xl font-black font-headline text-foreground mt-1.5">
+            <div className="text-xl font-bold font-mono text-white mt-1">
               {counts.cars.toLocaleString("id-ID")}
             </div>
           </div>
 
           {/* Sepeda Motor */}
-          <div className="p-3 rounded-lg bg-background border border-emerald-500/30 shadow-sm flex flex-col justify-between">
-            <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400">
+          <div className="p-2.5 rounded-md bg-white/[0.02] border border-emerald-500/20 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-emerald-400">
               <div className="flex items-center gap-1.5">
-                <Bike className="w-4 h-4" />
-                <span className="text-xs font-semibold font-headline">Motor</span>
+                <Bike className="w-3.5 h-3.5" />
+                <span className="text-xs font-medium">Motor</span>
               </div>
-              <span className="text-[11px] font-medium">{bikePercent}%</span>
+              <span className="text-[10px] font-mono font-medium">{bikePercent}%</span>
             </div>
-            <div className="text-2xl font-black font-headline text-foreground mt-1.5">
+            <div className="text-xl font-bold font-mono text-white mt-1">
               {counts.motorcycles.toLocaleString("id-ID")}
             </div>
           </div>
 
           {/* Bus */}
-          <div className="p-3 rounded-lg bg-background border border-amber-500/30 shadow-sm flex flex-col justify-between">
-            <div className="flex items-center justify-between text-amber-600 dark:text-amber-400">
+          <div className="p-2.5 rounded-md bg-white/[0.02] border border-amber-500/20 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-amber-400">
               <div className="flex items-center gap-1.5">
-                <Bus className="w-4 h-4" />
-                <span className="text-xs font-semibold font-headline">Bus</span>
+                <Bus className="w-3.5 h-3.5" />
+                <span className="text-xs font-medium">Bus</span>
               </div>
-              <span className="text-[11px] font-medium">{busPercent}%</span>
+              <span className="text-[10px] font-mono font-medium">{busPercent}%</span>
             </div>
-            <div className="text-2xl font-black font-headline text-foreground mt-1.5">
+            <div className="text-xl font-bold font-mono text-white mt-1">
               {counts.buses.toLocaleString("id-ID")}
             </div>
           </div>
 
           {/* Truk */}
-          <div className="p-3 rounded-lg bg-background border border-orange-500/30 shadow-sm flex flex-col justify-between">
-            <div className="flex items-center justify-between text-orange-600 dark:text-orange-400">
+          <div className="p-2.5 rounded-md bg-white/[0.02] border border-orange-500/20 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-orange-400">
               <div className="flex items-center gap-1.5">
-                <Truck className="w-4 h-4" />
-                <span className="text-xs font-semibold font-headline">Truk</span>
+                <Truck className="w-3.5 h-3.5" />
+                <span className="text-xs font-medium">Truk</span>
               </div>
-              <span className="text-[11px] font-medium">{truckPercent}%</span>
+              <span className="text-[10px] font-mono font-medium">{truckPercent}%</span>
             </div>
-            <div className="text-2xl font-black font-headline text-foreground mt-1.5">
+            <div className="text-xl font-bold font-mono text-white mt-1">
               {counts.trucks.toLocaleString("id-ID")}
             </div>
           </div>
@@ -190,24 +183,24 @@ export function AITrafficTelemetry({
       </div>
 
       {/* ─── 3. Calibration & Settings ─── */}
-      <div className="bg-card rounded-xl p-4 border border-border shadow-sm flex flex-col gap-3.5">
+      <div className="bg-zinc-950/90 rounded-lg p-3.5 border border-white/[0.08] flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <SlidersHorizontal className="w-4 h-4 text-primary" />
-            <span className="text-xs font-semibold font-headline text-foreground/80">
-              Pengaturan & Sensitivitas Deteksi
+          <div className="flex items-center gap-1.5 text-zinc-300">
+            <SlidersHorizontal className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="text-xs font-semibold">
+              Sensitivitas & Kalibrasi AI
             </span>
           </div>
         </div>
 
         {/* Laju Sampling FPS AI Selector */}
         <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between items-center text-xs font-medium">
-            <div className="flex items-center gap-1.5 text-muted-foreground">
-              <Gauge className="w-3.5 h-3.5 text-primary" />
+          <div className="flex justify-between items-center text-xs">
+            <div className="flex items-center gap-1.5 text-zinc-400">
+              <Gauge className="w-3 h-3 text-emerald-400" />
               <span>Laju Analisis AI (FPS)</span>
             </div>
-            <span className="text-primary font-semibold font-mono">{targetFps} FPS Target</span>
+            <span className="text-emerald-400 font-mono text-[11px] font-medium">{targetFps} FPS Target</span>
           </div>
 
           <div className="grid grid-cols-4 gap-1.5">
@@ -223,10 +216,10 @@ export function AITrafficTelemetry({
                   key={rate}
                   type="button"
                   onClick={() => onTargetFpsChange(rate)}
-                  className={`py-1.5 px-2 rounded-lg text-xs font-semibold font-headline transition-all text-center border ${
+                  className={`py-1 px-2 rounded text-xs font-mono font-medium transition-all text-center border ${
                     isSelected
-                      ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                      : "bg-background text-muted-foreground hover:text-foreground border-border"
+                      ? "bg-emerald-500 text-zinc-950 border-emerald-400 font-semibold"
+                      : "bg-white/[0.03] text-zinc-400 hover:text-zinc-200 border-white/[0.06]"
                   }`}
                 >
                   {label}
@@ -234,104 +227,95 @@ export function AITrafficTelemetry({
               );
             })}
           </div>
-          <span className="text-[10px] text-muted-foreground">
-            {targetFps === 20 ? "💡 20 FPS: Rekomendasi seimbang untuk sudut kamera bird's-eye" : "Laju pengambilan frame gambar untuk inferensi AI"}
-          </span>
         </div>
 
         {/* Sinkronisasi Frame Video AI (1:1 Frame-Lock) */}
-        <div className="p-3 rounded-lg bg-background border border-border flex items-center justify-between shadow-sm">
-          <div className="flex items-center gap-2.5">
-            <Lock className={`w-4 h-4 ${syncFrameLock ? "text-emerald-500" : "text-muted-foreground"}`} />
+        <div className="p-2.5 rounded-md bg-white/[0.02] border border-white/[0.06] flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Lock className={`w-3.5 h-3.5 ${syncFrameLock ? "text-emerald-400" : "text-zinc-400"}`} />
             <div className="flex flex-col">
-              <span className="text-xs font-semibold font-headline text-foreground">
+              <span className="text-xs font-medium text-zinc-200">
                 Sinkronisasi Frame (1:1 Lock)
               </span>
-              <span className="text-[11px] font-normal text-muted-foreground">
+              <span className="text-[10px] text-zinc-400">
                 Kunci visual video selaras dengan analisis AI
               </span>
             </div>
           </div>
 
-          <Button
-            size="sm"
-            variant={syncFrameLock ? "default" : "outline"}
+          <button
             onClick={onToggleSyncFrameLock}
-            className={`h-7 px-3 text-xs font-semibold ${
+            className={`h-6 px-2.5 text-xs font-mono rounded transition-colors ${
               syncFrameLock
-                ? "bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
-                : "text-muted-foreground"
+                ? "bg-emerald-500 text-zinc-950 font-bold"
+                : "bg-white/[0.04] text-zinc-400 border border-white/[0.08] hover:text-zinc-200"
             }`}
           >
             {syncFrameLock ? "Aktif" : "Nonaktif"}
-          </Button>
+          </button>
         </div>
 
         {/* Penajaman Citra AI (512px High-Def) */}
-        <div className="p-3 rounded-lg bg-background border border-border flex items-center justify-between shadow-sm">
-          <div className="flex items-center gap-2.5">
-            <Sparkles className={`w-4 h-4 ${enableSharpening ? "text-cyan-500 animate-pulse" : "text-muted-foreground"}`} />
+        <div className="p-2.5 rounded-md bg-white/[0.02] border border-white/[0.06] flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Sparkles className={`w-3.5 h-3.5 ${enableSharpening ? "text-cyan-400 animate-pulse" : "text-zinc-400"}`} />
             <div className="flex flex-col">
-              <span className="text-xs font-semibold font-headline text-foreground">
+              <span className="text-xs font-medium text-zinc-200">
                 Penajaman Citra (512px HD)
               </span>
-              <span className="text-[11px] font-normal text-muted-foreground">
+              <span className="text-[10px] text-zinc-400">
                 Perjelas kontur kap mobil & bodi motor
               </span>
             </div>
           </div>
 
-          <Button
-            size="sm"
-            variant={enableSharpening ? "default" : "outline"}
+          <button
             onClick={onToggleSharpening}
-            className={`h-7 px-3 text-xs font-semibold ${
+            className={`h-6 px-2.5 text-xs font-mono rounded transition-colors ${
               enableSharpening
-                ? "bg-cyan-500 text-black hover:bg-cyan-400 font-bold"
-                : "text-muted-foreground"
+                ? "bg-cyan-500 text-zinc-950 font-bold"
+                : "bg-white/[0.04] text-zinc-400 border border-white/[0.08] hover:text-zinc-200"
             }`}
           >
             {enableSharpening ? "Aktif" : "Nonaktif"}
-          </Button>
+          </button>
         </div>
 
         {/* Mode Malam Otomatis Toggle */}
-        <div className="p-3 rounded-lg bg-background border border-border flex items-center justify-between shadow-sm">
-          <div className="flex items-center gap-2.5">
+        <div className="p-2.5 rounded-md bg-white/[0.02] border border-white/[0.06] flex items-center justify-between">
+          <div className="flex items-center gap-2">
             {enableNightBoost ? (
-              <Moon className="w-4 h-4 text-cyan-600 dark:text-cyan-400 animate-pulse" />
+              <Moon className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
             ) : (
-              <Sun className="w-4 h-4 text-amber-500" />
+              <Sun className="w-3.5 h-3.5 text-zinc-400" />
             )}
             <div className="flex flex-col">
-              <span className="text-xs font-semibold font-headline text-foreground">
+              <span className="text-xs font-medium text-zinc-200">
                 Mode Malam Otomatis
               </span>
-              <span className="text-[11px] font-normal text-muted-foreground">
-                Meningkatkan kejelasan di jalanan minim cahaya
+              <span className="text-[10px] text-zinc-400">
+                Tingkatkan kontras di kondisi minim cahaya
               </span>
             </div>
           </div>
 
-          <Button
-            size="sm"
-            variant={enableNightBoost ? "default" : "outline"}
+          <button
             onClick={onToggleNightBoost}
-            className={`h-7 px-3 text-xs font-semibold ${
+            className={`h-6 px-2.5 text-xs font-mono rounded transition-colors ${
               enableNightBoost
-                ? "bg-cyan-500 text-black hover:bg-cyan-400 font-bold"
-                : "text-muted-foreground"
+                ? "bg-cyan-500 text-zinc-950 font-bold"
+                : "bg-white/[0.04] text-zinc-400 border border-white/[0.08] hover:text-zinc-200"
             }`}
           >
             {enableNightBoost ? "Aktif" : "Nonaktif"}
-          </Button>
+          </button>
         </div>
 
         {/* Tripwire Height */}
-        <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between text-xs font-medium">
-            <span className="text-muted-foreground">Posisi Garis Hitung</span>
-            <span className="text-cyan-600 dark:text-cyan-400 font-semibold">{Math.round(tripwireYRatio * 100)}%</span>
+        <div className="flex flex-col gap-1">
+          <div className="flex justify-between text-xs">
+            <span className="text-zinc-400">Posisi Garis Hitung</span>
+            <span className="text-cyan-400 font-mono text-[11px] font-medium">{Math.round(tripwireYRatio * 100)}%</span>
           </div>
           <input
             type="range"
@@ -340,15 +324,15 @@ export function AITrafficTelemetry({
             step="0.05"
             value={tripwireYRatio}
             onChange={(e) => onTripwireChange(parseFloat(e.target.value))}
-            className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-cyan-500"
+            className="w-full h-1 bg-white/[0.1] rounded appearance-none cursor-pointer accent-cyan-400"
           />
         </div>
 
         {/* Confidence Threshold */}
-        <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between text-xs font-medium">
-            <span className="text-muted-foreground">Tingkat Ketelitian (Sensitivitas)</span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{Math.round(confidence * 100)}%</span>
+        <div className="flex flex-col gap-1">
+          <div className="flex justify-between text-xs">
+            <span className="text-zinc-400">Tingkat Ketelitian AI</span>
+            <span className="text-emerald-400 font-mono text-[11px] font-medium">{Math.round(confidence * 100)}%</span>
           </div>
           <input
             type="range"
@@ -357,7 +341,7 @@ export function AITrafficTelemetry({
             step="0.05"
             value={confidence}
             onChange={(e) => onConfidenceChange(parseFloat(e.target.value))}
-            className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-emerald-500"
+            className="w-full h-1 bg-white/[0.1] rounded appearance-none cursor-pointer accent-emerald-400"
           />
         </div>
       </div>

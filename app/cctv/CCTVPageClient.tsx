@@ -6,8 +6,18 @@ import CCTVSidebar from '@/components/cctv/CCTVSidebar';
 import CCTVGridView, { LAYOUTS } from '@/components/cctv/CCTVGridView';
 import type { CCTVChannel } from '@/types/cctv';
 import type { GridLayout } from '@/components/cctv/CCTVGridView';
-import { LayoutGrid, Map as MapIcon, Trash2, Video, Activity, PanelLeftClose, PanelLeft } from 'lucide-react';
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  LayoutGrid,
+  Map as MapIcon,
+  Trash2,
+  Video,
+  PanelLeftClose,
+  PanelLeft,
+  Grid2X2,
+  Grid3X3,
+  Maximize,
+  Layout,
+} from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -15,11 +25,11 @@ import { cn } from "@/lib/utils";
 const CCTVMap = dynamic(() => import('@/components/cctv/CCTVMap'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full flex items-center justify-center bg-muted/30 rounded-xl border border-border">
+    <div className="w-full h-full flex items-center justify-center bg-zinc-950">
       <div className="text-center">
-        <MapIcon className="w-8 h-8 text-primary animate-pulse mx-auto mb-3" />
-        <p className="text-xs text-muted-foreground font-semibold">
-          Memuat Peta Kamera CCTV...
+        <MapIcon className="w-6 h-6 text-emerald-400 animate-pulse mx-auto mb-2.5" />
+        <p className="text-xs font-mono text-zinc-400">
+          Memuat Peta Spasial CCTV...
         </p>
       </div>
     </div>
@@ -83,15 +93,15 @@ export default function CCTVPageClient(props: Props) {
   );
 
   return (
-    <div className="flex gap-6 h-[calc(100vh-6.5rem)]">
+    <div className="flex gap-4 h-[calc(100vh-3.5rem)] p-3 md:p-4 bg-zinc-950 overflow-hidden">
       {/* ─── Camera List Sidebar (Desktop) ─── */}
-      <section 
+      <section
         className={cn(
           "hidden md:block flex-shrink-0 transition-all duration-300 ease-in-out",
-          isSidebarOpen ? "w-80 opacity-100" : "w-0 opacity-0 overflow-hidden"
+          isSidebarOpen ? "w-80 opacity-100" : "w-0 opacity-0 overflow-hidden pointer-events-none"
         )}
       >
-        <div className="h-full w-80 rounded-xl overflow-hidden border border-border shadow-md">
+        <div className="h-full w-80 rounded-lg overflow-hidden border border-white/[0.08] bg-zinc-950/90 shadow-lg">
           <CCTVSidebar
             channels={allChannels}
             selectedCams={selectedCams}
@@ -102,15 +112,15 @@ export default function CCTVPageClient(props: Props) {
         </div>
       </section>
 
-      {/* Sidebar (Mobile) */}
-      <div className="md:hidden fixed bottom-6 right-6 z-50">
+      {/* Sidebar Mobile Trigger */}
+      <div className="md:hidden fixed bottom-5 right-5 z-50">
         <Sheet>
           <SheetTrigger asChild>
-            <Button size="icon" className="w-14 h-14 rounded-full shadow-2xl">
-              <Video className="w-6 h-6" />
+            <Button size="icon" className="w-12 h-12 rounded-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 shadow-xl">
+              <Video className="w-5 h-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-80">
+          <SheetContent side="left" className="p-0 w-80 bg-zinc-950 border-white/[0.08]">
             <CCTVSidebar
               channels={allChannels}
               selectedCams={selectedCams}
@@ -122,62 +132,74 @@ export default function CCTVPageClient(props: Props) {
         </Sheet>
       </div>
 
-      {/* ─── Main Content Canvas ─── */}
-      <section className="flex-1 flex flex-col gap-4 min-w-0 transition-all duration-300">
-        {/* Toolbar */}
-        <div className="flex items-center justify-between flex-shrink-0 gap-4 flex-wrap">
+      {/* ─── Main Monitoring Canvas ─── */}
+      <section className="flex-1 flex flex-col gap-3 min-w-0 transition-all duration-300">
+        {/* Floating Top Linear Toolbar */}
+        <div className="flex items-center justify-between flex-shrink-0 gap-3 flex-wrap bg-zinc-900/60 border border-white/[0.08] p-2 rounded-lg backdrop-blur-md">
+          {/* Left Controls */}
           <div className="flex items-center gap-2">
             <Button
-              variant="outline"
+              variant="ghost"
               size="icon"
-              className="hidden md:flex h-9 w-9 border-border"
+              className="hidden md:flex h-8 w-8 text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06] rounded-md"
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               title={isSidebarOpen ? "Sembunyikan Sidebar" : "Buka Sidebar"}
             >
               {isSidebarOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeft className="w-4 h-4" />}
             </Button>
-            <Tabs 
-              value={viewMode} 
-              onValueChange={(v) => setViewMode(v as ViewMode)} 
-              className="w-auto"
-            >
-              <TabsList className="bg-muted border border-border">
-                <TabsTrigger value="grid" className="gap-2 text-xs font-semibold px-4">
-                  <LayoutGrid className="w-3.5 h-3.5" />
-                  Tampilan Grid
-                </TabsTrigger>
-                <TabsTrigger value="map" className="gap-2 text-xs font-semibold px-4">
-                  <MapIcon className="w-3.5 h-3.5" />
-                  Peta Sebaran
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+
+            {/* View Mode Toggle */}
+            <div className="flex items-center p-0.5 bg-black/40 border border-white/[0.06] rounded-md">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded transition-all",
+                  viewMode === 'grid'
+                    ? "bg-white/[0.1] text-white shadow-sm"
+                    : "text-zinc-400 hover:text-zinc-200"
+                )}
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span>Grid Video</span>
+              </button>
+              <button
+                onClick={() => setViewMode('map')}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded transition-all",
+                  viewMode === 'map'
+                    ? "bg-white/[0.1] text-white shadow-sm"
+                    : "text-zinc-400 hover:text-zinc-200"
+                )}
+              >
+                <MapIcon className="w-3.5 h-3.5" />
+                <span>Peta Kamera</span>
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
-             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs font-semibold">
-                  {allChannels.length} Kamera Terhubung
-                </span>
-             </div>
+          {/* Right Controls & Telemetry */}
+          <div className="flex items-center gap-2.5">
+            <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded bg-white/[0.03] border border-white/[0.06] text-zinc-300 font-mono text-[11px]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>{selectedCams.length}/{maxSlots} Slot Aktif</span>
+            </div>
 
-             {selectedCams.length > 0 && (
-               <Button 
-                variant="outline" 
-                size="sm" 
+            {selectedCams.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={handleClearAll}
-                className="gap-2 text-xs font-semibold h-9 text-destructive border-border hover:bg-destructive/10"
-               >
-                 <Trash2 className="w-3.5 h-3.5" />
-                 Hapus Pilihan ({selectedCams.length})
-               </Button>
-             )}
+                className="h-8 px-2.5 gap-1.5 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-md font-medium"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Kosongkan</span>
+              </Button>
+            )}
           </div>
         </div>
 
-        {/* Dynamic Display */}
-        <div className="flex-1 min-h-0 bg-card rounded-xl overflow-hidden border border-border shadow-sm">
+        {/* Dynamic Display Surface */}
+        <div className="flex-1 min-h-0 bg-zinc-950 rounded-lg overflow-hidden border border-white/[0.08] shadow-inner">
           {viewMode === 'grid' ? (
             <CCTVGridView
               channels={selectedCams}

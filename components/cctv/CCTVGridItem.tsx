@@ -2,8 +2,7 @@
 
 import { CCTVChannel } from "@/types/cctv";
 import { CCTVPlayer } from "./CCTVPlayer";
-import { X, Maximize } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { X, Maximize, Radio, MapPin } from "lucide-react";
 import { useRef } from "react";
 
 interface CCTVGridItemProps {
@@ -25,53 +24,53 @@ export function CCTVGridItem({ channel, onRemove }: CCTVGridItemProps) {
   };
 
   return (
-    <div ref={containerRef} className="group relative w-full aspect-video bg-background overflow-hidden rounded-xl border border-border/60 hover:border-primary/50 transition-colors shadow-sm">
-      {/* The Stream */}
+    <div
+      ref={containerRef}
+      className="group relative w-full aspect-video bg-black overflow-hidden rounded-md border border-white/[0.08] hover:border-emerald-500/40 transition-all shadow-sm"
+    >
+      {/* Video Stream Element */}
       <CCTVPlayer channel={channel} />
 
-      {/* Transparent HUD Overlays (No Solid Black Boxes) */}
-      <div className="absolute inset-0 pointer-events-none p-3 flex flex-col justify-between z-10">
-        {/* Top HUD */}
-        <div className="flex justify-between items-start w-full gap-2">
-          {/* Camera Name */}
-          <div className="flex items-center gap-2 drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)] max-w-[70%]">
-            <span className="font-headline font-bold text-xs text-white truncate">
-              {channel.ch_name}
-            </span>
-          </div>
+      {/* Top Floating Glass HUD */}
+      <div className="absolute inset-x-0 top-0 pointer-events-none p-2.5 bg-gradient-to-b from-black/80 via-black/30 to-transparent flex items-center justify-between gap-2 z-10">
+        <div className="flex items-center gap-1.5 max-w-[75%] min-w-0">
+          <span className="text-xs font-medium text-white truncate tracking-tight drop-shadow-sm">
+            {channel.ch_name}
+          </span>
+        </div>
 
-          {/* Transparent Live Badge */}
-          <div className="flex items-center gap-1.5 drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-            </span>
-            <span className="text-[11px] font-bold text-red-400 font-headline">Live</span>
-          </div>
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono text-[9px] font-medium">
+            <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
+            LIVE
+          </span>
         </div>
       </div>
 
-      {/* Interactive Layer (Hover) */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 backdrop-blur-[2px] flex items-center justify-center pointer-events-none z-30">
-        <div className="pointer-events-auto flex items-center gap-3">
-          <Button 
-            variant="secondary" 
-            size="icon" 
-            className="h-10 w-10 rounded-full shadow-lg"
+      {/* Bottom Minimal Region Label */}
+      <div className="absolute inset-x-0 bottom-0 pointer-events-none p-2 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-center justify-between z-10">
+        <span className="text-[10px] font-mono text-zinc-400">
+          {channel.region}
+        </span>
+      </div>
+
+      {/* Hover Action Overlay */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-[1px] flex items-center justify-center pointer-events-none z-30">
+        <div className="pointer-events-auto flex items-center gap-2">
+          <button
             onClick={toggleFullScreen}
             title="Layar Penuh"
+            className="w-8 h-8 rounded-md bg-white/[0.1] hover:bg-white/[0.2] text-white border border-white/[0.15] flex items-center justify-center transition-all shadow-md"
           >
-            <Maximize className="h-4 w-4" />
-          </Button>
-          <Button 
-            variant="destructive" 
-            size="icon" 
-            className="h-10 w-10 rounded-full shadow-lg"
+            <Maximize className="w-3.5 h-3.5" />
+          </button>
+          <button
             onClick={() => onRemove(channel.cctv_id)}
             title="Tutup Kamera"
+            className="w-8 h-8 rounded-md bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 flex items-center justify-center transition-all shadow-md"
           >
-            <X className="h-4 w-4" />
-          </Button>
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
     </div>
