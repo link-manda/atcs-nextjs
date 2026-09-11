@@ -71,8 +71,9 @@ export async function clearClientAICache(): Promise<void> {
       try {
         const dbs = await window.indexedDB.databases();
         for (let i = 0; i < dbs.length; i++) {
-          if (dbs[i].name) {
-            window.indexedDB.deleteDatabase(dbs[i].name!);
+          const dbName = dbs[i].name;
+          if (dbName && /^(tensorflow|tfjs|_tfjs)/i.test(dbName)) {
+            window.indexedDB.deleteDatabase(dbName);
           }
         }
       } catch (e) {
@@ -84,7 +85,9 @@ export async function clearClientAICache(): Promise<void> {
       try {
         const keys = await window.caches.keys();
         for (let i = 0; i < keys.length; i++) {
-          await window.caches.delete(keys[i]);
+          if (/^(tensorflow|tfjs|coco-ssd)/i.test(keys[i])) {
+            await window.caches.delete(keys[i]);
+          }
         }
       } catch (e) {
         console.warn("[ClientAI] CacheStorage clear skipped:", e);
@@ -122,11 +125,21 @@ export async function clearClientAICache(): Promise<void> {
   }
 }
 
+// 256-byte Lookup Table for Night Mode Gamma Boost (gamma = 0.65, factor = 1.15)
+const NIGHT_GAMMA_LUT = new Uint8Array(256);
+for (let i = 0; i < 256; i++) {
+  const boosted = Math.pow(i / 255, 0.65) * 255 * 1.15;
+  NIGHT_GAMMA_LUT[i] = boosted > 255 ? 255 : (boosted | 0);
+}
+
+// Reusable scratch buffer to eliminate 1MB/frame GC heap churn at 15-30 FPS
+let scratchBuffer: Uint8ClampedArray | null = null;
+
 /**
  * Enhanced Bird's-Eye POV & High-Resolution Preprocessor:
  * 1. 512px High-Density Extraction
  * 2. Spatial Unsharp Masking (High-Pass Kernel Sharpening) for vehicle contours
- * 3. Adaptive Gamma & Contrast Stretching for Night CCTV
+ * 3. Adaptive Gamma & Contrast Stretching for Night CCTV (O(1) LUT)
  */
 export function preprocessAdaptiveVision(
   video: HTMLVideoElement,
@@ -167,20 +180,23 @@ export function preprocessAdaptiveVision(
 
   let modified = false;
 
-  // 1. Night Vision Gamma Boost (if night scene and enabled)
+  // 1. Night Vision Gamma Boost with O(1) Precomputed LUT
   if (isNight && enableNightBoost) {
-    const gamma = 0.65;
     for (let i = 0; i < data.length; i += 4) {
-      data[i] = Math.min(255, Math.pow(data[i] / 255, gamma) * 255 * 1.15); // R
-      data[i + 1] = Math.min(255, Math.pow(data[i + 1] / 255, gamma) * 255 * 1.15); // G
-      data[i + 2] = Math.min(255, Math.pow(data[i + 2] / 255, gamma) * 255 * 1.15); // B
+      data[i] = NIGHT_GAMMA_LUT[data[i]];
+      data[i + 1] = NIGHT_GAMMA_LUT[data[i + 1]];
+      data[i + 2] = NIGHT_GAMMA_LUT[data[i + 2]];
     }
     modified = true;
   }
 
-  // 2. High-Pass Spatial Unsharp Masking Kernel (Sharpening Filter)
+  // 2. High-Pass Spatial Unsharp Masking Kernel (Sharpening Filter) with reused scratch buffer
   if (enableSharpening) {
-    const copy = new Uint8ClampedArray(data);
+    if (!scratchBuffer || scratchBuffer.length !== data.length) {
+      scratchBuffer = new Uint8ClampedArray(data.length);
+    }
+    scratchBuffer.set(data);
+    const copy = scratchBuffer;
     const w = CANVAS_SIZE;
     const h = CANVAS_SIZE;
 

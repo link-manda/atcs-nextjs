@@ -102,10 +102,16 @@ export function AIStationClient({ channels }: AIStationClientProps) {
       const saved = localStorage.getItem(`ai_cam_pref_${selectedChannel.cctv_id}`);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.targetFps) setTargetFps(parsed.targetFps);
+        if (typeof parsed.targetFps === "number") setTargetFps(parsed.targetFps);
         if (typeof parsed.enableSharpening === "boolean") setEnableSharpening(parsed.enableSharpening);
         if (typeof parsed.syncFrameLock === "boolean") setSyncFrameLock(parsed.syncFrameLock);
         if (typeof parsed.enableNightBoost === "boolean") setEnableNightBoost(parsed.enableNightBoost);
+      } else {
+        // Reset to default preferences when switching to a camera without saved overrides
+        setTargetFps(20);
+        setEnableSharpening(true);
+        setSyncFrameLock(true);
+        setEnableNightBoost(true);
       }
     } catch {}
   }, [selectedChannel]);
@@ -305,6 +311,20 @@ export function AIStationClient({ channels }: AIStationClientProps) {
       document.exitFullscreen().catch(() => {});
     }
   };
+
+  if (!selectedChannel) {
+    return (
+      <div className="w-full max-w-[1800px] mx-auto p-6 flex flex-col items-center justify-center min-h-[60vh] bg-zinc-950 text-zinc-100 font-sans">
+        <div className="rounded-xl border border-white/[0.08] bg-zinc-900/40 p-8 text-center max-w-md">
+          <Video className="w-8 h-8 text-zinc-500 mx-auto mb-3 animate-pulse" />
+          <h2 className="text-base font-bold text-white mb-2">Tidak Ada Feed Kamera Video Aktif</h2>
+          <p className="text-xs text-zinc-400">
+            Kamera dengan format streaming video langsung belum tersedia atau sedang offline. Silakan periksa kembali beberapa saat lagi.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-[1800px] mx-auto p-3 md:p-5 flex flex-col gap-4 bg-zinc-950 text-zinc-100 font-sans">

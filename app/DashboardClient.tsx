@@ -55,7 +55,7 @@ export default function DashboardClient({ channels }: Props) {
   }, [channels]);
 
   return (
-    <div className="flex flex-col lg:flex-row h-auto lg:h-[calc(100vh-3.5rem)] min-h-[calc(100vh-3.5rem)] gap-0 bg-zinc-950">
+    <div className="flex flex-col lg:flex-row h-auto lg:h-[calc(100vh-5.75rem)] min-h-[calc(100vh-5.75rem)] gap-0 bg-zinc-950">
       {/* ─── Tactical Map ─── */}
       <div className="relative isolate h-[58vh] lg:h-auto lg:flex-1">
         <DashboardMap cameras={channels} />

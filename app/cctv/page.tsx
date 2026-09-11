@@ -17,13 +17,13 @@ export default async function CCTVPage() {
     const channels = await getAllCCTVChannels();
 
     return (
-      <div className="h-[calc(100vh-3.5rem)] overflow-hidden">
+      <div className="h-[calc(100vh-5.75rem)] overflow-hidden">
         <CCTVPageClient channels={channels} />
       </div>
     );
   } catch {
     return (
-      <div className="p-4 md:p-5 min-h-[calc(100vh-3.5rem)]">
+      <div className="p-4 md:p-5 min-h-[calc(100vh-5.75rem)]">
         <div className="rounded-xl border border-error/30 bg-error/10 p-5 text-error">
           <h2 className="font-headline text-sm font-bold uppercase tracking-widest">
             Gagal Memuat Data CCTV

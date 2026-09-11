@@ -3,6 +3,7 @@
 import { CCTVChannel } from "@/types/cctv";
 import { useEffect, useState, useRef, useCallback } from "react";
 import Hls from "hls.js";
+import { VideoOff } from "lucide-react";
 
 interface CCTVPlayerProps {
   channel: CCTVChannel;
@@ -15,9 +16,6 @@ export function CCTVPlayer({ channel }: CCTVPlayerProps) {
   const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const MAX_RETRIES = 5;
-
-  // Diagnostic log to track URL duplication/mangling
-  console.log(`[CCTVPlayer] Rendering ${channel.ch_name} with URL: ${channel.streaming_url} (Type: ${channel.player_type})`);
 
   useEffect(() => {
     setMounted(true);
@@ -133,8 +131,8 @@ export function CCTVPlayer({ channel }: CCTVPlayerProps) {
         )}
         {retryCount >= MAX_RETRIES && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/95">
-            <span className="material-symbols-outlined text-error mb-2 text-2xl">videocam_off</span>
-            <span className="text-error text-xs font-bold uppercase tracking-widest">Stream Failed</span>
+            <VideoOff className="w-8 h-8 text-rose-500 mb-2" />
+            <span className="text-rose-500 text-xs font-bold uppercase tracking-widest">Stream Failed</span>
           </div>
         )}
       </div>
@@ -162,8 +160,8 @@ export function CCTVPlayer({ channel }: CCTVPlayerProps) {
       )}
       {retryCount >= MAX_RETRIES && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/95 z-30">
-          <span className="material-symbols-outlined text-error mb-2 text-2xl">videocam_off</span>
-          <span className="text-error text-xs font-bold uppercase tracking-widest">Stream Failed</span>
+          <VideoOff className="w-8 h-8 text-rose-500 mb-2" />
+          <span className="text-rose-500 text-xs font-bold uppercase tracking-widest">Stream Failed</span>
         </div>
       )}
     </div>

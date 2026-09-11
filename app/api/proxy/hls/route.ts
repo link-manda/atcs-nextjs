@@ -19,9 +19,15 @@ export async function GET(req: NextRequest) {
     return new NextResponse('Invalid url parameter', { status: 400 });
   }
 
-  // Enforce HTTPS and strict hostname allowlist
-  if (parsedUrl.protocol !== 'https:' || !ALLOWED_HOSTS.has(parsedUrl.hostname)) {
-    return new NextResponse('Forbidden upstream host', { status: 403 });
+  // Enforce HTTPS, strict hostname allowlist, default port only, and no embedded credentials
+  if (
+    parsedUrl.protocol !== 'https:' ||
+    !ALLOWED_HOSTS.has(parsedUrl.hostname) ||
+    (parsedUrl.port && parsedUrl.port !== '443') ||
+    parsedUrl.username ||
+    parsedUrl.password
+  ) {
+    return new NextResponse('Forbidden upstream host or parameters', { status: 403 });
   }
 
   try {
@@ -41,7 +47,12 @@ export async function GET(req: NextRequest) {
     const upstreamResponse = await fetch(targetUrl, {
       cache: 'no-store',
       headers,
+      redirect: 'manual', // Prevent SSRF via open redirect to internal network
     });
+
+    if (upstreamResponse.status >= 300 && upstreamResponse.status < 400) {
+      return new NextResponse('Upstream redirects not permitted', { status: 502 });
+    }
 
     if (!upstreamResponse.ok) {
       return new NextResponse(`Upstream returned ${upstreamResponse.status}`, {
@@ -93,6 +104,8 @@ export async function GET(req: NextRequest) {
           'Content-Type': 'application/vnd.apple.mpegurl',
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, OPTIONS',
+          'Access-Control-Allow-Headers': '*',
+          'Access-Control-Expose-Headers': 'Content-Length, Content-Range',
           'Cache-Control': 'no-cache, no-store, max-age=0, must-revalidate',
           'Pragma': 'no-cache',
           'Expires': '0',
@@ -100,17 +113,33 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Binary stream chunk (.ts video segment or .mp4 fragment)
-    const arrayBuffer = await upstreamResponse.arrayBuffer();
+    // Binary stream chunk (.ts video segment or .mp4 fragment) - stream directly if body exists
     const defaultContentType = targetUrl.endsWith('.mp4') ? 'video/mp4' : 'video/MP2T';
+    const chunkHeaders: Record<string, string> = {
+      'Content-Type': contentType || defaultContentType,
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': '*',
+      'Access-Control-Expose-Headers': 'Content-Length, Content-Range',
+      'Cache-Control': 'public, max-age=3600, immutable',
+    };
+
+    const contentLength = upstreamResponse.headers.get('content-length');
+    if (contentLength) {
+      chunkHeaders['Content-Length'] = contentLength;
+    }
+
+    if (upstreamResponse.body) {
+      return new NextResponse(upstreamResponse.body, {
+        status: 200,
+        headers: chunkHeaders,
+      });
+    }
+
+    const arrayBuffer = await upstreamResponse.arrayBuffer();
     return new NextResponse(arrayBuffer, {
       status: 200,
-      headers: {
-        'Content-Type': contentType || defaultContentType,
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, OPTIONS',
-        'Cache-Control': 'public, max-age=3600, immutable',
-      },
+      headers: chunkHeaders,
     });
   } catch (error: any) {
     console.error('[HLS Proxy] Fetch error:', error);

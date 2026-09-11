@@ -125,11 +125,10 @@ export class ClientVehicleTracker {
         if (!vehicle.counted && vehicle.history.length >= 2) {
           const p1Y = vehicle.history[vehicle.history.length - 2][1];
           const p2Y = cy;
-          const yMin = det.bbox[1];
-          const yMax = det.bbox[1] + det.bbox[3];
 
-          const crossedDown = p1Y <= tripwireY && p2Y >= tripwireY;
-          const crossedUp = p1Y >= tripwireY && p2Y <= tripwireY;
+          // Strict directional movement across the virtual tripwire
+          const crossedDown = p1Y < tripwireY && p2Y >= tripwireY;
+          const crossedUp = p1Y > tripwireY && p2Y <= tripwireY;
 
           // Only count when centroid path genuinely crosses the tripwire
           if (crossedDown || crossedUp) {
