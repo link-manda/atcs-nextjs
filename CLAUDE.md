@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Bali Command Center / ATCS — a Next.js 14 (App Router) dashboard that aggregates Bali province CCTV feeds, traffic monitoring, and analytics. Stack: TypeScript, Tailwind + Shadcn UI (Radix), Leaflet via `react-leaflet`, ReactPlayer for streams, Lucide + Material Symbols for icons.
+Bali Command Center / ATCS — a Next.js 14 (App Router) dashboard that aggregates Bali province CCTV feeds, traffic monitoring, and analytics. Stack: TypeScript, Tailwind + Shadcn UI (Radix), Leaflet via `react-leaflet`, native HTML5 video / Hls.js for streams, TensorFlow.js for in-browser neural vision, Lucide + Material Symbols for icons.
 
 ## Commands
 
@@ -18,9 +18,9 @@ npx jest app/cctv/CCTVPageClient.test.tsx   # single test file
 npx jest -t "caps selection"                # run by test name
 ```
 
-There is no `test` script in `package.json`; invoke Jest directly. Jest uses `next/jest`, jsdom, `@/` → repo root path alias (mirrors `tsconfig.json`), and `jest.setup.ts` (just imports `@testing-library/jest-dom`).
+There is no `test` script in `package.json`; invoke Jest directly. Jest uses `next/jest`, jsdom, `@/` → repo root path alias (mirrors `tsconfig.json`), and `jest.setup.ts` (imports `@testing-library/jest-dom`).
 
-`CCTV_API_URL` env var optionally overrides the provincial CCTV endpoint. `NEXT_PUBLIC_TOMTOM_API_KEY` is required for the live traffic tile layer.
+`CCTV_API_URL` env var optionally overrides the provincial CCTV endpoint. `NEXT_PUBLIC_TOMTOM_API_KEY` is required for the live traffic tile layer. `DENPASAR_CLIENT_ID` and `DENPASAR_CLIENT_SECRET` can override default ATCS API credentials.
 
 ## Architecture
 
@@ -40,17 +40,15 @@ Each upstream entry is normalized through `mapToChannel()` into `CCTVChannel` (`
 
 ### Stream rewrites and proxies
 
-Two upstream quirks are handled at the data layer / route layer:
-
-1. **Shinobi (Buleleng) MP4 → iframe rewrite.** The provincial API returns `https://shinobi.bulelengkab.go.id/<token>/mp4/<group>/<monitor>/s.mp4` URLs that 504/AbortError. `mapToChannel()` rewrites them to the Shinobi `/embed/<group>/<monitor>/fullscreen|jquery|hd` iframe URL (pipes encoded as `%7C` for Firefox), then routes that through `app/api/proxy/shinobi/route.ts`. The proxy injects a `<script>` after Shinobi's `socket.io.min.js` tag that monkey-patches `window.io` to fix a duplicate-URL bug in their `bs5.embed.js`. Touch this carefully — breaking it kills every Buleleng stream.
-2. **Generic Denpasar JSON proxy.** `app/api/proxy/route.ts` forwards arbitrary URLs with the spoofed Denpasar headers/User-Agent. Used for client-side reads that need the credentials baked in server-side.
+1. **Secured HLS Proxy.** `app/api/proxy/hls/route.ts` proxies `.m3u8` playlists and `.ts` video chunks to resolve browser CORS limitations on cross-origin media streams. Enforces strict security allowlist restricting targets to `atcs.denpasarkota.go.id` and `transcode.baliprov.go.id`, rejecting SSRF attempts and non-whitelisted hosts.
 
 ### Routes
 
 - `/` (`app/page.tsx` → `DashboardClient.tsx`) — Bali-wide tactical map + stats panel.
 - `/cctv` (`CCTVPageClient.tsx`) — grid of live streams with sidebar selection, capped by current layout's `maxSlots`.
+- `/ai-station` (`AIStationClient.tsx`) — client-side WebGL vehicle detection & tripwire tracking.
 - `/analytics` — traffic report visualizations.
-- `/api/proxy` and `/api/proxy/shinobi` — described above.
+- `/api/proxy/hls` — secured HLS stream proxy.
 
 ### Map components
 

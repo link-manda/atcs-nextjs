@@ -20,3 +20,6 @@ Users/
 docs/
 hooks/
 graphify-out
+
+# Local sensitive data
+atcs-dps.json

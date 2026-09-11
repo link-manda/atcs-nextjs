@@ -91,8 +91,28 @@ export async function clearClientAICache(): Promise<void> {
       }
     }
 
-    if (typeof localStorage !== "undefined") localStorage.clear();
-    if (typeof sessionStorage !== "undefined") sessionStorage.clear();
+    // Selectively clear only AI-specific cache and preferences, preserving user API keys (e.g. tomtom_api_key)
+    if (typeof localStorage !== "undefined") {
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith("ai_cam_pref_") || key.startsWith("tfjs_") || key.startsWith("tensorflow"))) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach((k) => localStorage.removeItem(k));
+    }
+
+    if (typeof sessionStorage !== "undefined") {
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key && (key.startsWith("ai_") || key.startsWith("tfjs_"))) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach((k) => sessionStorage.removeItem(k));
+    }
 
     if (typeof window !== "undefined") {
       window.location.reload();
@@ -164,18 +184,18 @@ export function preprocessAdaptiveVision(
     const w = CANVAS_SIZE;
     const h = CANVAS_SIZE;
 
-    // Fast 3x3 kernel convolution on RGB channels
+    // Fast 3x3 kernel convolution on RGB channels with direct index offsets
     for (let y = 1; y < h - 1; y += 1) {
       const rowOffset = y * w;
       const topOffset = (y - 1) * w;
       const bottomOffset = (y + 1) * w;
 
       for (let x = 1; x < w - 1; x += 1) {
-        const idx = (rowOffset + x) * 4;
-        const topIdx = (topOffset + x) * 4;
-        const btmIdx = (bottomOffset + x) * 4;
-        const leftIdx = (rowOffset + x - 1) * 4;
-        const rightIdx = (rowOffset + x + 1) * 4;
+        const idx = (rowOffset + x) << 2;
+        const topIdx = (topOffset + x) << 2;
+        const btmIdx = (bottomOffset + x) << 2;
+        const leftIdx = idx - 4;
+        const rightIdx = idx + 4;
 
         for (let c = 0; c < 3; c++) {
           const center = copy[idx + c];
@@ -186,7 +206,7 @@ export function preprocessAdaptiveVision(
 
           // High-pass filter boost
           const sharpVal = center * 2.4 - (top + bottom + left + right) * 0.35;
-          data[idx + c] = sharpVal < 0 ? 0 : sharpVal > 255 ? 255 : sharpVal;
+          data[idx + c] = sharpVal < 0 ? 0 : sharpVal > 255 ? 255 : (sharpVal | 0);
         }
       }
     }

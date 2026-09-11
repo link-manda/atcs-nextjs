@@ -130,9 +130,9 @@ export class ClientVehicleTracker {
 
           const crossedDown = p1Y <= tripwireY && p2Y >= tripwireY;
           const crossedUp = p1Y >= tripwireY && p2Y <= tripwireY;
-          const boxSpanned = yMin <= tripwireY && tripwireY <= yMax;
 
-          if (crossedDown || crossedUp || boxSpanned) {
+          // Only count when centroid path genuinely crosses the tripwire
+          if (crossedDown || crossedUp) {
             vehicle.counted = true;
             this.counts.total++;
 

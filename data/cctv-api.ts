@@ -110,8 +110,8 @@ const loadDenpasarCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
       next: { revalidate: CCTV_REVALIDATE_SECONDS },
       headers: {
         Accept: 'application/json',
-        'x-client-id': 'a194e6ae-d4dd-4b62-a0ac-388922f09303',
-        'x-client-secret': 'f430fde38a031fb657a2a7d6f84644a9aed767a4c22314d4b7c565648acc2396',
+        'x-client-id': process.env.DENPASAR_CLIENT_ID || 'a194e6ae-d4dd-4b62-a0ac-388922f09303',
+        'x-client-secret': process.env.DENPASAR_CLIENT_SECRET || 'f430fde38a031fb657a2a7d6f84644a9aed767a4c22314d4b7c565648acc2396',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       },
     });
@@ -179,8 +179,8 @@ interface BulelengMonitor {
 }
 
 const loadBulelengCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
-  const BULELENG_API_KEY = 'Amk60KFacq87lQMvTCMHu17u00ONuC';
-  const BULELENG_GROUP = 'admin';
+  const BULELENG_API_KEY = process.env.BULELENG_API_KEY || 'Amk60KFacq87lQMvTCMHu17u00ONuC';
+  const BULELENG_GROUP = process.env.BULELENG_GROUP || 'admin';
   const BULELENG_API_URL = `https://shinobi.bulelengkab.go.id/${BULELENG_API_KEY}/monitor/${BULELENG_GROUP}`;
 
   try {

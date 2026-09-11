@@ -6,23 +6,23 @@ import { CCTVChannel } from "@/types/cctv";
 const mockChannels: CCTVChannel[] = [
   {
     cctv_id: 1,
+    ch_id: "DPS-1",
     ch_name: "PASAR SATRIA PTZ",
     streaming_url: "https://atcs.denpasarkota.go.id/hls/pasar_satria.m3u8",
     player_type: "video",
-    latitude: -8.65,
-    longitude: 115.22,
+    lat: -8.65,
+    lng: 115.22,
     region: "Denpasar",
-    is_active: true,
   },
   {
     cctv_id: 2,
+    ch_id: "BDG-2",
     ch_name: "SIMPANG DEWA RUCI",
     streaming_url: "https://atcs.badungkab.go.id/hls/dewa_ruci.m3u8",
     player_type: "video",
-    latitude: -8.72,
-    longitude: 115.18,
+    lat: -8.72,
+    lng: 115.18,
     region: "Badung",
-    is_active: true,
   },
 ];
 

@@ -42,11 +42,33 @@ export function detectRegion(cctv: RawCCTV): CCTVRegion {
   if (url.includes('bulelengkab')) return 'Buleleng';
 
   if (
-    name.includes('besakih') ||
-    name.includes('pura batur') ||
     name.includes('batur') ||
-    (name.includes('subagan') || name.includes('kodim')) &&
-      cctv.lng !== null && cctv.lng > 115.5
+    name.includes('kintamani') ||
+    name.includes('penelokan') ||
+    name.includes('kayubihi') ||
+    name.includes('bangli')
+  )
+    return 'Bangli';
+
+  if (
+    name.includes('gianyar') ||
+    name.includes('ubud') ||
+    name.includes('sukawati') ||
+    name.includes('tegallalang') ||
+    name.includes('celuk') ||
+    name.includes('blahbatuh') ||
+    name.includes('batubulan')
+  )
+    return 'Gianyar';
+
+  if (
+    name.includes('besakih') ||
+    name.includes('karangasem') ||
+    name.includes('amlapura') ||
+    name.includes('candidasa') ||
+    name.includes('padangbai') ||
+    ((name.includes('subagan') || name.includes('kodim')) &&
+      cctv.lng !== null && cctv.lng > 115.5)
   )
     return 'Karangasem';
 
@@ -66,13 +88,19 @@ export function detectRegion(cctv: RawCCTV): CCTVRegion {
     name.includes('catus pata') ||
     name.includes('lepang') ||
     name.includes('banjarangkan') ||
-    name.includes('pasar satria') ||
-    name.includes('pasar senggol') ||
     (name.includes('simpang lima') && cctv.lng !== null && cctv.lng > 115.35)
   )
     return 'Klungkung';
 
-  if (name.includes('padang galak') || name.includes('bali beach') || name.includes('sudirman'))
+  if (
+    name.includes('padang galak') ||
+    name.includes('bali beach') ||
+    name.includes('pasar satria') ||
+    name.includes('denpasar') ||
+    name.includes('sanur') ||
+    name.includes('renon') ||
+    name.includes('sudirman')
+  )
     return 'Denpasar';
 
   if (
@@ -131,6 +159,8 @@ export function detectRegion(cctv: RawCCTV): CCTVRegion {
     if (cctv.lat < -8.75)                                  return 'Badung Selatan';
     if (cctv.lat < -8.65 && cctv.lng < 115.22)            return 'Badung';
     if (cctv.lat > -8.55 && cctv.lng > 115.35)            return 'Klungkung';
+    if (cctv.lat > -8.45 && cctv.lat < -8.15 && cctv.lng >= 115.28 && cctv.lng <= 115.42) return 'Bangli';
+    if (cctv.lat >= -8.62 && cctv.lat <= -8.45 && cctv.lng >= 115.24 && cctv.lng <= 115.35) return 'Gianyar';
     if (cctv.lng >= 115.10 && cctv.lng <= 115.15)          return 'Tabanan';
   }
 

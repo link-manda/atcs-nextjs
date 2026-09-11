@@ -105,6 +105,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
         if (parsed.targetFps) setTargetFps(parsed.targetFps);
         if (typeof parsed.enableSharpening === "boolean") setEnableSharpening(parsed.enableSharpening);
         if (typeof parsed.syncFrameLock === "boolean") setSyncFrameLock(parsed.syncFrameLock);
+        if (typeof parsed.enableNightBoost === "boolean") setEnableNightBoost(parsed.enableNightBoost);
       }
     } catch {}
   }, [selectedChannel]);
@@ -141,9 +142,18 @@ export function AIStationClient({ channels }: AIStationClientProps) {
     });
   };
 
-  // Filtered cameras list
+  const handleToggleNightBoost = () => {
+    setEnableNightBoost((prev) => {
+      const next = !prev;
+      saveCameraPreference("enableNightBoost", next);
+      return next;
+    });
+  };
+
+  // Filtered cameras list (strictly video feeds for AI inference)
   const filteredChannels = useMemo(() => {
     return channels.filter((ch) => {
+      if (ch.player_type !== "video") return false;
       const matchRegion = regionFilter === "ALL" || ch.region === regionFilter;
       const matchSearch =
         searchQuery === "" ||
@@ -488,7 +498,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
             onTargetFpsChange={handleTargetFpsChange}
             isNightScene={isNightScene}
             enableNightBoost={enableNightBoost}
-            onToggleNightBoost={() => setEnableNightBoost((prev) => !prev)}
+            onToggleNightBoost={handleToggleNightBoost}
             enableSharpening={enableSharpening}
             onToggleSharpening={handleToggleSharpening}
             syncFrameLock={syncFrameLock}

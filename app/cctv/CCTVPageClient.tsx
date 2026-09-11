@@ -93,7 +93,7 @@ export default function CCTVPageClient(props: Props) {
   );
 
   return (
-    <div className="flex gap-4 h-[calc(100vh-3.5rem)] p-3 md:p-4 bg-zinc-950 overflow-hidden">
+    <div className="flex gap-4 h-full p-3 md:p-4 bg-zinc-950 overflow-hidden">
       {/* ─── Camera List Sidebar (Desktop) ─── */}
       <section
         className={cn(
