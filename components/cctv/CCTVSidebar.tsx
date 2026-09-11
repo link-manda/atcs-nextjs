@@ -57,26 +57,26 @@ export default function CCTVSidebar({
   );
 
   return (
-    <div className="flex flex-col h-full bg-zinc-950 text-zinc-100">
+    <div className="flex flex-col h-full bg-card text-foreground transition-colors">
       {/* Search & Header */}
-      <div className="p-3.5 border-b border-white/[0.08] space-y-2.5 flex-shrink-0">
+      <div className="p-3.5 border-b border-border space-y-2.5 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold tracking-tight text-zinc-200 flex items-center gap-2">
-            <Radio className="w-3.5 h-3.5 text-emerald-400" />
+          <span className="text-xs font-semibold tracking-tight text-foreground flex items-center gap-2">
+            <Radio className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
             Daftar Kamera Wilayah
           </span>
-          <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-medium">
+          <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-medium">
             {selectedCams.length}/{maxSlots} Terpilih
           </span>
         </div>
 
         <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-400" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <Input 
             placeholder="Cari kamera atau jalan..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-8 pl-8 text-xs bg-white/[0.03] border-white/[0.08] focus:border-emerald-500/50 text-zinc-200 placeholder:text-zinc-400 rounded-md font-sans transition-colors"
+            className="h-8 pl-8 text-xs bg-secondary/50 border-border focus:border-emerald-500/50 text-foreground placeholder:text-muted-foreground rounded-md font-sans transition-colors"
           />
         </div>
       </div>
@@ -86,12 +86,12 @@ export default function CCTVSidebar({
         <Accordion type="multiple" className="w-full px-2 py-2">
           {regions.map((region) => (
             <AccordionItem key={region} value={region} className="border-none mb-1">
-              <AccordionTrigger className="hover:no-underline py-1.5 px-2.5 hover:bg-white/[0.04] rounded-md transition-all group data-[state=open]:bg-white/[0.03]">
+              <AccordionTrigger className="hover:no-underline py-1.5 px-2.5 hover:bg-secondary/70 rounded-md transition-all group data-[state=open]:bg-secondary/50">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-zinc-200">
+                  <span className="text-xs font-medium text-foreground">
                     {region}
                   </span>
-                  <span className="font-mono text-[10px] px-1.5 py-0.2 rounded bg-white/[0.06] text-zinc-400 group-data-[state=open]:bg-emerald-500/20 group-data-[state=open]:text-emerald-300">
+                  <span className="font-mono text-[10px] px-1.5 py-0.2 rounded bg-secondary text-muted-foreground group-data-[state=open]:bg-emerald-500/20 group-data-[state=open]:text-emerald-600 dark:group-data-[state=open]:text-emerald-300">
                     {grouped[region].length}
                   </span>
                 </div>
@@ -112,8 +112,8 @@ export default function CCTVSidebar({
                         className={cn(
                           "w-full min-w-0 flex items-center justify-between gap-2 px-2 py-1.5 rounded-md text-left transition-all text-xs font-sans group/item",
                           isSelected 
-                            ? "bg-emerald-500/15 text-emerald-300 font-medium border border-emerald-500/30" 
-                            : "hover:bg-white/[0.04] text-zinc-300 border border-transparent",
+                            ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 font-medium border border-emerald-500/30" 
+                            : "hover:bg-secondary/60 text-muted-foreground hover:text-foreground border border-transparent",
                           isDisabled && "opacity-35 cursor-not-allowed hover:bg-transparent"
                         )}
                       >
@@ -121,17 +121,17 @@ export default function CCTVSidebar({
                           <span
                             className={cn(
                               "w-1.5 h-1.5 rounded-full flex-shrink-0",
-                              isSelected ? "bg-emerald-400 animate-pulse" : "bg-zinc-400"
+                              isSelected ? "bg-emerald-500 dark:bg-emerald-400 animate-pulse" : "bg-muted-foreground/50"
                             )}
                           />
                           <span className="truncate">{cam.ch_name}</span>
                         </div>
                         {isSelected ? (
                           <div className="w-3.5 h-3.5 rounded bg-emerald-500 flex items-center justify-center flex-shrink-0">
-                            <Check className="w-2.5 h-2.5 text-zinc-950 stroke-[3]" />
+                            <Check className="w-2.5 h-2.5 text-white dark:text-zinc-950 stroke-[3]" />
                           </div>
                         ) : (
-                          <span className="text-[10px] text-zinc-400 font-mono opacity-0 group-hover/item:opacity-100 transition-opacity flex-shrink-0">
+                          <span className="text-[10px] text-muted-foreground font-mono opacity-0 group-hover/item:opacity-100 transition-opacity flex-shrink-0">
                             +Pilih
                           </span>
                         )}

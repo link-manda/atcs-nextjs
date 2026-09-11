@@ -19,8 +19,8 @@ import Link from 'next/link';
 const AnalyticsMap = dynamic(() => import('@/components/dashboard/DashboardMap'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full flex items-center justify-center bg-zinc-950">
-      <MapPin className="w-6 h-6 text-emerald-400 animate-pulse" />
+    <div className="w-full h-full flex items-center justify-center bg-background">
+      <MapPin className="w-6 h-6 text-emerald-500 dark:text-emerald-400 animate-pulse" />
     </div>
   ),
 });
@@ -62,30 +62,30 @@ export default function AnalyticsClient({ channels }: Props) {
   }, [channels]);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 px-4 md:px-8 py-6 pb-12 font-sans">
+    <div className="min-h-screen bg-background text-foreground px-4 md:px-8 py-6 pb-12 font-sans">
       {/* ─── Top Header ─── */}
-      <header className="mb-6 flex flex-wrap justify-between items-end gap-4 border-b border-white/[0.08] pb-5">
+      <header className="mb-6 flex flex-wrap justify-between items-end gap-4 border-b border-border pb-5">
         <div>
-          <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
             Telemetri & Analisis Jaringan
           </span>
-          <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white mt-0.5">
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground mt-0.5">
             Statistik & Distribusi Infrastruktur CCTV
           </h1>
-          <p className="text-zinc-400 text-xs mt-1 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <p className="text-muted-foreground text-xs mt-1 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
             Integrasi Multi-Sumber Satu Data Bali & ATCS Denpasar
           </p>
         </div>
 
         <div className="flex flex-wrap gap-2.5">
-          <div className="px-3.5 py-2 rounded-lg bg-white/[0.03] border border-white/[0.08] flex flex-col items-end">
-            <span className="text-[10px] font-mono uppercase text-zinc-400">Total Terpasang</span>
-            <span className="font-mono text-xl font-bold text-white">{stats.total}</span>
+          <div className="px-3.5 py-2 rounded-lg bg-card border border-border shadow-sm flex flex-col items-end">
+            <span className="text-[10px] font-mono uppercase text-muted-foreground">Total Terpasang</span>
+            <span className="font-mono text-xl font-bold text-foreground">{stats.total}</span>
           </div>
           <div className="px-3.5 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex flex-col items-end">
-            <span className="text-[10px] font-mono uppercase text-emerald-400">Wilayah Tercakup</span>
-            <span className="font-mono text-xl font-bold text-emerald-400">{stats.regionEntries.length}</span>
+            <span className="text-[10px] font-mono uppercase text-emerald-600 dark:text-emerald-400">Wilayah Tercakup</span>
+            <span className="font-mono text-xl font-bold text-emerald-600 dark:text-emerald-400">{stats.regionEntries.length}</span>
           </div>
         </div>
       </header>
@@ -101,7 +101,7 @@ export default function AnalyticsClient({ channels }: Props) {
                 value: stats.total,
                 sub: 'unit terdaftar di Bali',
                 icon: Video,
-                color: 'text-zinc-100',
+                color: 'text-foreground',
                 bar: '#10b981',
                 pct: 100,
               },
@@ -137,10 +137,10 @@ export default function AnalyticsClient({ channels }: Props) {
               return (
                 <div
                   key={card.label}
-                  className="bg-white/[0.02] border border-white/[0.08] rounded-lg p-3.5 flex flex-col justify-between"
+                  className="bg-card border border-border rounded-lg p-3.5 flex flex-col justify-between shadow-sm"
                 >
                   <div className="flex items-center justify-between pb-2">
-                    <span className="text-xs font-medium text-zinc-300">
+                    <span className="text-xs font-medium text-muted-foreground">
                       {card.label}
                     </span>
                     <Icon className={`w-3.5 h-3.5 ${card.color}`} />
@@ -149,13 +149,13 @@ export default function AnalyticsClient({ channels }: Props) {
                     <p className={`text-2xl font-mono font-bold tracking-tight ${card.color}`}>
                       {card.value}
                     </p>
-                    <div className="h-1 w-full bg-white/[0.06] rounded-full overflow-hidden">
+                    <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-500"
                         style={{ width: `${card.pct}%`, backgroundColor: card.bar }}
                       />
                     </div>
-                    <p className="text-[10px] text-zinc-400">{card.sub}</p>
+                    <p className="text-[10px] text-muted-foreground">{card.sub}</p>
                   </div>
                 </div>
               );
@@ -164,10 +164,10 @@ export default function AnalyticsClient({ channels }: Props) {
         </section>
 
         {/* 2. Region Bar Chart */}
-        <div className="col-span-1 md:col-span-1 xl:col-span-7 flex flex-col rounded-lg border border-white/[0.08] bg-white/[0.02] overflow-hidden">
-          <div className="px-4 py-3 flex items-center gap-2 border-b border-white/[0.06]">
-            <BarChart3 className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="text-xs font-semibold text-zinc-200">
+        <div className="col-span-1 md:col-span-1 xl:col-span-7 flex flex-col rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+          <div className="px-4 py-3 flex items-center gap-2 border-b border-border">
+            <BarChart3 className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
+            <span className="text-xs font-semibold text-foreground">
               Sebaran Titik Kamera per Wilayah
             </span>
           </div>
@@ -177,21 +177,21 @@ export default function AnalyticsClient({ channels }: Props) {
               const color = REGION_COLORS[region] ?? '#38bdf8';
               const totalPct = Math.round((count / (stats.total || 1)) * 100);
               return (
-                <div key={region} className="p-2 rounded bg-white/[0.02] border border-white/[0.04]">
+                <div key={region} className="p-2 rounded bg-muted/40 border border-border/50">
                   <div className="flex items-center justify-between mb-1.5">
                     <div className="flex items-center gap-2">
                       <span
                         className="w-1.5 h-1.5 rounded-full flex-shrink-0"
                         style={{ backgroundColor: color }}
                       />
-                      <span className="text-xs font-medium text-zinc-200">{region}</span>
+                      <span className="text-xs font-medium text-foreground">{region}</span>
                     </div>
                     <div className="flex items-center gap-2 font-mono text-xs">
-                      <span className="text-zinc-400 text-[10px]">{totalPct}%</span>
-                      <span className="text-white font-bold" style={{ color }}>{count}</span>
+                      <span className="text-muted-foreground text-[10px]">{totalPct}%</span>
+                      <span className="font-bold" style={{ color }}>{count}</span>
                     </div>
                   </div>
-                  <div className="h-1 w-full bg-white/[0.06] rounded-full overflow-hidden">
+                  <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"
                       style={{ width: `${pct}%`, backgroundColor: color }}
@@ -204,17 +204,17 @@ export default function AnalyticsClient({ channels }: Props) {
         </div>
 
         {/* 3. Tactical Map Preview */}
-        <div className="col-span-1 md:col-span-1 xl:col-span-5 flex flex-col rounded-lg border border-white/[0.08] bg-white/[0.02] overflow-hidden">
-          <div className="px-4 py-3 flex items-center justify-between border-b border-white/[0.06]">
+        <div className="col-span-1 md:col-span-1 xl:col-span-5 flex flex-col rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+          <div className="px-4 py-3 flex items-center justify-between border-b border-border">
             <div className="flex items-center gap-2">
-              <Compass className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="text-xs font-semibold text-zinc-200">
+              <Compass className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
+              <span className="text-xs font-semibold text-foreground">
                 Peta Spasial Terpadu
               </span>
             </div>
             <Link
               href="/"
-              className="text-[11px] text-emerald-400 hover:text-emerald-300 flex items-center gap-1 font-medium"
+              className="text-[11px] text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-medium"
             >
               <span>Buka Penuh</span>
               <ArrowRight className="w-3 h-3" />
@@ -227,15 +227,15 @@ export default function AnalyticsClient({ channels }: Props) {
       </div>
 
       {/* ─── Footer Action Bar ─── */}
-      <footer className="mt-8 pt-5 border-t border-white/[0.08] flex flex-wrap justify-between items-center gap-4">
+      <footer className="mt-8 pt-5 border-t border-border flex flex-wrap justify-between items-center gap-4">
         <div className="flex flex-wrap items-center gap-6">
           <div>
-            <span className="text-[10px] font-mono uppercase text-zinc-400">Sumber Data Terpadu</span>
-            <p className="text-xs font-semibold text-zinc-200">Bali Satu Data · Dishub ATCS</p>
+            <span className="text-[10px] font-mono uppercase text-muted-foreground">Sumber Data Terpadu</span>
+            <p className="text-xs font-semibold text-foreground">Bali Satu Data · Dishub ATCS</p>
           </div>
           <div>
-            <span className="text-[10px] font-mono uppercase text-zinc-400">Status Node Kamera</span>
-            <p className="text-xs font-mono font-medium text-emerald-400">{stats.total} Titik Terhubung</p>
+            <span className="text-[10px] font-mono uppercase text-muted-foreground">Status Node Kamera</span>
+            <p className="text-xs font-mono font-medium text-emerald-600 dark:text-emerald-400">{stats.total} Titik Terhubung</p>
           </div>
         </div>
         <div className="flex gap-2">

@@ -5,6 +5,8 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { cn } from "@/lib/utils";
 
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
+
 export const metadata: Metadata = {
   title: "BALI COMMAND CENTER | ATCS TRAFFIC OPS",
   description:
@@ -19,10 +21,13 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={cn("dark", "font-sans", GeistSans.variable, GeistMono.variable)}
+      className={cn("font-sans", GeistSans.variable, GeistMono.variable)}
+      suppressHydrationWarning
     >
       <body className="bg-background text-foreground font-sans antialiased selection:bg-emerald-500/20 selection:text-emerald-400">
-        <AppShell>{children}</AppShell>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
+          <AppShell>{children}</AppShell>
+        </ThemeProvider>
       </body>
     </html>
   );

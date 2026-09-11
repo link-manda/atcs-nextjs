@@ -25,10 +25,10 @@ import { cn } from "@/lib/utils";
 const CCTVMap = dynamic(() => import('@/components/cctv/CCTVMap'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full flex items-center justify-center bg-zinc-950">
+    <div className="w-full h-full flex items-center justify-center bg-background">
       <div className="text-center">
-        <MapIcon className="w-6 h-6 text-emerald-400 animate-pulse mx-auto mb-2.5" />
-        <p className="text-xs font-mono text-zinc-400">
+        <MapIcon className="w-6 h-6 text-emerald-500 dark:text-emerald-400 animate-pulse mx-auto mb-2.5" />
+        <p className="text-xs font-mono text-muted-foreground">
           Memuat Peta Spasial CCTV...
         </p>
       </div>
@@ -93,7 +93,7 @@ export default function CCTVPageClient(props: Props) {
   );
 
   return (
-    <div className="flex gap-4 h-full p-3 md:p-4 bg-zinc-950 overflow-hidden">
+    <div className="flex gap-4 h-full p-3 md:p-4 bg-background text-foreground overflow-hidden transition-colors">
       {/* ─── Camera List Sidebar (Desktop) ─── */}
       <section
         className={cn(
@@ -101,7 +101,7 @@ export default function CCTVPageClient(props: Props) {
           isSidebarOpen ? "w-80 opacity-100" : "w-0 opacity-0 overflow-hidden pointer-events-none"
         )}
       >
-        <div className="h-full w-80 rounded-lg overflow-hidden border border-white/[0.08] bg-zinc-950/90 shadow-lg">
+        <div className="h-full w-80 rounded-lg overflow-hidden border border-border bg-card/90 shadow-lg">
           <CCTVSidebar
             channels={allChannels}
             selectedCams={selectedCams}
@@ -120,7 +120,7 @@ export default function CCTVPageClient(props: Props) {
               <Video className="w-5 h-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-80 bg-zinc-950 border-white/[0.08]">
+          <SheetContent side="left" className="p-0 w-80 bg-background border-border text-foreground">
             <CCTVSidebar
               channels={allChannels}
               selectedCams={selectedCams}
@@ -135,13 +135,13 @@ export default function CCTVPageClient(props: Props) {
       {/* ─── Main Monitoring Canvas ─── */}
       <section className="flex-1 flex flex-col gap-3 min-w-0 transition-all duration-300">
         {/* Floating Top Linear Toolbar */}
-        <div className="flex items-center justify-between flex-shrink-0 gap-3 flex-wrap bg-zinc-900/60 border border-white/[0.08] p-2 rounded-lg backdrop-blur-md">
+        <div className="flex items-center justify-between flex-shrink-0 gap-3 flex-wrap bg-card/80 border border-border p-2 rounded-lg backdrop-blur-md">
           {/* Left Controls */}
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="icon"
-              className="hidden md:flex h-8 w-8 text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06] rounded-md"
+              className="hidden md:flex h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-md"
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               title={isSidebarOpen ? "Sembunyikan Sidebar" : "Buka Sidebar"}
             >
@@ -149,14 +149,14 @@ export default function CCTVPageClient(props: Props) {
             </Button>
 
             {/* View Mode Toggle */}
-            <div className="flex items-center p-0.5 bg-black/40 border border-white/[0.06] rounded-md">
+            <div className="flex items-center p-0.5 bg-secondary/80 border border-border rounded-md">
               <button
                 onClick={() => setViewMode('grid')}
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded transition-all",
                   viewMode === 'grid'
-                    ? "bg-white/[0.1] text-white shadow-sm"
-                    : "text-zinc-400 hover:text-zinc-200"
+                    ? "bg-background text-foreground shadow-sm font-semibold"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <LayoutGrid className="w-3.5 h-3.5" />
@@ -167,8 +167,8 @@ export default function CCTVPageClient(props: Props) {
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded transition-all",
                   viewMode === 'map'
-                    ? "bg-white/[0.1] text-white shadow-sm"
-                    : "text-zinc-400 hover:text-zinc-200"
+                    ? "bg-background text-foreground shadow-sm font-semibold"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <MapIcon className="w-3.5 h-3.5" />
@@ -179,8 +179,8 @@ export default function CCTVPageClient(props: Props) {
 
           {/* Right Controls & Telemetry */}
           <div className="flex items-center gap-2.5">
-            <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded bg-white/[0.03] border border-white/[0.06] text-zinc-300 font-mono text-[11px]">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded bg-secondary/60 border border-border text-foreground font-mono text-[11px]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
               <span>{selectedCams.length}/{maxSlots} Slot Aktif</span>
             </div>
 
@@ -189,7 +189,7 @@ export default function CCTVPageClient(props: Props) {
                 variant="ghost"
                 size="sm"
                 onClick={handleClearAll}
-                className="h-8 px-2.5 gap-1.5 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-md font-medium"
+                className="h-8 px-2.5 gap-1.5 text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-md font-medium"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Kosongkan</span>
@@ -199,7 +199,7 @@ export default function CCTVPageClient(props: Props) {
         </div>
 
         {/* Dynamic Display Surface */}
-        <div className="flex-1 min-h-0 bg-zinc-950 rounded-lg overflow-hidden border border-white/[0.08] shadow-inner">
+        <div className="flex-1 min-h-0 bg-background rounded-lg overflow-hidden border border-border shadow-inner">
           {viewMode === 'grid' ? (
             <CCTVGridView
               channels={selectedCams}

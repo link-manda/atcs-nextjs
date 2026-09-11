@@ -314,11 +314,11 @@ export function AIStationClient({ channels }: AIStationClientProps) {
 
   if (!selectedChannel) {
     return (
-      <div className="w-full max-w-[1800px] mx-auto p-6 flex flex-col items-center justify-center min-h-[60vh] bg-zinc-950 text-zinc-100 font-sans">
-        <div className="rounded-xl border border-white/[0.08] bg-zinc-900/40 p-8 text-center max-w-md">
-          <Video className="w-8 h-8 text-zinc-500 mx-auto mb-3 animate-pulse" />
-          <h2 className="text-base font-bold text-white mb-2">Tidak Ada Feed Kamera Video Aktif</h2>
-          <p className="text-xs text-zinc-400">
+      <div className="w-full max-w-[1800px] mx-auto p-6 flex flex-col items-center justify-center min-h-[60vh] bg-background text-foreground font-sans">
+        <div className="rounded-xl border border-border bg-card p-8 text-center max-w-md">
+          <Video className="w-8 h-8 text-muted-foreground mx-auto mb-3 animate-pulse" />
+          <h2 className="text-base font-bold text-foreground mb-2">Tidak Ada Feed Kamera Video Aktif</h2>
+          <p className="text-xs text-muted-foreground">
             Kamera dengan format streaming video langsung belum tersedia atau sedang offline. Silakan periksa kembali beberapa saat lagi.
           </p>
         </div>
@@ -327,23 +327,23 @@ export function AIStationClient({ channels }: AIStationClientProps) {
   }
 
   return (
-    <div className="w-full max-w-[1800px] mx-auto p-3 md:p-5 flex flex-col gap-4 bg-zinc-950 text-zinc-100 font-sans">
+    <div className="w-full max-w-[1800px] mx-auto p-3 md:p-5 flex flex-col gap-4 bg-background text-foreground font-sans transition-colors">
       {/* ─── Header & Camera Selection Bar ─── */}
-      <div className="relative z-40 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-zinc-900/40 rounded-lg p-4 border border-white/[0.08] backdrop-blur-md">
+      <div className="relative z-40 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-card/85 rounded-lg p-4 border border-border backdrop-blur-md">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono font-medium text-emerald-400 uppercase">
+            <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono font-medium text-emerald-600 dark:text-emerald-400 uppercase">
               {selectedChannel.region}
             </span>
-            <span className="text-xs font-mono text-zinc-400 flex items-center gap-1">
-              <Video className="w-3 h-3 text-emerald-400" />
+            <span className="text-xs font-mono text-muted-foreground flex items-center gap-1">
+              <Video className="w-3 h-3 text-emerald-500 dark:text-emerald-400" />
               {selectedChannel.ch_name}
             </span>
           </div>
-          <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white">
+          <h1 className="text-lg sm:text-xl font-bold tracking-tight text-foreground">
             Pantauan Cerdas AI
           </h1>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-muted-foreground">
             Analisis arus kendaraan real-time, estimasi volume per menit, dan inferensi neural vision berbasis WebGL.
           </p>
         </div>
@@ -353,25 +353,25 @@ export function AIStationClient({ channels }: AIStationClientProps) {
           <div ref={dropdownRef} className="relative">
             <button
               onClick={() => setShowCameraSelector(!showCameraSelector)}
-              className="flex items-center gap-2 h-8 px-3 text-xs bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] font-medium text-zinc-200 rounded-md shadow-sm min-w-[200px] sm:min-w-[240px] max-w-[280px] transition-colors"
+              className="flex items-center gap-2 h-8 px-3 text-xs bg-secondary/60 border border-border hover:bg-secondary font-medium text-foreground rounded-md shadow-sm min-w-[200px] sm:min-w-[240px] max-w-[280px] transition-colors"
             >
-              <Video className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+              <Video className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 flex-shrink-0" />
               <span className="truncate flex-1 text-left">{selectedChannel.ch_name}</span>
-              <ChevronDown className="w-3 h-3 text-zinc-400 flex-shrink-0 ml-1" />
+              <ChevronDown className="w-3 h-3 text-muted-foreground flex-shrink-0 ml-1" />
             </button>
 
             {/* Dropdown Menu Modal */}
             {showCameraSelector && (
-              <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-[calc(100vw-2.5rem)] sm:w-96 max-w-sm bg-[#09090b] border border-white/[0.15] ring-1 ring-white/[0.08] rounded-lg shadow-[0_25px_60px_rgba(0,0,0,0.95)] z-50 p-3 flex flex-col gap-2.5 animate-in fade-in zoom-in-95">
+              <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-[calc(100vw-2.5rem)] sm:w-96 max-w-sm bg-card border border-border rounded-lg shadow-xl z-50 p-3 flex flex-col gap-2.5 animate-in fade-in zoom-in-95">
                 {/* Search Bar */}
                 <div className="relative">
-                  <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400" />
+                  <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     type="text"
                     placeholder="Cari kamera atau wilayah..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-8 h-8 text-xs bg-zinc-900 border-white/[0.1] text-zinc-100 placeholder:text-zinc-500 rounded-md focus-visible:ring-1 focus-visible:ring-emerald-500/50"
+                    className="pl-8 h-8 text-xs bg-secondary/50 border-border text-foreground placeholder:text-muted-foreground rounded-md focus-visible:ring-1 focus-visible:ring-emerald-500/50"
                     autoFocus
                   />
                 </div>
@@ -383,7 +383,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                     className={`px-2 py-0.5 rounded text-[10px] font-mono whitespace-nowrap border transition-colors ${
                       regionFilter === "ALL"
                         ? "bg-emerald-500 text-zinc-950 font-bold border-emerald-400"
-                        : "bg-zinc-900 text-zinc-400 border-white/[0.06] hover:text-zinc-200 hover:bg-zinc-800"
+                        : "bg-secondary text-muted-foreground border-border hover:text-foreground hover:bg-secondary/80"
                     }`}
                   >
                     Semua
@@ -395,7 +395,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                       className={`px-2 py-0.5 rounded text-[10px] font-mono whitespace-nowrap border transition-colors ${
                         regionFilter === r
                           ? "bg-emerald-500 text-zinc-950 font-bold border-emerald-400"
-                          : "bg-zinc-900 text-zinc-400 border-white/[0.06] hover:text-zinc-200 hover:bg-zinc-800"
+                          : "bg-secondary text-muted-foreground border-border hover:text-foreground hover:bg-secondary/80"
                       }`}
                     >
                       {r}
@@ -404,9 +404,9 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                 </div>
 
                 {/* Camera List */}
-                <div className="max-h-64 overflow-y-auto flex flex-col gap-1 pr-1 divide-y divide-white/[0.04]">
+                <div className="max-h-64 overflow-y-auto flex flex-col gap-1 pr-1 divide-y divide-border/40">
                   {filteredChannels.length === 0 ? (
-                    <div className="p-4 text-center text-xs text-zinc-400 font-mono">
+                    <div className="p-4 text-center text-xs text-muted-foreground font-mono">
                       Tidak ada kamera yang cocok
                     </div>
                   ) : (
@@ -423,20 +423,20 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                           }}
                           className={`w-full flex items-center justify-between p-2 rounded text-left text-xs transition-colors ${
                             isSelected
-                              ? "bg-emerald-500/15 text-emerald-300 font-medium border border-emerald-500/30"
-                              : "hover:bg-zinc-900 text-zinc-200 border border-transparent"
+                              ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 font-medium border border-emerald-500/30"
+                              : "hover:bg-secondary text-foreground border border-transparent"
                           }`}
                         >
                           <div className="flex items-center gap-2 min-w-0 flex-1 pr-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0 animate-pulse" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 flex-shrink-0 animate-pulse" />
                             <div className="flex flex-col min-w-0 flex-1">
-                              <span className="truncate text-zinc-100 font-medium">{cam.ch_name}</span>
-                              <span className="text-[10px] font-mono text-zinc-400">
+                              <span className="truncate text-foreground font-medium">{cam.ch_name}</span>
+                              <span className="text-[10px] font-mono text-muted-foreground">
                                 {cam.region}
                               </span>
                             </div>
                           </div>
-                          {isSelected && <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />}
+                          {isSelected && <Check className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 flex-shrink-0" />}
                         </button>
                       );
                     })
@@ -449,7 +449,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
           {/* Fullscreen Button */}
           <button
             onClick={toggleFullScreen}
-            className="h-8 w-8 bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-zinc-300 rounded-md flex items-center justify-center transition-colors"
+            className="h-8 w-8 bg-secondary/60 border border-border hover:bg-secondary text-muted-foreground hover:text-foreground rounded-md flex items-center justify-center transition-colors"
             title="Layar Penuh"
           >
             <Maximize2 className="w-3.5 h-3.5" />

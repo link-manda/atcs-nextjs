@@ -5,6 +5,7 @@ import { CCTVChannel } from '@/types/cctv';
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import { useTheme } from 'next-themes';
 import { Activity, Key, ExternalLink, X, Settings2, Check, Video, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -117,6 +118,8 @@ function MapBounds({ stations }: { stations: CCTVStation[] }) {
 }
 
 export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMapProps) {
+  const { resolvedTheme } = useTheme();
+  const isLight = resolvedTheme === 'light';
   const [showTraffic, setShowTraffic] = useState(false);
   const [apiKey, setApiKey] = useState<string>('');
   const [showKeyModal, setShowKeyModal] = useState(false);
@@ -163,10 +166,8 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
 
   if (stations.length === 0) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-card">
-        <p className="text-sm font-semibold text-muted-foreground">
-          Tidak ada data koordinat GPS kamera yang tersedia.
-        </p>
+      <div className="w-full h-full flex items-center justify-center bg-background text-muted-foreground font-mono text-xs">
+        Memuat data telemetri kamera...
       </div>
     );
   }
@@ -179,19 +180,19 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
           onClick={handleToggleTraffic}
           className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium font-sans transition-all shadow-md backdrop-blur-md border ${
             showTraffic 
-              ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 ring-1 ring-emerald-500/30' 
-              : 'bg-zinc-950/90 border-white/[0.1] text-zinc-300 hover:text-white hover:bg-zinc-900'
+              ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-300 ring-1 ring-emerald-500/30' 
+              : 'bg-background/90 border-border text-foreground hover:bg-secondary'
           }`}
           title="Pantauan Kepadatan Arus Lalu Lintas Real-Time"
         >
-          <Activity className={`w-3.5 h-3.5 ${showTraffic ? 'animate-pulse text-emerald-400' : 'text-zinc-400'}`} />
+          <Activity className={`w-3.5 h-3.5 ${showTraffic ? 'animate-pulse text-emerald-500 dark:text-emerald-400' : 'text-muted-foreground'}`} />
           <span>Live Traffic</span>
         </button>
 
         {showTraffic && (
           <button
             onClick={() => setShowKeyModal(true)}
-            className="p-1.5 rounded-md bg-zinc-950/90 border border-white/[0.1] text-zinc-400 hover:text-zinc-100 shadow-md backdrop-blur-md"
+            className="p-1.5 rounded-md bg-background/90 border border-border text-muted-foreground hover:text-foreground shadow-md backdrop-blur-md"
             title="Pengaturan API Key TomTom"
           >
             <Settings2 className="w-3.5 h-3.5" />
@@ -201,53 +202,53 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
 
       {/* ─── API Key Modal Dialog ─── */}
       {showKeyModal && (
-        <div className="absolute inset-0 z-[1001] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-zinc-950 border border-white/[0.12] rounded-xl p-5 max-w-md w-full shadow-2xl flex flex-col gap-4 relative animate-in fade-in zoom-in-95 font-sans">
+        <div className="absolute inset-0 z-[1001] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-background border border-border rounded-xl p-5 max-w-md w-full shadow-2xl flex flex-col gap-4 relative animate-in fade-in zoom-in-95 font-sans">
             <button
               onClick={() => setShowKeyModal(false)}
-              className="absolute top-4 right-4 p-1.5 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06]"
+              className="absolute top-4 right-4 p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
             >
               <X className="w-4 h-4" />
             </button>
 
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
-                <Activity className="w-4 h-4 text-emerald-400" />
+                <Activity className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white">
+                <h3 className="text-sm font-bold text-foreground">
                   Aktifkan Live Traffic Bali
                 </h3>
-                <p className="text-[11px] text-zinc-400">
+                <p className="text-[11px] text-muted-foreground">
                   Lapisan visualisasi kepadatan lalu lintas real-time (TomTom Flow)
                 </p>
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-medium text-zinc-200 flex items-center justify-between">
+              <label className="text-xs font-medium text-foreground flex items-center justify-between">
                 <span>TomTom API Key</span>
                 <a
                   href="https://developer.tomtom.com/"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-[11px] text-emerald-400 hover:underline flex items-center gap-1 font-mono"
+                  className="text-[11px] text-emerald-500 hover:underline flex items-center gap-1 font-mono"
                 >
                   Dapatkan Key Gratis
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </label>
               <div className="relative">
-                <Key className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
+                <Key className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   type="text"
                   placeholder="Masukkan API Key TomTom..."
                   value={inputKey}
                   onChange={(e) => setInputKey(e.target.value)}
-                  className="pl-9 text-xs font-mono bg-white/[0.04] border-white/[0.1] text-zinc-100 placeholder:text-zinc-400 rounded-md"
+                  className="pl-9 text-xs font-mono bg-muted/50 border-border text-foreground placeholder:text-muted-foreground rounded-md"
                 />
               </div>
-              <p className="text-[10px] text-zinc-400 leading-relaxed">
+              <p className="text-[10px] text-muted-foreground leading-relaxed">
                 💡 TomTom menyediakan tier gratis 2.500 request/hari. Kunci ini disimpan di browser lokal Anda.
               </p>
             </div>
@@ -255,7 +256,7 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
             <div className="flex items-center justify-end gap-2 mt-1">
               <button
                 onClick={() => setShowKeyModal(false)}
-                className="px-3 py-1.5 rounded-md text-xs font-medium bg-white/[0.04] border border-white/[0.08] text-zinc-300 hover:bg-white/[0.08] transition-colors"
+                className="px-3 py-1.5 rounded-md text-xs font-medium bg-muted border border-border text-foreground hover:bg-muted/80 transition-colors"
               >
                 Batal
               </button>
@@ -286,8 +287,13 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
         zoomControl={false}
       >
         <TileLayer
+          key={isLight ? 'carto-light' : 'carto-dark'}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          url={
+            isLight
+              ? "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+              : "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          }
         />
         
         {/* TomTom Real-Time Traffic Flow Layer */}
