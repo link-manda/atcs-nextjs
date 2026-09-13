@@ -4,6 +4,11 @@ import { CCTVChannel } from "@/types/cctv";
 import { useEffect, useState, useRef, useCallback } from "react";
 import Hls from "hls.js";
 import { VideoOff } from "lucide-react";
+import {
+  HLS_LOW_LATENCY_CONFIG,
+  resolveHlsFallbackUrl,
+  handleHlsStallCatchUp,
+} from "@/lib/hls-config";
 
 interface CCTVPlayerProps {
   channel: CCTVChannel;
@@ -49,26 +54,7 @@ export function CCTVPlayer({ channel }: CCTVPlayerProps) {
     const isHlsStream = currentUrl.includes(".m3u8") || currentUrl.includes("/api/proxy/hls");
 
     if (isHlsStream && Hls.isSupported()) {
-      hls = new Hls({
-        enableWorker: true,
-        lowLatencyMode: true,
-        backBufferLength: 4,
-        maxBufferLength: 10,
-        maxMaxBufferLength: 20,
-        liveSyncDurationCount: 2,          // Target 4s behind live edge
-        liveMaxLatencyDurationCount: 4,     // If lag exceeds 8s, fast-forward to live
-        initialLiveManifestSize: 2,        // Wait until at least 2 segments to prevent cold-start freeze
-        maxBufferHole: 0.5,
-        highBufferWatchdogPeriod: 2,
-        nudgeOffset: 0.2,
-        nudgeMaxRetry: 5,
-        manifestLoadingTimeOut: 10000,
-        manifestLoadingMaxRetry: 5,
-        levelLoadingTimeOut: 10000,
-        levelLoadingMaxRetry: 5,
-        fragLoadingTimeOut: 15000,
-        fragLoadingMaxRetry: 6,
-      });
+      hls = new Hls(HLS_LOW_LATENCY_CONFIG);
 
       hls.loadSource(currentUrl);
       hls.attachMedia(video);
@@ -81,25 +67,16 @@ export function CCTVPlayer({ channel }: CCTVPlayerProps) {
 
       hls.on(Hls.Events.ERROR, (_, data) => {
         if (data.details === Hls.ErrorDetails.BUFFER_STALLED_ERROR) {
-          if (hls && video) {
-            const livePos = hls.liveSyncPosition;
-            if (typeof livePos === "number" && livePos > 0 && Math.abs(livePos - video.currentTime) > 4) {
-              video.currentTime = livePos;
-            }
-            if (video.paused && video.readyState >= 2) {
-              video.play().catch(() => {});
-            }
-          }
+          handleHlsStallCatchUp(hls, video, 4);
           return;
         }
 
         if (data.fatal) {
           switch (data.type) {
-            case Hls.ErrorTypes.NETWORK_ERROR:
-              // If direct stream fails (e.g. CORS block or connection timeout), fallback to proxy
-              if (!currentUrl.includes('/api/proxy/hls') && currentUrl.startsWith('https://atcs.denpasarkota.go.id')) {
+            case Hls.ErrorTypes.NETWORK_ERROR: {
+              const fallbackUrl = resolveHlsFallbackUrl(currentUrl);
+              if (fallbackUrl) {
                 console.warn("[CCTVPlayer] Direct HLS network error, switching to proxy fallback...");
-                const fallbackUrl = `/api/proxy/hls?url=${encodeURIComponent(currentUrl)}`;
                 setCurrentUrl(fallbackUrl);
                 hls?.loadSource(fallbackUrl);
                 hls?.startLoad();
@@ -108,6 +85,7 @@ export function CCTVPlayer({ channel }: CCTVPlayerProps) {
               console.warn("[CCTVPlayer] HLS network error, recovering...", data);
               hls?.startLoad();
               break;
+            }
             case Hls.ErrorTypes.MEDIA_ERROR:
               console.warn("[CCTVPlayer] HLS media error, recovering...", data);
               hls?.recoverMediaError();
