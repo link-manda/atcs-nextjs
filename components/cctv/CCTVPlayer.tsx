@@ -21,6 +21,12 @@ export function CCTVPlayer({ channel }: CCTVPlayerProps) {
     setMounted(true);
   }, []);
 
+  const [currentUrl, setCurrentUrl] = useState(channel.streaming_url);
+
+  useEffect(() => {
+    setCurrentUrl(channel.streaming_url);
+  }, [channel.streaming_url]);
+
   const handleError = useCallback(() => {
     if (retryCount < MAX_RETRIES) {
       setTimeout(() => {
@@ -40,28 +46,31 @@ export function CCTVPlayer({ channel }: CCTVPlayerProps) {
     setVideoElement(video);
 
     let hls: Hls | null = null;
-    const url = channel.streaming_url;
-    const isHlsStream = url.includes(".m3u8") || url.includes("/api/proxy/hls");
+    const isHlsStream = currentUrl.includes(".m3u8") || currentUrl.includes("/api/proxy/hls");
 
     if (isHlsStream && Hls.isSupported()) {
       hls = new Hls({
         enableWorker: true,
-        lowLatencyMode: false,
-        backBufferLength: 0,
-        maxBufferLength: 30,
-        maxMaxBufferLength: 60,
-        liveSyncDurationCount: 3,
-        liveMaxLatencyDurationCount: 8,
-        liveDurationInfinity: true,
-        manifestLoadingTimeOut: 15000,
+        lowLatencyMode: true,
+        backBufferLength: 4,
+        maxBufferLength: 10,
+        maxMaxBufferLength: 20,
+        liveSyncDurationCount: 2,          // Target 4s behind live edge
+        liveMaxLatencyDurationCount: 4,     // If lag exceeds 8s, fast-forward to live
+        initialLiveManifestSize: 2,        // Wait until at least 2 segments to prevent cold-start freeze
+        maxBufferHole: 0.5,
+        highBufferWatchdogPeriod: 2,
+        nudgeOffset: 0.2,
+        nudgeMaxRetry: 5,
+        manifestLoadingTimeOut: 10000,
         manifestLoadingMaxRetry: 5,
-        levelLoadingTimeOut: 15000,
+        levelLoadingTimeOut: 10000,
         levelLoadingMaxRetry: 5,
-        fragLoadingTimeOut: 20000,
+        fragLoadingTimeOut: 15000,
         fragLoadingMaxRetry: 6,
       });
 
-      hls.loadSource(url);
+      hls.loadSource(currentUrl);
       hls.attachMedia(video);
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
@@ -72,8 +81,14 @@ export function CCTVPlayer({ channel }: CCTVPlayerProps) {
 
       hls.on(Hls.Events.ERROR, (_, data) => {
         if (data.details === Hls.ErrorDetails.BUFFER_STALLED_ERROR) {
-          if (video.paused) {
-            video.play().catch(() => {});
+          if (hls && video) {
+            const livePos = hls.liveSyncPosition;
+            if (typeof livePos === "number" && livePos > 0 && Math.abs(livePos - video.currentTime) > 4) {
+              video.currentTime = livePos;
+            }
+            if (video.paused && video.readyState >= 2) {
+              video.play().catch(() => {});
+            }
           }
           return;
         }
@@ -81,6 +96,15 @@ export function CCTVPlayer({ channel }: CCTVPlayerProps) {
         if (data.fatal) {
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
+              // If direct stream fails (e.g. CORS block or connection timeout), fallback to proxy
+              if (!currentUrl.includes('/api/proxy/hls') && currentUrl.startsWith('https://atcs.denpasarkota.go.id')) {
+                console.warn("[CCTVPlayer] Direct HLS network error, switching to proxy fallback...");
+                const fallbackUrl = `/api/proxy/hls?url=${encodeURIComponent(currentUrl)}`;
+                setCurrentUrl(fallbackUrl);
+                hls?.loadSource(fallbackUrl);
+                hls?.startLoad();
+                return;
+              }
               console.warn("[CCTVPlayer] HLS network error, recovering...", data);
               hls?.startLoad();
               break;
@@ -98,11 +122,11 @@ export function CCTVPlayer({ channel }: CCTVPlayerProps) {
       });
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
       // Native Safari HLS support
-      video.src = url;
+      video.src = currentUrl;
       video.play().catch(() => {});
     } else {
       // Direct MP4 playback
-      video.src = url;
+      video.src = currentUrl;
       video.play().catch(() => {});
     }
 
@@ -111,7 +135,7 @@ export function CCTVPlayer({ channel }: CCTVPlayerProps) {
         hls.destroy();
       }
     };
-  }, [mounted, channel.streaming_url, channel.player_type, key, handleError]);
+  }, [mounted, currentUrl, channel.player_type, key, handleError]);
 
   if (channel.player_type === "iframe") {
     return (

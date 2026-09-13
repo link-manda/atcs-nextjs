@@ -169,29 +169,47 @@ export function AIStationClient({ channels }: AIStationClientProps) {
     });
   }, [channels, regionFilter, searchQuery]);
 
+  const [currentUrl, setCurrentUrl] = useState<string>(selectedChannel?.streaming_url || "");
+
+  useEffect(() => {
+    if (selectedChannel) {
+      setCurrentUrl(selectedChannel.streaming_url);
+    }
+  }, [selectedChannel]);
+
   // Video Player Mount & HLS Setup
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !selectedChannel) return;
+    if (!video || !selectedChannel || !currentUrl) return;
 
     setVideoElement(video);
 
     let hls: Hls | null = null;
-    const url = selectedChannel.streaming_url;
-    const isHlsStream = url.includes(".m3u8") || url.includes("/api/proxy/hls");
+    const isHlsStream = currentUrl.includes(".m3u8") || currentUrl.includes("/api/proxy/hls");
 
     if (isHlsStream && Hls.isSupported()) {
       hls = new Hls({
         enableWorker: true,
-        lowLatencyMode: false,
-        backBufferLength: 0,
-        maxBufferLength: 30,
-        liveSyncDurationCount: 3,
-        liveMaxLatencyDurationCount: 8,
-        liveDurationInfinity: true,
+        lowLatencyMode: true,
+        backBufferLength: 4,
+        maxBufferLength: 10,
+        maxMaxBufferLength: 20,
+        liveSyncDurationCount: 2,          // Target 4s behind live edge
+        liveMaxLatencyDurationCount: 4,     // If lag exceeds 8s, fast-forward to live
+        initialLiveManifestSize: 2,        // Wait until at least 2 segments to prevent cold-start freeze
+        maxBufferHole: 0.5,
+        highBufferWatchdogPeriod: 2,
+        nudgeOffset: 0.2,
+        nudgeMaxRetry: 5,
+        manifestLoadingTimeOut: 10000,
+        manifestLoadingMaxRetry: 5,
+        levelLoadingTimeOut: 10000,
+        levelLoadingMaxRetry: 5,
+        fragLoadingTimeOut: 15000,
+        fragLoadingMaxRetry: 6,
       });
 
-      hls.loadSource(url);
+      hls.loadSource(currentUrl);
       hls.attachMedia(video);
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
@@ -200,9 +218,25 @@ export function AIStationClient({ channels }: AIStationClientProps) {
 
       hls.on(Hls.Events.ERROR, (_, data) => {
         if (data.details === Hls.ErrorDetails.BUFFER_STALLED_ERROR) {
-          if (video.paused) video.play().catch(() => {});
+          if (hls && video) {
+            const livePos = hls.liveSyncPosition;
+            if (typeof livePos === "number" && livePos > 0 && Math.abs(livePos - video.currentTime) > 4) {
+              video.currentTime = livePos;
+            }
+            if (video.paused && video.readyState >= 2) {
+              video.play().catch(() => {});
+            }
+          }
         } else if (data.fatal) {
           if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+            if (!currentUrl.includes('/api/proxy/hls') && currentUrl.startsWith('https://atcs.denpasarkota.go.id')) {
+              console.warn("[AIStation] Direct HLS network error, switching to proxy fallback...");
+              const fallbackUrl = `/api/proxy/hls?url=${encodeURIComponent(currentUrl)}`;
+              setCurrentUrl(fallbackUrl);
+              hls?.loadSource(fallbackUrl);
+              hls?.startLoad();
+              return;
+            }
             hls?.startLoad();
           } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
             hls?.recoverMediaError();
@@ -210,7 +244,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
         }
       });
     } else {
-      video.src = url;
+      video.src = currentUrl;
       video.play().catch(() => {});
     }
 
@@ -219,7 +253,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
         hls.destroy();
       }
     };
-  }, [selectedChannel, videoKey]);
+  }, [selectedChannel, currentUrl, videoKey]);
 
   // 4. Real-Time Client-Side WebGL AI Inference Loop with Dynamic Throttle & 512px Frame Lock
   useEffect(() => {
