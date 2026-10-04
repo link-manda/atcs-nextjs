@@ -597,7 +597,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                   </div>
                   <div className="flex flex-col gap-1 text-center">
                     <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">
-                      Mengunduh Model YOLOS Tiny (ViT)
+                      Mengunduh Model YOLOv10n WebGPU
                     </h3>
                     <p className="text-xs text-muted-foreground font-mono">
                       {modelProgress.file
@@ -669,7 +669,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                       : "bg-emerald-400 animate-ping"
                   }`}
                 />
-                <span>{modelProgress.status === "error" ? "AI OFFLINE" : "YOLOS LIVE"}</span>
+                <span>{modelProgress.status === "error" ? "AI OFFLINE" : "AI LIVE"}</span>
               </div>
             </div>
           </div>

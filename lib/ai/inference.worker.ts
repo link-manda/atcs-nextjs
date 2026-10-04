@@ -1,11 +1,6 @@
-import { pipeline, env, RawImage } from "@xenova/transformers";
-
-/**
- * Inference Web Worker.
- * Owns model download + ONNX execution so the UI thread never blocks on inference.
- * Protocol is defined in lib/ai/inference-protocol.ts.
- */
+import { AutoModel, AutoProcessor, env, RawImage } from "@huggingface/transformers";
 import type { WorkerRequest, WorkerResponse } from "./inference-protocol";
+import { postProcessYolo } from "./yolo-postprocess";
 
 env.allowLocalModels = false;
 env.useBrowserCache = true;
@@ -15,36 +10,47 @@ const ctx = self as unknown as {
   onmessage: ((event: MessageEvent<WorkerRequest>) => void) | null;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Detector = (image: RawImage, options: { threshold: number; percentage: boolean }) => Promise<any>;
+let modelPromise: Promise<any> | null = null;
+let processorPromise: Promise<any> | null = null;
 
-let detectorPromise: Promise<Detector> | null = null;
+async function loadModel(modelId: string) {
+  if (!modelPromise) {
+    const progressCallback = (data: any) => {
+      if (data && data.status === "progress" && typeof data.progress === "number") {
+        ctx.postMessage({
+          type: "progress",
+          info: {
+            status: "loading",
+            progress: Math.min(100, Math.max(0, Math.round(data.progress))),
+            file: data.file,
+            loaded: data.loaded,
+            total: data.total,
+          },
+        });
+      } else if (data && data.status === "done") {
+        ctx.postMessage({ type: "progress", info: { status: "loading", progress: 100, file: data.file } });
+      }
+    };
 
-function loadDetector(model: string): Promise<Detector> {
-  if (!detectorPromise) {
-    detectorPromise = pipeline("object-detection", model, {
-      progress_callback: (data: { status?: string; progress?: number; file?: string; loaded?: number; total?: number }) => {
-        if (data && data.status === "progress" && typeof data.progress === "number") {
-          ctx.postMessage({
-            type: "progress",
-            info: {
-              status: "loading",
-              progress: Math.min(100, Math.max(0, Math.round(data.progress))),
-              file: data.file,
-              loaded: data.loaded,
-              total: data.total,
-            },
-          });
-        } else if (data && data.status === "done") {
-          ctx.postMessage({ type: "progress", info: { status: "loading", progress: 100, file: data.file } });
-        }
-      },
-    }) as unknown as Promise<Detector>;
-    detectorPromise.catch(() => {
-      detectorPromise = null;
+    // Try webgpu first, then fallback to wasm
+    modelPromise = AutoModel.from_pretrained(modelId, {
+      progress_callback: progressCallback,
+      device: "webgpu",
+      dtype: "fp32", // fp16 can be problematic on some devices, using fp32 for safety first
+    }).catch((err) => {
+      console.warn("WebGPU model load failed, falling back to wasm", err);
+      return AutoModel.from_pretrained(modelId, {
+        progress_callback: progressCallback,
+        device: "wasm",
+        dtype: "q8",
+      });
+    });
+
+    processorPromise = AutoProcessor.from_pretrained(modelId, {
+      progress_callback: progressCallback,
     });
   }
-  return detectorPromise;
+  return Promise.all([modelPromise, processorPromise]);
 }
 
 ctx.onmessage = async (event: MessageEvent<WorkerRequest>) => {
@@ -52,7 +58,7 @@ ctx.onmessage = async (event: MessageEvent<WorkerRequest>) => {
 
   if (msg.type === "load") {
     try {
-      await loadDetector(msg.model);
+      await loadModel(msg.model);
       ctx.postMessage({ type: "ready" });
     } catch (err) {
       ctx.postMessage({ type: "loadError", message: err instanceof Error ? err.message : String(err) });
@@ -62,10 +68,20 @@ ctx.onmessage = async (event: MessageEvent<WorkerRequest>) => {
 
   if (msg.type === "detect") {
     try {
-      const detector = await loadDetector(msg.model);
+      const [model, processor] = await loadModel(msg.model);
+      
       const image = new RawImage(new Uint8ClampedArray(msg.buffer), msg.width, msg.height, 4);
-      const predictions = await detector(image, { threshold: msg.threshold, percentage: false });
-      ctx.postMessage({ type: "result", id: msg.id, predictions: Array.isArray(predictions) ? predictions : [] });
+      
+      // Preprocess
+      const inputs = await processor(image);
+      
+      // Run inference
+      const outputs = await model(inputs);
+      
+      // Postprocess
+      const predictions = postProcessYolo(outputs, msg.width, msg.height, msg.threshold);
+      
+      ctx.postMessage({ type: "result", id: msg.id, predictions });
     } catch (err) {
       ctx.postMessage({ type: "error", id: msg.id, message: err instanceof Error ? err.message : String(err) });
     }

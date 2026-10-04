@@ -86,8 +86,8 @@ function notifyModelProgress(info: ModelProgressInfo): void {
   });
 }
 
-// Official public Vision Transformer object detection model (100% public, ~9.6 MB Quantized ONNX INT8)
-export const AI_MODEL_NAME = "Xenova/yolos-tiny";
+// Official YOLOv10 Nano WebGPU ONNX Model
+export const AI_MODEL_NAME = "onnx-community/yolov10n";
 
 // Circuit breaker to prevent rapid network retry loops on failure
 let lastLoadError: Error | null = null;

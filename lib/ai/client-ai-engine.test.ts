@@ -84,7 +84,7 @@ describe("Client AI Engine (worker-based)", () => {
 
     expect(createInferenceWorker).toHaveBeenCalledTimes(1);
     expect(worker.postMessage).toHaveBeenCalledTimes(1);
-    expect(worker.postMessage.mock.calls[0][0]).toEqual({ type: "load", model: "Xenova/yolos-tiny" });
+    expect(worker.postMessage.mock.calls[0][0]).toEqual({ type: "load", model: "onnx-community/yolov10n" });
     expect(updates).toContain(50);
     expect(getModelProgress().status).toBe("ready");
     unsubscribe();
@@ -115,9 +115,10 @@ describe("Client AI Engine (worker-based)", () => {
     await runClientVehicleInference(mockVideo(1280, 720), 0.25, false, false);
 
     const detect = worker.postMessage.mock.calls.map((c) => c[0]).find((m) => m.type === "detect");
-    expect(detect).toEqual(
-      expect.objectContaining({ type: "detect", width: 640, height: 640, model: "Xenova/yolos-tiny" })
-    );
+    expect(detect.type).toBe("detect");
+    expect(detect.width).toBe(640);
+    expect(detect.height).toBe(640);
+    expect(detect.model).toBe("onnx-community/yolov10n");
     // buffer is passed in the transfer list so it is moved, not copied
     const detectCall = worker.postMessage.mock.calls.find((c) => c[0].type === "detect");
     expect(detectCall?.[1]).toHaveLength(1);

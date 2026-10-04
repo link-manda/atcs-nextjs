@@ -24,9 +24,20 @@ if (typeof HTMLCanvasElement !== 'undefined') {
   })) as any;
 }
 
-// Global mock for @xenova/transformers in Node test environment
-jest.mock('@xenova/transformers', () => ({
+// Global mock for @huggingface/transformers in Node test environment
+jest.mock('@huggingface/transformers', () => ({
   pipeline: jest.fn().mockResolvedValue(jest.fn().mockResolvedValue([])),
+  AutoModel: {
+    from_pretrained: jest.fn().mockResolvedValue({
+      __call__: jest.fn().mockResolvedValue([{ boxes: [], scores: [], classes: [] }])
+    })
+  },
+  AutoProcessor: {
+    from_pretrained: jest.fn().mockResolvedValue(jest.fn())
+  },
+  RawImage: {
+    fromURL: jest.fn()
+  },
   env: {
     allowLocalModels: false,
     useBrowserCache: false,

@@ -92,7 +92,7 @@ describe("AIStationClient", () => {
   it("renders YOLOS LIVE HUD badge in viewport", () => {
     render(<AIStationClient channels={mockChannels} />);
 
-    expect(screen.getByText("YOLOS LIVE")).toBeInTheDocument();
+    expect(screen.getByText("AI LIVE")).toBeInTheDocument();
   });
 
   it("renders error overlay and retry button when modelProgress is in error state", () => {

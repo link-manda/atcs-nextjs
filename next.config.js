@@ -5,6 +5,7 @@ const nextConfig = {
       ...config.resolve.alias,
       sharp$: false,
       "onnxruntime-node$": false,
+      "@huggingface/transformers": require.resolve("@huggingface/transformers"),
     };
     return config;
   },
