@@ -1,6 +1,6 @@
 "use client";
 
-import { pipeline, env } from "@xenova/transformers";
+import { pipeline, env, RawImage } from "@xenova/transformers";
 
 // Configure Transformers.js for browser environment
 if (typeof window !== "undefined") {
@@ -249,7 +249,13 @@ export function preprocessAdaptiveVision(
   video: HTMLVideoElement,
   enableNightBoost: boolean = true,
   enableSharpening: boolean = true
-): { inputSource: HTMLCanvasElement; isNight: boolean; luminance: number; canvas: HTMLCanvasElement } {
+): {
+  rawImage: RawImage;
+  inputSource: HTMLCanvasElement;
+  isNight: boolean;
+  luminance: number;
+  canvas: HTMLCanvasElement;
+} {
   if (!offscreenCanvas) {
     offscreenCanvas = document.createElement("canvas");
     offscreenCanvas.width = CANVAS_SIZE;
@@ -258,7 +264,15 @@ export function preprocessAdaptiveVision(
   }
 
   if (!offscreenCtx) {
-    return { inputSource: offscreenCanvas, isNight: false, luminance: 128, canvas: offscreenCanvas };
+    const dummyData = new Uint8ClampedArray(CANVAS_SIZE * CANVAS_SIZE * 4);
+    const fallbackImage = new RawImage(dummyData, CANVAS_SIZE, CANVAS_SIZE, 4);
+    return {
+      rawImage: fallbackImage,
+      inputSource: offscreenCanvas,
+      isNight: false,
+      luminance: 128,
+      canvas: offscreenCanvas,
+    };
   }
 
   // Draw scaled video frame to offscreen canvas
@@ -337,7 +351,11 @@ export function preprocessAdaptiveVision(
     offscreenCtx.putImageData(imgData, 0, 0);
   }
 
+  // Wrap preprocessed pixel data into native Transformers.js RawImage
+  const rawImage = new RawImage(data, CANVAS_SIZE, CANVAS_SIZE, 4);
+
   return {
+    rawImage,
     inputSource: offscreenCanvas,
     isNight,
     luminance: Math.round(avgLuminance),
@@ -357,7 +375,7 @@ export async function runClientVehicleInference(
   const startTime = performance.now();
   const detector = await getClientAIModel();
 
-  const { inputSource, isNight, luminance, canvas } = preprocessAdaptiveVision(
+  const { rawImage, isNight, luminance, canvas } = preprocessAdaptiveVision(
     video,
     enableNightBoost,
     enableSharpening
@@ -366,8 +384,8 @@ export async function runClientVehicleInference(
   // Baseline threshold for YOLOv8
   const baseThreshold = Math.max(0.15, confidenceThreshold * 0.7);
 
-  // Execute inference on preprocessed canvas
-  const rawPredictions: any[] = await detector(inputSource, {
+  // Execute inference on native RawImage
+  const rawPredictions: any[] = await detector(rawImage, {
     threshold: baseThreshold,
     percentage: false,
   });

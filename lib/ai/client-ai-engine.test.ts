@@ -11,6 +11,12 @@ import {
 jest.mock("@xenova/transformers", () => {
   return {
     pipeline: jest.fn(),
+    RawImage: jest.fn().mockImplementation((data, width, height, channels) => ({
+      data,
+      width,
+      height,
+      channels,
+    })),
     env: {
       allowLocalModels: true,
       useBrowserCache: false,
@@ -18,7 +24,7 @@ jest.mock("@xenova/transformers", () => {
   };
 });
 
-import { pipeline } from "@xenova/transformers";
+import { pipeline, RawImage } from "@xenova/transformers";
 
 describe("Client AI Engine (YOLOv8 Nano)", () => {
   let mockDetector: jest.Mock;
@@ -98,6 +104,11 @@ describe("Client AI Engine (YOLOv8 Nano)", () => {
     const result = await runClientVehicleInference(mockVideo, 0.25, false, false);
 
     expect(mockDetector).toHaveBeenCalled();
+    expect(RawImage).toHaveBeenCalledWith(expect.any(Uint8ClampedArray), 640, 640, 4);
+    expect(mockDetector).toHaveBeenCalledWith(
+      expect.objectContaining({ width: 640, height: 640, channels: 4 }),
+      expect.any(Object)
+    );
     // Only 'car' and 'motorcycle' should be in detections, 'person' must be filtered out
     expect(result.detections.length).toBe(2);
 

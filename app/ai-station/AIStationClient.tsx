@@ -233,6 +233,9 @@ export function AIStationClient({ channels }: AIStationClientProps) {
         video.play().catch(() => {});
       });
 
+      let networkRetryCount = 0;
+      const MAX_NETWORK_RETRIES = 3;
+
       hls.on(Hls.Events.ERROR, (_, data) => {
         if (data.details === Hls.ErrorDetails.BUFFER_STALLED_ERROR) {
           handleHlsStallCatchUp(hls, video, 4);
@@ -246,7 +249,16 @@ export function AIStationClient({ channels }: AIStationClientProps) {
               hls?.startLoad();
               return;
             }
-            hls?.startLoad();
+            if (networkRetryCount < MAX_NETWORK_RETRIES) {
+              networkRetryCount++;
+              console.warn(`[AIStation] HLS network error, retry ${networkRetryCount}/${MAX_NETWORK_RETRIES}...`);
+              setTimeout(() => {
+                hls?.startLoad();
+              }, 1500 * networkRetryCount);
+            } else {
+              console.error("[AIStation] HLS network retries exhausted. Stream unavailable.");
+              hls?.destroy();
+            }
           } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
             hls?.recoverMediaError();
           }
@@ -270,11 +282,19 @@ export function AIStationClient({ channels }: AIStationClientProps) {
     let lastInferenceTime = 0;
     let frameCount = 0;
     let fpsCalcTime = performance.now();
+    let consecutiveErrors = 0;
+    let coolOffUntil = 0;
     const throttleInterval = Math.round(1000 / targetFps);
 
     const loop = async (timestamp: number) => {
       // Circuit breaker: do not run inference if model is loading or in error state
       if (modelStatusRef.current === "error" || modelStatusRef.current === "loading") {
+        animationFrameId = requestAnimationFrame(loop);
+        return;
+      }
+
+      // Cool-off backoff: skip frames during cool-off to protect browser UI thread
+      if (timestamp < coolOffUntil) {
         animationFrameId = requestAnimationFrame(loop);
         return;
       }
@@ -292,13 +312,16 @@ export function AIStationClient({ channels }: AIStationClientProps) {
         lastInferenceTime = timestamp;
 
         try {
-          // Run 512px WebGL inference with unsharp masking filter
+          // Run inference with adaptive vision preprocessor
           const result = await runClientVehicleInference(
             video,
             confidence,
             enableNightBoost,
             enableSharpening
           );
+
+          // Reset consecutive errors upon successful inference
+          consecutiveErrors = 0;
 
           // Update trajectory tracker
           const trackerResult = trackerRef.current.update(
@@ -324,7 +347,18 @@ export function AIStationClient({ channels }: AIStationClientProps) {
             fpsCalcTime = timestamp;
           }
         } catch (err) {
-          console.warn("[AIStation] Inference frame dropped:", err);
+          consecutiveErrors++;
+          if (consecutiveErrors <= 2) {
+            console.debug("[AIStation] Inference frame dropped:", err);
+          } else if (consecutiveErrors === 3) {
+            console.warn(
+              "[AIStation] Consecutive inference failures detected. Entering 3s cool-off to protect browser UI thread:",
+              err
+            );
+            coolOffUntil = performance.now() + 3000;
+          } else {
+            coolOffUntil = performance.now() + 5000;
+          }
         } finally {
           isInferringRef.current = false;
         }
