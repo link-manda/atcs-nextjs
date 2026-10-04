@@ -1,3 +1,5 @@
+const path = require("path");
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   webpack: (config) => {
@@ -5,6 +7,14 @@ const nextConfig = {
       ...config.resolve.alias,
       sharp$: false,
       "onnxruntime-node$": false,
+      "#onnxruntime-webgpu": path.resolve(
+        __dirname,
+        "node_modules/@huggingface/transformers/node_modules/onnxruntime-web/dist/ort.webgpu.bundle.min.mjs"
+      ),
+      "onnxruntime-web$": path.resolve(
+        __dirname,
+        "node_modules/@huggingface/transformers/node_modules/onnxruntime-web/dist/ort.webgpu.bundle.min.mjs"
+      ),
       "@huggingface/transformers": require.resolve("@huggingface/transformers"),
     };
     return config;
