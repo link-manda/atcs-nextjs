@@ -16,6 +16,7 @@ import {
   VehicleCounts,
   TrackedVehicle,
 } from "@/lib/ai/client-vehicle-tracker";
+import { InferenceBenchmark } from "@/lib/ai/benchmark";
 import { ClientAITacticalOverlay } from "@/components/ai-station/ClientAITacticalOverlay";
 import { AITrafficTelemetry } from "@/components/ai-station/AITrafficTelemetry";
 import { ALL_REGIONS } from "@/lib/cctv-utils";
@@ -129,6 +130,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
   }, []);
 
   const trackerRef = useRef<ClientVehicleTracker>(new ClientVehicleTracker());
+  const benchmarkRef = useRef<InferenceBenchmark>(new InferenceBenchmark(100));
   const isInferringRef = useRef<boolean>(false);
 
   // Load camera-specific AI settings from localStorage
@@ -337,16 +339,25 @@ export function AIStationClient({ channels }: AIStationClientProps) {
           setLineCrossed(trackerResult.lineCrossed);
           setIsNightScene(result.isNightScene);
           setInferenceTimeMs(result.inferenceTimeMs);
+          benchmarkRef.current.recordInference(result.inferenceTimeMs);
+          
           if (result.processedCanvas) {
             setProcessedCanvas(result.processedCanvas);
           }
 
-          // Calculate actual FPS
+          // Calculate actual FPS and log benchmark
           frameCount++;
           if (timestamp - fpsCalcTime >= 1000) {
-            setFps(Math.round((frameCount * 1000) / (timestamp - fpsCalcTime)));
+            const currentFps = Math.round((frameCount * 1000) / (timestamp - fpsCalcTime));
+            setFps(currentFps);
             frameCount = 0;
             fpsCalcTime = timestamp;
+            
+            // Console log benchmark
+            const metrics = benchmarkRef.current.getMetrics();
+            if (metrics) {
+              console.log(`[AI Benchmark] Latency: median ${metrics.medianMs.toFixed(1)}ms, p95 ${metrics.p95Ms.toFixed(1)}ms | max FPS: ${metrics.averageFps.toFixed(1)} | Actual FPS: ${currentFps}`);
+            }
           }
         } catch (err) {
           consecutiveErrors++;
