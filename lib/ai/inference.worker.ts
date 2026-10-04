@@ -4,9 +4,11 @@ import { postProcessYolo } from "./yolo-postprocess";
 
 env.allowLocalModels = false;
 env.useBrowserCache = true;
-// HuggingFace V3 alpha 12 accidentally excludes ort-wasm-simd-threaded.wasm from its own dist directory.
-// We must point it directly to the underlying onnxruntime-web CDN so WebGPU-unsupported browsers don't crash on WASM fallback.
-env.backends.onnx.wasm.wasmPaths = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.0-dev.20240827-1d059b8702/dist/";
+// Serve onnxruntime WebAssembly binaries locally from Next.js public directory
+// Eliminates external CDN 404s, CORS restrictions, and adblocker interference
+if (env.backends?.onnx?.wasm) {
+  env.backends.onnx.wasm.wasmPaths = "/onnx/";
+}
 
 const ctx = self as unknown as {
   postMessage: (message: WorkerResponse) => void;
@@ -78,8 +80,12 @@ ctx.onmessage = async (event: MessageEvent<WorkerRequest>) => {
       // Preprocess
       const inputs = await processor(image);
       
-      // Run inference
-      const outputs = await model(inputs);
+      // Run inference (YOLO ONNX expects the input named 'images', while AutoProcessor provides 'pixel_values')
+      const modelInputs = {
+        ...inputs,
+        images: inputs.pixel_values,
+      };
+      const outputs = await model(modelInputs);
       
       // Postprocess
       const predictions = postProcessYolo(outputs, msg.width, msg.height, msg.threshold);
