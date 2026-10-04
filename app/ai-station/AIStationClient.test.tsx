@@ -88,4 +88,10 @@ describe("AIStationClient", () => {
     expect(screen.getByRole("button", { name: /Reset/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Hapus Cache/i })).toBeInTheDocument();
   });
+
+  it("renders YOLOV8n LIVE HUD badge in viewport", () => {
+    render(<AIStationClient channels={mockChannels} />);
+
+    expect(screen.getByText("YOLOV8n LIVE")).toBeInTheDocument();
+  });
 });

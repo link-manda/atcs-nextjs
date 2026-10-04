@@ -24,3 +24,12 @@ if (typeof HTMLCanvasElement !== 'undefined') {
   })) as any;
 }
 
+// Global mock for @xenova/transformers in Node test environment
+jest.mock('@xenova/transformers', () => ({
+  pipeline: jest.fn().mockResolvedValue(jest.fn().mockResolvedValue([])),
+  env: {
+    allowLocalModels: false,
+    useBrowserCache: false,
+  },
+}));
+

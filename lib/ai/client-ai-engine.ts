@@ -1,7 +1,12 @@
 "use client";
 
-import * as tf from "@tensorflow/tfjs";
-import * as cocoSsd from "@tensorflow-models/coco-ssd";
+import { pipeline, env } from "@xenova/transformers";
+
+// Configure Transformers.js for browser environment
+if (typeof window !== "undefined") {
+  env.allowLocalModels = false;
+  env.useBrowserCache = true;
+}
 
 export type VehicleCategory = "car" | "motorcycle" | "bus" | "truck";
 
@@ -20,7 +25,19 @@ export interface EngineInferenceResult {
   processedCanvas: HTMLCanvasElement | null;
 }
 
-// Vehicle class mapping for COCO SSD
+export type ModelLoadingStatus = "idle" | "loading" | "ready" | "error";
+
+export interface ModelProgressInfo {
+  status: ModelLoadingStatus;
+  progress: number; // 0 to 100
+  file?: string;
+  loaded?: number;
+  total?: number;
+}
+
+export type ModelProgressCallback = (info: ModelProgressInfo) => void;
+
+// Vehicle class mapping for YOLOv8 COCO labels
 const VEHICLE_CLASSES: Record<string, VehicleCategory> = {
   car: "car",
   motorcycle: "motorcycle",
@@ -29,50 +46,120 @@ const VEHICLE_CLASSES: Record<string, VehicleCategory> = {
   truck: "truck",
 };
 
-let modelPromise: Promise<cocoSsd.ObjectDetection> | null = null;
+// High-resolution 640px matching YOLOv8 native input architecture
+export const CANVAS_SIZE = 640;
+
+let detectorPromise: Promise<any> | null = null;
 let offscreenCanvas: HTMLCanvasElement | null = null;
 let offscreenCtx: CanvasRenderingContext2D | null = null;
 
-// High-detail 512px resolution for small distant bird's-eye vehicles and bikes
-export const CANVAS_SIZE = 512;
+// Progress tracking listeners
+const modelProgressListeners = new Set<ModelProgressCallback>();
+let currentProgressInfo: ModelProgressInfo = { status: "idle", progress: 0 };
 
-/**
- * Initializes TensorFlow.js with WebGL GPU shader acceleration and loads MobileNet V2 (~6.8 MB)
- */
-export async function getClientAIModel(): Promise<cocoSsd.ObjectDetection> {
-  if (!modelPromise) {
-    modelPromise = (async () => {
-      // 1. Ensure WebGL GPU backend is active
-      await tf.ready();
-      if (tf.getBackend() !== "webgl") {
-        try {
-          await tf.setBackend("webgl");
-        } catch (e) {
-          console.warn("[ClientAI] WebGL backend not available, falling back to:", tf.getBackend(), e);
-        }
-      }
-      console.log(`[ClientAI] TensorFlow.js initialized with backend: ${tf.getBackend()}`);
+export function getModelProgress(): ModelProgressInfo {
+  return currentProgressInfo;
+}
 
-      // 2. Load lightweight quantized MobileNet V2 model (~6.8 MB)
-      const model = await cocoSsd.load({ base: "mobilenet_v2" });
-      console.log("[ClientAI] MobileNet V2 model loaded successfully.");
-      return model;
-    })();
-  }
-  return modelPromise;
+export function subscribeModelProgress(cb: ModelProgressCallback): () => void {
+  modelProgressListeners.add(cb);
+  cb(currentProgressInfo);
+  return () => {
+    modelProgressListeners.delete(cb);
+  };
+}
+
+function notifyModelProgress(info: ModelProgressInfo): void {
+  currentProgressInfo = info;
+  modelProgressListeners.forEach((listener) => {
+    try {
+      listener(info);
+    } catch (e) {
+      console.warn("[ClientAI] Progress listener error:", e);
+    }
+  });
 }
 
 /**
- * Clears cached TensorFlow.js IndexedDB models, CacheStorage, and reloads page
+ * Initializes and caches the YOLOv8 Nano object detection pipeline (~6.2 MB INT8 ONNX).
+ * Uses WebGL/WASM acceleration in browser with download progress tracking.
  */
-export async function clearClientAICache(): Promise<void> {
+export async function getClientAIModel(): Promise<any> {
+  if (!detectorPromise) {
+    notifyModelProgress({ status: "loading", progress: 0 });
+    detectorPromise = (async () => {
+      try {
+        console.log("[ClientAI] Initializing YOLOv8 Nano object detection pipeline...");
+
+        const detector = await pipeline("object-detection", "Xenova/yolov8n", {
+          progress_callback: (data: any) => {
+            if (data && data.status === "progress" && typeof data.progress === "number") {
+              notifyModelProgress({
+                status: "loading",
+                progress: Math.min(100, Math.max(0, Math.round(data.progress))),
+                file: data.file,
+                loaded: data.loaded,
+                total: data.total,
+              });
+            } else if (data && data.status === "done") {
+              notifyModelProgress({
+                status: "loading",
+                progress: 100,
+                file: data.file,
+              });
+            }
+          },
+        });
+
+        notifyModelProgress({ status: "ready", progress: 100 });
+        console.log("[ClientAI] YOLOv8 Nano pipeline ready.");
+        return detector;
+      } catch (err) {
+        console.error("[ClientAI] Failed to load YOLOv8 Nano model:", err);
+        notifyModelProgress({ status: "error", progress: 0 });
+        detectorPromise = null;
+        throw err;
+      }
+    })();
+  }
+  return detectorPromise;
+}
+
+/**
+ * Reset internal detector singleton (useful for testing or cache purge)
+ */
+export function resetClientAIModel(): void {
+  detectorPromise = null;
+  notifyModelProgress({ status: "idle", progress: 0 });
+}
+
+/**
+ * Clears cached YOLOv8/Transformers.js models from browser CacheStorage, IndexedDB, and localStorage.
+ */
+export async function clearClientAICache(reloadPage: boolean = true): Promise<void> {
   try {
+    resetClientAIModel();
+
+    if (typeof window !== "undefined" && "caches" in window) {
+      try {
+        const keys = await window.caches.keys();
+        for (let i = 0; i < keys.length; i++) {
+          const key = keys[i];
+          if (/^(transformers|xenova|onnx|tensorflow|tfjs|coco-ssd)/i.test(key)) {
+            await window.caches.delete(key);
+          }
+        }
+      } catch (e) {
+        console.warn("[ClientAI] CacheStorage clear skipped:", e);
+      }
+    }
+
     if (typeof window !== "undefined" && window.indexedDB && window.indexedDB.databases) {
       try {
         const dbs = await window.indexedDB.databases();
         for (let i = 0; i < dbs.length; i++) {
           const dbName = dbs[i].name;
-          if (dbName && /^(tensorflow|tfjs|_tfjs)/i.test(dbName)) {
+          if (dbName && /^(transformers|xenova|onnx|tensorflow|tfjs)/i.test(dbName)) {
             window.indexedDB.deleteDatabase(dbName);
           }
         }
@@ -81,25 +168,19 @@ export async function clearClientAICache(): Promise<void> {
       }
     }
 
-    if (typeof window !== "undefined" && "caches" in window) {
-      try {
-        const keys = await window.caches.keys();
-        for (let i = 0; i < keys.length; i++) {
-          if (/^(tensorflow|tfjs|coco-ssd)/i.test(keys[i])) {
-            await window.caches.delete(keys[i]);
-          }
-        }
-      } catch (e) {
-        console.warn("[ClientAI] CacheStorage clear skipped:", e);
-      }
-    }
-
-    // Selectively clear only AI-specific cache and preferences, preserving user API keys (e.g. tomtom_api_key)
+    // Selectively clear AI preferences, preserving API keys (e.g. tomtom_api_key)
     if (typeof localStorage !== "undefined") {
       const keysToRemove: string[] = [];
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key && (key.startsWith("ai_cam_pref_") || key.startsWith("tfjs_") || key.startsWith("tensorflow"))) {
+        if (
+          key &&
+          (key.startsWith("ai_cam_pref_") ||
+            key.startsWith("xenova_") ||
+            key.startsWith("transformers_") ||
+            key.startsWith("tfjs_") ||
+            key.startsWith("tensorflow"))
+        ) {
           keysToRemove.push(key);
         }
       }
@@ -110,14 +191,14 @@ export async function clearClientAICache(): Promise<void> {
       const keysToRemove: string[] = [];
       for (let i = 0; i < sessionStorage.length; i++) {
         const key = sessionStorage.key(i);
-        if (key && (key.startsWith("ai_") || key.startsWith("tfjs_"))) {
+        if (key && (key.startsWith("ai_") || key.startsWith("xenova_") || key.startsWith("tfjs_"))) {
           keysToRemove.push(key);
         }
       }
       keysToRemove.forEach((k) => sessionStorage.removeItem(k));
     }
 
-    if (typeof window !== "undefined") {
+    if (reloadPage && typeof window !== "undefined" && typeof window.location?.reload === "function") {
       window.location.reload();
     }
   } catch (err) {
@@ -132,12 +213,12 @@ for (let i = 0; i < 256; i++) {
   NIGHT_GAMMA_LUT[i] = boosted > 255 ? 255 : (boosted | 0);
 }
 
-// Reusable scratch buffer to eliminate 1MB/frame GC heap churn at 15-30 FPS
+// Reusable scratch buffer to eliminate GC heap churn at 15-30 FPS
 let scratchBuffer: Uint8ClampedArray | null = null;
 
 /**
  * Enhanced Bird's-Eye POV & High-Resolution Preprocessor:
- * 1. 512px High-Density Extraction
+ * 1. 640px Extraction matching YOLOv8 geometry
  * 2. Spatial Unsharp Masking (High-Pass Kernel Sharpening) for vehicle contours
  * 3. Adaptive Gamma & Contrast Stretching for Night CCTV (O(1) LUT)
  */
@@ -242,7 +323,7 @@ export function preprocessAdaptiveVision(
 }
 
 /**
- * Runs WebGL GPU vehicle detection inference on a video frame with 512px High-Def & Sharpening
+ * Runs YOLOv8 Nano inference on a video frame with 640px High-Def & Perspective Scaling
  */
 export async function runClientVehicleInference(
   video: HTMLVideoElement,
@@ -251,7 +332,7 @@ export async function runClientVehicleInference(
   enableSharpening: boolean = true
 ): Promise<EngineInferenceResult> {
   const startTime = performance.now();
-  const model = await getClientAIModel();
+  const detector = await getClientAIModel();
 
   const { inputSource, isNight, luminance, canvas } = preprocessAdaptiveVision(
     video,
@@ -259,9 +340,14 @@ export async function runClientVehicleInference(
     enableSharpening
   );
 
-  // Run COCO-SSD prediction with lower baseline for distant bird's-eye objects
-  const minConfidence = Math.max(0.15, confidenceThreshold * 0.7);
-  const predictions = await model.detect(inputSource, 20, minConfidence);
+  // Baseline threshold for YOLOv8
+  const baseThreshold = Math.max(0.15, confidenceThreshold * 0.7);
+
+  // Execute inference on preprocessed canvas
+  const rawPredictions: any[] = await detector(inputSource, {
+    threshold: baseThreshold,
+    percentage: false,
+  });
 
   const nativeW = video.videoWidth || 640;
   const nativeH = video.videoHeight || 480;
@@ -269,22 +355,26 @@ export async function runClientVehicleInference(
   const scaleY = nativeH / CANVAS_SIZE;
 
   const detections: ClientDetection[] = [];
+  const predictions = Array.isArray(rawPredictions) ? rawPredictions : [];
 
   for (let i = 0; i < predictions.length; i++) {
     const pred = predictions[i];
-    const matchedCategory = VEHICLE_CLASSES[pred.class.toLowerCase()];
+    const labelKey = String(pred.label || "").toLowerCase();
+    const matchedCategory = VEHICLE_CLASSES[labelKey];
 
-    if (matchedCategory) {
-      const [rawX, rawY, rawW, rawH] = pred.bbox;
-      const normalizedY = rawY / CANVAS_SIZE;
+    if (matchedCategory && pred.box) {
+      const { xmin, ymin, xmax, ymax } = pred.box;
+      const rawW = Math.max(0, xmax - xmin);
+      const rawH = Math.max(0, ymax - ymin);
 
       // Depth-aware perspective thresholding for Bird's-Eye camera:
       // Vehicles far away (top of screen) have smaller profile -> lower required threshold
+      const normalizedY = Math.max(0, Math.min(1, ymin / CANVAS_SIZE));
       const dynamicThreshold = confidenceThreshold * (0.75 + 0.35 * normalizedY);
 
       if (pred.score >= dynamicThreshold) {
-        const x = rawX * scaleX;
-        const y = rawY * scaleY;
+        const x = xmin * scaleX;
+        const y = ymin * scaleY;
         const w = rawW * scaleX;
         const h = rawH * scaleY;
 

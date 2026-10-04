@@ -5,6 +5,8 @@ import { CCTVChannel } from "@/types/cctv";
 import {
   runClientVehicleInference,
   clearClientAICache,
+  subscribeModelProgress,
+  ModelProgressInfo,
 } from "@/lib/ai/client-ai-engine";
 import {
   ClientVehicleTracker,
@@ -26,6 +28,8 @@ import {
   Maximize2,
   Video,
   Check,
+  Sparkles,
+  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -96,6 +100,19 @@ export function AIStationClient({ channels }: AIStationClientProps) {
   });
   const [trackedVehicles, setTrackedVehicles] = useState<TrackedVehicle[]>([]);
   const [lineCrossed, setLineCrossed] = useState<boolean>(false);
+
+  // Model loading progress state
+  const [modelProgress, setModelProgress] = useState<ModelProgressInfo>({
+    status: "idle",
+    progress: 0,
+  });
+
+  useEffect(() => {
+    const unsubscribe = subscribeModelProgress((info) => {
+      setModelProgress(info);
+    });
+    return unsubscribe;
+  }, []);
 
   const trackerRef = useRef<ClientVehicleTracker>(new ClientVehicleTracker());
   const isInferringRef = useRef<boolean>(false);
@@ -503,6 +520,36 @@ export function AIStationClient({ channels }: AIStationClientProps) {
               processedCanvas={processedCanvas}
             />
 
+            {/* Model Download / Preparation Progress Overlay */}
+            {modelProgress.status === "loading" && (
+              <div className="absolute inset-0 z-40 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-200">
+                <div className="max-w-md w-full flex flex-col items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-emerald-400 animate-spin" />
+                  </div>
+                  <div className="flex flex-col gap-1 text-center">
+                    <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">
+                      Mengunduh Model YOLOv8 Nano
+                    </h3>
+                    <p className="text-xs text-muted-foreground font-mono">
+                      {modelProgress.file
+                        ? `Memuat ${modelProgress.file.split("/").pop()} (${modelProgress.progress}%)`
+                        : `Menyiapkan akselerasi neural WebGL (${modelProgress.progress}%)...`}
+                    </p>
+                  </div>
+                  <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden border border-white/10">
+                    <div
+                      className="bg-emerald-500 h-full transition-all duration-300 rounded-full shadow-[0_0_12px_rgba(16,185,129,0.5)]"
+                      style={{ width: `${Math.max(5, modelProgress.progress)}%` }}
+                    />
+                  </div>
+                  <span className="text-[11px] font-mono text-emerald-400">
+                    {modelProgress.progress}% • 100% In-Browser (Zero GPU Cost)
+                  </span>
+                </div>
+              </div>
+            )}
+
             {/* Viewport Top HUD */}
             <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start justify-between pointer-events-none z-30">
               <div className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded border border-white/[0.1]">
@@ -514,7 +561,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
 
               <div className="flex items-center gap-1.5 bg-emerald-500/20 backdrop-blur-sm px-2 py-1 rounded border border-emerald-500/30 font-mono text-[10px] text-emerald-300">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                <span>LIVE TRACKER</span>
+                <span>YOLOV8n LIVE</span>
               </div>
             </div>
           </div>
