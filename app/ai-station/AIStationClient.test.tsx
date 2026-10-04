@@ -89,9 +89,9 @@ describe("AIStationClient", () => {
     expect(screen.getByRole("button", { name: /Hapus Cache/i })).toBeInTheDocument();
   });
 
-  it("renders YOLOV8n LIVE HUD badge in viewport", () => {
+  it("renders YOLOS LIVE HUD badge in viewport", () => {
     render(<AIStationClient channels={mockChannels} />);
 
-    expect(screen.getByText("YOLOV8n LIVE")).toBeInTheDocument();
+    expect(screen.getByText("YOLOS LIVE")).toBeInTheDocument();
   });
 });

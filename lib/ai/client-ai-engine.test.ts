@@ -59,7 +59,7 @@ describe("Client AI Engine (YOLOv8 Nano)", () => {
     });
 
     const model = await getClientAIModel();
-    expect(pipeline).toHaveBeenCalledWith("object-detection", "Xenova/yolov8n", expect.any(Object));
+    expect(pipeline).toHaveBeenCalledWith("object-detection", "Xenova/yolos-tiny", expect.any(Object));
     expect(model).toBe(mockDetector);
 
     // Call again to verify singleton behavior

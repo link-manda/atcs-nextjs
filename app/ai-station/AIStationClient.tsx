@@ -529,7 +529,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
                   </div>
                   <div className="flex flex-col gap-1 text-center">
                     <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">
-                      Mengunduh Model YOLOv8 Nano
+                      Mengunduh Model YOLOS Tiny (ViT)
                     </h3>
                     <p className="text-xs text-muted-foreground font-mono">
                       {modelProgress.file
@@ -561,7 +561,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
 
               <div className="flex items-center gap-1.5 bg-emerald-500/20 backdrop-blur-sm px-2 py-1 rounded border border-emerald-500/30 font-mono text-[10px] text-emerald-300">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                <span>YOLOV8n LIVE</span>
+                <span>YOLOS LIVE</span>
               </div>
             </div>
           </div>

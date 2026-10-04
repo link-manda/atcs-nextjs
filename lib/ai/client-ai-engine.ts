@@ -80,8 +80,11 @@ function notifyModelProgress(info: ModelProgressInfo): void {
   });
 }
 
+// Official public Vision Transformer object detection model (100% public, ~9.6 MB Quantized ONNX INT8)
+export const AI_MODEL_NAME = "Xenova/yolos-tiny";
+
 /**
- * Initializes and caches the YOLOv8 Nano object detection pipeline (~6.2 MB INT8 ONNX).
+ * Initializes and caches the YOLOS Vision Transformer object detection pipeline (~9.6 MB INT8 ONNX).
  * Uses WebGL/WASM acceleration in browser with download progress tracking.
  */
 export async function getClientAIModel(): Promise<any> {
@@ -89,9 +92,9 @@ export async function getClientAIModel(): Promise<any> {
     notifyModelProgress({ status: "loading", progress: 0 });
     detectorPromise = (async () => {
       try {
-        console.log("[ClientAI] Initializing YOLOv8 Nano object detection pipeline...");
+        console.log(`[ClientAI] Initializing ${AI_MODEL_NAME} object detection pipeline...`);
 
-        const detector = await pipeline("object-detection", "Xenova/yolov8n", {
+        const detector = await pipeline("object-detection", AI_MODEL_NAME, {
           progress_callback: (data: any) => {
             if (data && data.status === "progress" && typeof data.progress === "number") {
               notifyModelProgress({
@@ -112,10 +115,10 @@ export async function getClientAIModel(): Promise<any> {
         });
 
         notifyModelProgress({ status: "ready", progress: 100 });
-        console.log("[ClientAI] YOLOv8 Nano pipeline ready.");
+        console.log(`[ClientAI] ${AI_MODEL_NAME} pipeline ready.`);
         return detector;
       } catch (err) {
-        console.error("[ClientAI] Failed to load YOLOv8 Nano model:", err);
+        console.error(`[ClientAI] Failed to load ${AI_MODEL_NAME} model:`, err);
         notifyModelProgress({ status: "error", progress: 0 });
         detectorPromise = null;
         throw err;
