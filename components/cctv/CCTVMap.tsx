@@ -9,6 +9,7 @@ import { useTheme } from 'next-themes';
 import { Activity, Key, ExternalLink, X, Settings2, Check, Video, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { getBasemapTileConfig } from '@/lib/map-tile-config';
 
 interface CCTVMapProps {
   cameras: CCTVChannel[];
@@ -120,6 +121,7 @@ function MapBounds({ stations }: { stations: CCTVStation[] }) {
 export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMapProps) {
   const { resolvedTheme } = useTheme();
   const isLight = resolvedTheme === 'light';
+  const basemap = getBasemapTileConfig(isLight);
   const [showTraffic, setShowTraffic] = useState(false);
   const [apiKey, setApiKey] = useState<string>('');
   const [showKeyModal, setShowKeyModal] = useState(false);
@@ -287,13 +289,11 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
         zoomControl={false}
       >
         <TileLayer
-          key={isLight ? 'carto-light' : 'carto-dark'}
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url={
-            isLight
-              ? "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-              : "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          }
+          key={basemap.key}
+          attribution={basemap.attribution}
+          url={basemap.url}
+          maxNativeZoom={basemap.maxNativeZoom}
+          maxZoom={basemap.maxZoom}
         />
         
         {/* TomTom Real-Time Traffic Flow Layer */}
