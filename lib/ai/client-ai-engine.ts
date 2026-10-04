@@ -69,6 +69,10 @@ export function subscribeModelProgress(cb: ModelProgressCallback): () => void {
   };
 }
 
+export function setModelProgressForTest(info: ModelProgressInfo): void {
+  notifyModelProgress(info);
+}
+
 function notifyModelProgress(info: ModelProgressInfo): void {
   currentProgressInfo = info;
   modelProgressListeners.forEach((listener) => {
@@ -83,11 +87,21 @@ function notifyModelProgress(info: ModelProgressInfo): void {
 // Official public Vision Transformer object detection model (100% public, ~9.6 MB Quantized ONNX INT8)
 export const AI_MODEL_NAME = "Xenova/yolos-tiny";
 
+// Circuit breaker to prevent rapid network retry loops on failure
+let lastLoadError: Error | null = null;
+let lastLoadErrorTime = 0;
+export const LOAD_COOLDOWN_MS = 10000; // 10 seconds cooldown
+
 /**
  * Initializes and caches the YOLOS Vision Transformer object detection pipeline (~9.6 MB INT8 ONNX).
  * Uses WebGL/WASM acceleration in browser with download progress tracking.
  */
 export async function getClientAIModel(): Promise<any> {
+  // Fast fail during cooldown period to protect browser event loop
+  if (lastLoadError && Date.now() - lastLoadErrorTime < LOAD_COOLDOWN_MS) {
+    throw lastLoadError;
+  }
+
   if (!detectorPromise) {
     notifyModelProgress({ status: "loading", progress: 0 });
     detectorPromise = (async () => {
@@ -116,10 +130,14 @@ export async function getClientAIModel(): Promise<any> {
 
         notifyModelProgress({ status: "ready", progress: 100 });
         console.log(`[ClientAI] ${AI_MODEL_NAME} pipeline ready.`);
+        lastLoadError = null;
+        lastLoadErrorTime = 0;
         return detector;
-      } catch (err) {
+      } catch (err: any) {
         console.error(`[ClientAI] Failed to load ${AI_MODEL_NAME} model:`, err);
         notifyModelProgress({ status: "error", progress: 0 });
+        lastLoadError = err instanceof Error ? err : new Error(String(err));
+        lastLoadErrorTime = Date.now();
         detectorPromise = null;
         throw err;
       }
@@ -129,10 +147,12 @@ export async function getClientAIModel(): Promise<any> {
 }
 
 /**
- * Reset internal detector singleton (useful for testing or cache purge)
+ * Reset internal detector singleton and clear circuit breaker (useful for manual retry or cache purge)
  */
 export function resetClientAIModel(): void {
   detectorPromise = null;
+  lastLoadError = null;
+  lastLoadErrorTime = 0;
   notifyModelProgress({ status: "idle", progress: 0 });
 }
 

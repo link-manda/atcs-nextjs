@@ -94,4 +94,26 @@ describe("AIStationClient", () => {
 
     expect(screen.getByText("YOLOS LIVE")).toBeInTheDocument();
   });
+
+  it("renders error overlay and retry button when modelProgress is in error state", () => {
+    const { setModelProgressForTest } = require("@/lib/ai/client-ai-engine");
+
+    render(<AIStationClient channels={mockChannels} />);
+
+    // Simulate error state
+    fireEvent(window, new Event("focus"));
+    const { act } = require("@testing-library/react");
+    act(() => {
+      setModelProgressForTest({ status: "error", progress: 0 });
+    });
+
+    expect(screen.getByText("Gagal Memuat Model AI")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Coba Lagi/i })).toBeInTheDocument();
+    expect(screen.getByText("AI OFFLINE")).toBeInTheDocument();
+
+    // Reset back to idle
+    act(() => {
+      setModelProgressForTest({ status: "idle", progress: 0 });
+    });
+  });
 });

@@ -70,6 +70,25 @@ describe("Client AI Engine (YOLOv8 Nano)", () => {
     unsubscribe();
   });
 
+  it("enforces circuit breaker cooldown on loading error and avoids spamming pipeline calls", async () => {
+    resetClientAIModel();
+    (pipeline as jest.Mock).mockRejectedValueOnce(new Error("Network timeout"));
+
+    await expect(getClientAIModel()).rejects.toThrow("Network timeout");
+    expect(pipeline).toHaveBeenCalledTimes(1);
+
+    // Immediate second call should fast-fail via circuit breaker without calling pipeline again
+    await expect(getClientAIModel()).rejects.toThrow("Network timeout");
+    expect(pipeline).toHaveBeenCalledTimes(1);
+
+    // Calling resetClientAIModel should clear circuit breaker
+    resetClientAIModel();
+    (pipeline as jest.Mock).mockResolvedValueOnce(mockDetector);
+    const model = await getClientAIModel();
+    expect(model).toBe(mockDetector);
+    expect(pipeline).toHaveBeenCalledTimes(2);
+  });
+
   it("filters non-vehicle objects and normalizes bounding boxes and centroids", async () => {
     const mockVideo = {
       videoWidth: 1280,

@@ -6,7 +6,10 @@ import {
   runClientVehicleInference,
   clearClientAICache,
   subscribeModelProgress,
+  resetClientAIModel,
+  getClientAIModel,
   ModelProgressInfo,
+  ModelLoadingStatus,
 } from "@/lib/ai/client-ai-engine";
 import {
   ClientVehicleTracker,
@@ -30,6 +33,7 @@ import {
   Check,
   Sparkles,
   RefreshCw,
+  AlertTriangle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -112,6 +116,16 @@ export function AIStationClient({ channels }: AIStationClientProps) {
       setModelProgress(info);
     });
     return unsubscribe;
+  }, []);
+
+  const modelStatusRef = useRef<ModelLoadingStatus>("idle");
+  useEffect(() => {
+    modelStatusRef.current = modelProgress.status;
+  }, [modelProgress.status]);
+
+  const handleRetryModel = useCallback(() => {
+    resetClientAIModel();
+    getClientAIModel().catch(() => {});
   }, []);
 
   const trackerRef = useRef<ClientVehicleTracker>(new ClientVehicleTracker());
@@ -259,6 +273,12 @@ export function AIStationClient({ channels }: AIStationClientProps) {
     const throttleInterval = Math.round(1000 / targetFps);
 
     const loop = async (timestamp: number) => {
+      // Circuit breaker: do not run inference if model is loading or in error state
+      if (modelStatusRef.current === "error" || modelStatusRef.current === "loading") {
+        animationFrameId = requestAnimationFrame(loop);
+        return;
+      }
+
       const video = videoRef.current;
 
       if (
@@ -550,6 +570,40 @@ export function AIStationClient({ channels }: AIStationClientProps) {
               </div>
             )}
 
+            {/* Model Error State Overlay */}
+            {modelProgress.status === "error" && (
+              <div className="absolute inset-0 z-40 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-200">
+                <div className="max-w-md w-full flex flex-col items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
+                    <AlertTriangle className="w-5 h-5" />
+                  </div>
+                  <div className="flex flex-col gap-1 text-center">
+                    <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">
+                      Gagal Memuat Model AI
+                    </h3>
+                    <p className="text-xs text-muted-foreground font-mono">
+                      Terjadi kendala jaringan saat mengunduh model neural dari CDN. Silakan klik tombol di bawah untuk mencoba kembali.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 mt-2">
+                    <button
+                      onClick={handleRetryModel}
+                      className="px-3.5 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-lg shadow-emerald-900/30"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      <span>Coba Lagi</span>
+                    </button>
+                    <button
+                      onClick={() => clearClientAICache()}
+                      className="px-3.5 py-1.5 rounded-md bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground font-mono text-xs border border-border transition-colors"
+                    >
+                      Hapus Cache
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Viewport Top HUD */}
             <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start justify-between pointer-events-none z-30">
               <div className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded border border-white/[0.1]">
@@ -560,8 +614,14 @@ export function AIStationClient({ channels }: AIStationClientProps) {
               </div>
 
               <div className="flex items-center gap-1.5 bg-emerald-500/20 backdrop-blur-sm px-2 py-1 rounded border border-emerald-500/30 font-mono text-[10px] text-emerald-300">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                <span>YOLOS LIVE</span>
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    modelProgress.status === "error"
+                      ? "bg-rose-500"
+                      : "bg-emerald-400 animate-ping"
+                  }`}
+                />
+                <span>{modelProgress.status === "error" ? "AI OFFLINE" : "YOLOS LIVE"}</span>
               </div>
             </div>
           </div>
