@@ -279,12 +279,14 @@ export function AIStationClient({ channels }: AIStationClientProps) {
   // 4. Real-Time Client-Side WebGL AI Inference Loop with Dynamic Throttle & 512px Frame Lock
   useEffect(() => {
     let animationFrameId: number;
-    let lastInferenceTime = 0;
+    let nextAllowedTime = 0;
     let frameCount = 0;
     let fpsCalcTime = performance.now();
     let consecutiveErrors = 0;
     let coolOffUntil = 0;
     const throttleInterval = Math.round(1000 / targetFps);
+    // Guaranteed breathing room for the UI thread between two inferences
+    const MIN_IDLE_GAP_MS = 50;
 
     const loop = async (timestamp: number) => {
       // Circuit breaker: do not run inference if model is loading or in error state
@@ -306,10 +308,10 @@ export function AIStationClient({ channels }: AIStationClientProps) {
         video.readyState >= 2 &&
         !video.paused &&
         !isInferringRef.current &&
-        timestamp - lastInferenceTime >= throttleInterval
+        timestamp >= nextAllowedTime
       ) {
         isInferringRef.current = true;
-        lastInferenceTime = timestamp;
+        const startedAt = timestamp;
 
         try {
           // Run inference with adaptive vision preprocessor
@@ -361,6 +363,7 @@ export function AIStationClient({ channels }: AIStationClientProps) {
           }
         } finally {
           isInferringRef.current = false;
+          nextAllowedTime = Math.max(startedAt + throttleInterval, performance.now() + MIN_IDLE_GAP_MS);
         }
       }
 

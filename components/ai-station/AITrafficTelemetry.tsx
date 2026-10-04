@@ -77,9 +77,19 @@ export function AITrafficTelemetry({
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-mono text-[10px]">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping" />
-            <span>{fps} FPS • {inferenceTimeMs}ms</span>
+          <div className="flex items-center gap-1.5">
+            {inferenceTimeMs > Math.max(250, (1000 / Math.max(1, targetFps)) * 3) && (
+              <span
+                className="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 font-mono text-[10px]"
+                title="Inferensi lebih lambat dari target; laju deteksi diturunkan otomatis"
+              >
+                Beban tinggi
+              </span>
+            )}
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-mono text-[10px]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping" />
+              <span>{fps} FPS • {inferenceTimeMs}ms</span>
+            </div>
           </div>
         </div>
 

@@ -1,12 +1,7 @@
 "use client";
 
-import { pipeline, env, RawImage } from "@xenova/transformers";
-
-// Configure Transformers.js for browser environment
-if (typeof window !== "undefined") {
-  env.allowLocalModels = false;
-  env.useBrowserCache = true;
-}
+import { createInferenceWorker } from "./create-inference-worker";
+import type { RawPrediction, WorkerRequest, WorkerResponse } from "./inference-protocol";
 
 export type VehicleCategory = "car" | "motorcycle" | "bus" | "truck";
 
@@ -49,7 +44,14 @@ const VEHICLE_CLASSES: Record<string, VehicleCategory> = {
 // High-resolution 640px matching YOLOv8 native input architecture
 export const CANVAS_SIZE = 640;
 
-let detectorPromise: Promise<any> | null = null;
+let worker: Worker | null = null;
+let loadPromise: Promise<void> | null = null;
+let loadSettle: { resolve: () => void; reject: (err: Error) => void } | null = null;
+let nextFrameId = 0;
+const pendingDetections = new Map<
+  number,
+  { resolve: (predictions: RawPrediction[]) => void; reject: (err: Error) => void }
+>();
 let offscreenCanvas: HTMLCanvasElement | null = null;
 let offscreenCtx: CanvasRenderingContext2D | null = null;
 
@@ -92,65 +94,134 @@ let lastLoadError: Error | null = null;
 let lastLoadErrorTime = 0;
 export const LOAD_COOLDOWN_MS = 10000; // 10 seconds cooldown
 
+function postToWorker(message: WorkerRequest, transfer: Transferable[] = []): void {
+  if (!worker) {
+    worker = createInferenceWorker();
+    worker.onmessage = handleWorkerMessage;
+    worker.onerror = (event: ErrorEvent) => failWorker(new Error(event.message || "Inference worker crashed"));
+  }
+  worker.postMessage(message, transfer);
+}
+
+function handleWorkerMessage(event: MessageEvent<WorkerResponse>): void {
+  const msg = event.data;
+  switch (msg.type) {
+    case "progress":
+      notifyModelProgress(msg.info);
+      break;
+    case "ready":
+      notifyModelProgress({ status: "ready", progress: 100 });
+      console.log(`[ClientAI] ${AI_MODEL_NAME} pipeline ready.`);
+      lastLoadError = null;
+      lastLoadErrorTime = 0;
+      loadSettle?.resolve();
+      loadSettle = null;
+      break;
+    case "loadError":
+      loadSettle?.reject(new Error(msg.message));
+      loadSettle = null;
+      break;
+    case "result": {
+      // Responses for unknown ids (e.g. after a reset) are stale and ignored
+      const pending = pendingDetections.get(msg.id);
+      if (pending) {
+        pendingDetections.delete(msg.id);
+        pending.resolve(msg.predictions);
+      }
+      break;
+    }
+    case "error": {
+      const pending = pendingDetections.get(msg.id);
+      if (pending) {
+        pendingDetections.delete(msg.id);
+        pending.reject(new Error(msg.message));
+      }
+      break;
+    }
+  }
+}
+
+function teardownWorker(reason: Error): void {
+  if (worker) {
+    worker.terminate();
+    worker = null;
+  }
+  pendingDetections.forEach((pending) => pending.reject(reason));
+  pendingDetections.clear();
+}
+
+function failWorker(err: Error): void {
+  const wasLoading = loadSettle !== null;
+  const settle = loadSettle;
+  loadSettle = null;
+  teardownWorker(err);
+  if (wasLoading) {
+    settle?.reject(err);
+  } else {
+    console.error("[ClientAI] Inference worker failed:", err);
+    notifyModelProgress({ status: "error", progress: 0 });
+    lastLoadError = err;
+    lastLoadErrorTime = Date.now();
+    loadPromise = null;
+  }
+}
+
 /**
- * Initializes and caches the YOLOS Vision Transformer object detection pipeline (~9.6 MB INT8 ONNX).
- * Uses WebGL/WASM acceleration in browser with download progress tracking.
+ * Starts the inference worker and loads the model inside it (~9.6 MB INT8 ONNX).
+ * Resolves once the model is ready. Download progress is forwarded to subscribers.
  */
-export async function getClientAIModel(): Promise<any> {
+export async function getClientAIModel(): Promise<void> {
   // Fast fail during cooldown period to protect browser event loop
   if (lastLoadError && Date.now() - lastLoadErrorTime < LOAD_COOLDOWN_MS) {
     throw lastLoadError;
   }
 
-  if (!detectorPromise) {
+  if (!loadPromise) {
     notifyModelProgress({ status: "loading", progress: 0 });
-    detectorPromise = (async () => {
-      try {
-        console.log(`[ClientAI] Initializing ${AI_MODEL_NAME} object detection pipeline...`);
-
-        const detector = await pipeline("object-detection", AI_MODEL_NAME, {
-          progress_callback: (data: any) => {
-            if (data && data.status === "progress" && typeof data.progress === "number") {
-              notifyModelProgress({
-                status: "loading",
-                progress: Math.min(100, Math.max(0, Math.round(data.progress))),
-                file: data.file,
-                loaded: data.loaded,
-                total: data.total,
-              });
-            } else if (data && data.status === "done") {
-              notifyModelProgress({
-                status: "loading",
-                progress: 100,
-                file: data.file,
-              });
-            }
-          },
-        });
-
-        notifyModelProgress({ status: "ready", progress: 100 });
-        console.log(`[ClientAI] ${AI_MODEL_NAME} pipeline ready.`);
-        lastLoadError = null;
-        lastLoadErrorTime = 0;
-        return detector;
-      } catch (err: any) {
-        console.error(`[ClientAI] Failed to load ${AI_MODEL_NAME} model:`, err);
+    console.log(`[ClientAI] Initializing ${AI_MODEL_NAME} object detection pipeline...`);
+    const attempt: Promise<void> = new Promise<void>((resolve, reject) => {
+      loadSettle = { resolve, reject };
+      postToWorker({ type: "load", model: AI_MODEL_NAME });
+    }).catch((err: unknown) => {
+      const error = err instanceof Error ? err : new Error(String(err));
+      // A reset already replaced this attempt: just propagate to the awaiting caller
+      if (loadPromise === attempt) {
+        console.error(`[ClientAI] Failed to load ${AI_MODEL_NAME} model:`, error);
         notifyModelProgress({ status: "error", progress: 0 });
-        lastLoadError = err instanceof Error ? err : new Error(String(err));
+        lastLoadError = error;
         lastLoadErrorTime = Date.now();
-        detectorPromise = null;
-        throw err;
+        loadSettle = null;
+        loadPromise = null;
+        teardownWorker(error);
       }
-    })();
+      throw error;
+    });
+    loadPromise = attempt;
   }
-  return detectorPromise;
+  return loadPromise;
+}
+
+function detectInWorker(buffer: ArrayBuffer, threshold: number): Promise<RawPrediction[]> {
+  const id = ++nextFrameId;
+  return new Promise<RawPrediction[]>((resolve, reject) => {
+    pendingDetections.set(id, { resolve, reject });
+    postToWorker(
+      { type: "detect", id, model: AI_MODEL_NAME, buffer, width: CANVAS_SIZE, height: CANVAS_SIZE, threshold },
+      [buffer]
+    );
+  });
 }
 
 /**
- * Reset internal detector singleton and clear circuit breaker (useful for manual retry or cache purge)
+ * Terminate the worker and clear circuit breaker (useful for manual retry or cache purge)
  */
 export function resetClientAIModel(): void {
-  detectorPromise = null;
+  const settle = loadSettle;
+  const reason = new Error("AI engine reset");
+  loadSettle = null;
+  loadPromise = null;
+  teardownWorker(reason);
+  settle?.reject(reason);
   lastLoadError = null;
   lastLoadErrorTime = 0;
   notifyModelProgress({ status: "idle", progress: 0 });
@@ -250,7 +321,7 @@ export function preprocessAdaptiveVision(
   enableNightBoost: boolean = true,
   enableSharpening: boolean = true
 ): {
-  rawImage: RawImage;
+  pixels: Uint8ClampedArray;
   inputSource: HTMLCanvasElement;
   isNight: boolean;
   luminance: number;
@@ -264,10 +335,8 @@ export function preprocessAdaptiveVision(
   }
 
   if (!offscreenCtx) {
-    const dummyData = new Uint8ClampedArray(CANVAS_SIZE * CANVAS_SIZE * 4);
-    const fallbackImage = new RawImage(dummyData, CANVAS_SIZE, CANVAS_SIZE, 4);
     return {
-      rawImage: fallbackImage,
+      pixels: new Uint8ClampedArray(CANVAS_SIZE * CANVAS_SIZE * 4),
       inputSource: offscreenCanvas,
       isNight: false,
       luminance: 128,
@@ -351,11 +420,10 @@ export function preprocessAdaptiveVision(
     offscreenCtx.putImageData(imgData, 0, 0);
   }
 
-  // Wrap preprocessed pixel data into native Transformers.js RawImage
-  const rawImage = new RawImage(data, CANVAS_SIZE, CANVAS_SIZE, 4);
-
+  // Pixel buffer is transferred (not copied) to the worker, which builds the RawImage
+  // and runs inference off the UI thread.
   return {
-    rawImage,
+    pixels: data,
     inputSource: offscreenCanvas,
     isNight,
     luminance: Math.round(avgLuminance),
@@ -364,7 +432,7 @@ export function preprocessAdaptiveVision(
 }
 
 /**
- * Runs YOLOv8 Nano inference on a video frame with 640px High-Def & Perspective Scaling
+ * Runs object detection on a video frame inside the inference worker with 640px High-Def & Perspective Scaling
  */
 export async function runClientVehicleInference(
   video: HTMLVideoElement,
@@ -373,9 +441,9 @@ export async function runClientVehicleInference(
   enableSharpening: boolean = true
 ): Promise<EngineInferenceResult> {
   const startTime = performance.now();
-  const detector = await getClientAIModel();
+  await getClientAIModel();
 
-  const { rawImage, isNight, luminance, canvas } = preprocessAdaptiveVision(
+  const { pixels, isNight, luminance, canvas } = preprocessAdaptiveVision(
     video,
     enableNightBoost,
     enableSharpening
@@ -384,11 +452,7 @@ export async function runClientVehicleInference(
   // Baseline threshold for YOLOv8
   const baseThreshold = Math.max(0.15, confidenceThreshold * 0.7);
 
-  // Execute inference on native RawImage
-  const rawPredictions: any[] = await detector(rawImage, {
-    threshold: baseThreshold,
-    percentage: false,
-  });
+  const rawPredictions: RawPrediction[] = await detectInWorker(pixels.buffer as ArrayBuffer, baseThreshold);
 
   const nativeW = video.videoWidth || 640;
   const nativeH = video.videoHeight || 480;
