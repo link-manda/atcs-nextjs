@@ -194,33 +194,33 @@
   }
 }
 
-/* ─── Leaflet Tactical Dark Overrides ─── */
+/* ─── Leaflet Tactical Popup (Theme-Adaptive) ─── */
 .tactical-popup .leaflet-popup-content-wrapper {
-  background: rgba(9, 9, 11, 0.94) !important;
+  background: rgba(255, 255, 255, 0.96) !important;
   backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
   border-radius: 8px !important;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12) !important;
   padding: 0 !important;
-  color: #f4f4f5 !important;
+  color: #09090b !important;
 }
 
 .tactical-popup .leaflet-popup-content {
   margin: 10px 12px !important;
-  color: #f4f4f5 !important;
+  color: #09090b !important;
   line-height: 1.4 !important;
 }
 
 .tactical-popup .leaflet-popup-tip-container .leaflet-popup-tip {
-  background: rgba(9, 9, 11, 0.94) !important;
+  background: rgba(255, 255, 255, 0.96) !important;
   box-shadow: none !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
   border-top: none !important;
   border-left: none !important;
 }
 
 .tactical-popup .leaflet-popup-close-button {
-  color: #a1a1aa !important;
+  color: #71717a !important;
   font-size: 16px !important;
   top: 6px !important;
   right: 8px !important;
@@ -232,18 +232,55 @@
 }
 
 .tactical-popup .leaflet-popup-close-button:hover {
-  color: #ffffff !important;
+  color: #09090b !important;
   background: transparent !important;
 }
 
 .leaflet-control-attribution {
-  background: rgba(9, 9, 11, 0.85) !important;
+  background: rgba(255, 255, 255, 0.88) !important;
   color: #71717a !important;
   font-size: 9px !important;
   border-radius: 4px !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
 
 .leaflet-control-attribution a {
+  color: #059669 !important;
+}
+
+/* ─── Leaflet Tactical Popup (Dark Theme Overrides) ─── */
+.dark .tactical-popup .leaflet-popup-content-wrapper {
+  background: rgba(9, 9, 11, 0.94) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7) !important;
+  color: #f4f4f5 !important;
+}
+
+.dark .tactical-popup .leaflet-popup-content {
+  color: #f4f4f5 !important;
+}
+
+.dark .tactical-popup .leaflet-popup-tip-container .leaflet-popup-tip {
+  background: rgba(9, 9, 11, 0.94) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-top: none !important;
+  border-left: none !important;
+}
+
+.dark .tactical-popup .leaflet-popup-close-button {
+  color: #a1a1aa !important;
+}
+
+.dark .tactical-popup .leaflet-popup-close-button:hover {
+  color: #ffffff !important;
+}
+
+.dark .leaflet-control-attribution {
+  background: rgba(9, 9, 11, 0.85) !important;
+  color: #71717a !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark .leaflet-control-attribution a {
   color: #34d399 !important;
 }

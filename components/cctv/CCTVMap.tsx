@@ -356,7 +356,7 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
                                 {cam.ch_name}
                               </span>
                             </div>
-                            <span className="text-[9px] px-1.5 py-0.2 rounded font-bold uppercase bg-background border border-border text-muted-foreground flex-shrink-0">
+                            <span className="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase bg-background border border-border text-muted-foreground flex-shrink-0">
                               {isPanoramic ? 'Panoramic' : isPTZ ? 'PTZ' : 'Video'}
                             </span>
                           </div>
