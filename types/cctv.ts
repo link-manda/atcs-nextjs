@@ -13,6 +13,14 @@ export type CCTVRegion =
   | 'Bangli'
   | 'Lainnya';
 
+export interface NearbySPBU {
+  id: string | number;
+  name: string;
+  operator?: string;
+  distance_meters: number;
+  is_panoramic_recommended?: boolean;
+}
+
 export interface CCTVChannel {
   cctv_id: number;
   ch_id: string | null;
@@ -23,4 +31,5 @@ export interface CCTVChannel {
   player_type: PlayerType;
   region: CCTVRegion;
   is_online?: boolean;
+  nearby_spbu?: NearbySPBU;
 }
