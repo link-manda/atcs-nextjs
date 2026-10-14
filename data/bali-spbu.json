@@ -1,0 +1,2282 @@
+[
+  {
+    "id": "n274750656",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.352555,
+    "lng": 114.603949
+  },
+  {
+    "id": "n274813078",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.324796,
+    "lng": 114.540978
+  },
+  {
+    "id": "n274853846",
+    "name": "SPBU Pertamina",
+    "lat": -8.339801,
+    "lng": 115.032029
+  },
+  {
+    "id": "n610371699",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.721233,
+    "lng": 115.194287,
+    "regency": "Denpasar",
+    "street": "Jalan Bypass Ngurah Rai"
+  },
+  {
+    "id": "n610371788",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.713711,
+    "lng": 115.223159
+  },
+  {
+    "id": "n641643890",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.502495,
+    "lng": 115.135028
+  },
+  {
+    "id": "n941307526",
+    "name": "SPBU Gas Station Sunset Road 54.803.31",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.712949,
+    "lng": 115.185909,
+    "regency": "Kuta, Kabupaten Badung, Bali, Indonesia",
+    "street": "Sunset Road"
+  },
+  {
+    "id": "n945648527",
+    "name": "Pertamina",
+    "lat": -8.752605,
+    "lng": 115.21809
+  },
+  {
+    "id": "n963276323",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.743355,
+    "lng": 115.175005
+  },
+  {
+    "id": "n1291386618",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.477084,
+    "lng": 115.615759
+  },
+  {
+    "id": "n1292872676",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.72085,
+    "lng": 115.180191
+  },
+  {
+    "id": "n1456289125",
+    "name": "Pertamina",
+    "lat": -8.544992,
+    "lng": 115.214557
+  },
+  {
+    "id": "n1502919830",
+    "name": "Pertamina Gas Station 54.803.20",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.702607,
+    "lng": 115.175705,
+    "regency": "Legian, Kuta, Kabupaten Badung, Bali, Indonesia",
+    "street": "Jalan Dewi Sri"
+  },
+  {
+    "id": "n1534960000",
+    "name": "Pertamina",
+    "operator": "Rugana",
+    "brand": "Independent",
+    "lat": -8.672339,
+    "lng": 115.258802,
+    "regency": "Denpasar",
+    "street": "Jalan Bypass Ngurah Rai"
+  },
+  {
+    "id": "n1675080290",
+    "name": "SPBU Pertamina 54.801.32",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.687005,
+    "lng": 115.186727,
+    "regency": "Denpasar",
+    "street": "Jalan Gunung Soputan"
+  },
+  {
+    "id": "n1830362205",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.78198,
+    "lng": 115.174848,
+    "regency": "Jimbaran",
+    "street": "Jalan Uluwatu 2"
+  },
+  {
+    "id": "n1963414951",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.384301,
+    "lng": 115.19544
+  },
+  {
+    "id": "n1963414988",
+    "name": "SPBU Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.560268,
+    "lng": 115.153967
+  },
+  {
+    "id": "n1963415557",
+    "name": "Pertamina",
+    "lat": -8.630886,
+    "lng": 115.132762
+  },
+  {
+    "id": "n1963471597",
+    "name": "SPBU Pertamina",
+    "lat": -8.602308,
+    "lng": 115.260847
+  },
+  {
+    "id": "n1963471634",
+    "name": "Pertamina",
+    "lat": -8.651635,
+    "lng": 115.254182,
+    "regency": "Denpasar",
+    "street": "Jalan Bypass Ngurah Rai"
+  },
+  {
+    "id": "n2000869724",
+    "name": "Pertamina",
+    "lat": -8.543974,
+    "lng": 115.214653
+  },
+  {
+    "id": "n2148876485",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.437493,
+    "lng": 115.592817
+  },
+  {
+    "id": "n2272949196",
+    "name": "SPBU Pertamina",
+    "lat": -8.624176,
+    "lng": 115.25712
+  },
+  {
+    "id": "n2276389503",
+    "name": "Pom Bensin",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.629456,
+    "lng": 115.172976
+  },
+  {
+    "id": "n2279234528",
+    "name": "Pompa Bensin",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.649007,
+    "lng": 115.186379
+  },
+  {
+    "id": "n2279259061",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.715153,
+    "lng": 115.186308,
+    "regency": "Kuta",
+    "street": "Sunset Road"
+  },
+  {
+    "id": "n2487421311",
+    "name": "SPBU Pertamina",
+    "lat": -8.543634,
+    "lng": 115.140731
+  },
+  {
+    "id": "n2487421377",
+    "name": "Pertamina",
+    "lat": -8.520064,
+    "lng": 115.174348
+  },
+  {
+    "id": "n2487421443",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.333716,
+    "lng": 115.186672
+  },
+  {
+    "id": "n2487422443",
+    "name": "Pertamina",
+    "lat": -8.54374,
+    "lng": 115.140667
+  },
+  {
+    "id": "n2487544914",
+    "name": "SPBU Pertamina 54.803.19",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.689024,
+    "lng": 115.171781,
+    "regency": "Seminyak, Benoa, Kuta Selatan, Kabupaten Badung, Bali, Indonesia",
+    "street": "Sunset Road"
+  },
+  {
+    "id": "n2488170415",
+    "name": "Pertamina",
+    "lat": -8.674289,
+    "lng": 115.254225
+  },
+  {
+    "id": "n2498046486",
+    "name": "Pertamina",
+    "lat": -8.677284,
+    "lng": 115.232102
+  },
+  {
+    "id": "n2498046487",
+    "name": "Pertamina",
+    "operator": "PT Pertamina",
+    "lat": -8.673012,
+    "lng": 115.22621,
+    "regency": "Denpasar",
+    "street": "Raya Puputan"
+  },
+  {
+    "id": "n2498046488",
+    "name": "SPBU Pertamina",
+    "operator": "Pertamina",
+    "lat": -8.67308,
+    "lng": 115.240122
+  },
+  {
+    "id": "n2845852089",
+    "name": "SPBU Pertamina",
+    "lat": -8.404347,
+    "lng": 115.588417
+  },
+  {
+    "id": "n2847473231",
+    "name": "SPBU Pertamina",
+    "lat": -8.186316,
+    "lng": 114.977471
+  },
+  {
+    "id": "n2849702811",
+    "name": "SPBU Pertamina",
+    "lat": -8.757882,
+    "lng": 115.168741
+  },
+  {
+    "id": "n2872212679",
+    "name": "Pertamina 54.803.06 Gas Station",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.672977,
+    "lng": 115.165178,
+    "regency": "Kerobokan Kelod, Kuta Utara, Kabupaten Badung, Bali, Indonesia",
+    "street": "Jalan Raya Kerobokan"
+  },
+  {
+    "id": "n3175963462",
+    "name": "Pertamina",
+    "operator": "PT Pertamina",
+    "lat": -8.666811,
+    "lng": 115.231516
+  },
+  {
+    "id": "n3217531312",
+    "name": "Pertamina",
+    "lat": -8.820164,
+    "lng": 115.149848
+  },
+  {
+    "id": "n3219129615",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.724062,
+    "lng": 115.23128
+  },
+  {
+    "id": "n3292077086",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.656663,
+    "lng": 115.22508,
+    "regency": "Denpasar",
+    "street": "Jalan Kamboja"
+  },
+  {
+    "id": "n3299570661",
+    "name": "SPBU",
+    "lat": -8.191093,
+    "lng": 114.932671
+  },
+  {
+    "id": "n3329762011",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.54693,
+    "lng": 115.485918
+  },
+  {
+    "id": "n3530974108",
+    "name": "Pertamina 54.805.12",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.52316,
+    "lng": 115.275941
+  },
+  {
+    "id": "n3646990902",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "lat": -8.666373,
+    "lng": 115.241559,
+    "regency": "Denpasar",
+    "street": "Jalan Hayam Wuruk"
+  },
+  {
+    "id": "n3671677724",
+    "name": "Pertamina",
+    "lat": -8.686221,
+    "lng": 115.226382,
+    "regency": "Denpasar",
+    "street": "Tukad Pakerisan"
+  },
+  {
+    "id": "n3675164637",
+    "name": "Pertamina",
+    "lat": -8.660367,
+    "lng": 115.239398,
+    "regency": "Denpasar",
+    "street": "Jalan Hayam Wuruk"
+  },
+  {
+    "id": "n3718349380",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.678971,
+    "lng": 115.214914,
+    "regency": "Denpasar",
+    "street": "Jalan Raya Sesetan"
+  },
+  {
+    "id": "n3749170052",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.511795,
+    "lng": 115.501879
+  },
+  {
+    "id": "n3749171670",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.503463,
+    "lng": 115.558339
+  },
+  {
+    "id": "n3754488727",
+    "name": "SPBU Pertamina",
+    "lat": -8.082481,
+    "lng": 115.143243
+  },
+  {
+    "id": "n3754488728",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.145012,
+    "lng": 115.049947
+  },
+  {
+    "id": "n3754491925",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.115274,
+    "lng": 115.079728
+  },
+  {
+    "id": "n3775472294",
+    "name": "SPBU Pertamina",
+    "lat": -8.234539,
+    "lng": 115.55207
+  },
+  {
+    "id": "n3780445716",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.710779,
+    "lng": 115.223489,
+    "regency": "Denpasar",
+    "street": "Suwung Batan Kendal"
+  },
+  {
+    "id": "n3781991815",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.714504,
+    "lng": 115.215805
+  },
+  {
+    "id": "n3784338063",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.659713,
+    "lng": 115.203165,
+    "regency": "Denpasar",
+    "street": "Jalan Gunung Batukaru"
+  },
+  {
+    "id": "n3785230436",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.552699,
+    "lng": 115.440282
+  },
+  {
+    "id": "n3787237309",
+    "name": "SPBU Pertamina 54.801.35",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.638262,
+    "lng": 115.208975,
+    "regency": "Denpasar",
+    "street": "Jalan Bypass Gatot Subroto"
+  },
+  {
+    "id": "n3788508644",
+    "name": "SPBU Pertamina",
+    "lat": -8.362162,
+    "lng": 115.191025
+  },
+  {
+    "id": "n3791203569",
+    "name": "Pertamina",
+    "lat": -8.635943,
+    "lng": 115.218734,
+    "regency": "Denpasar",
+    "street": "Jalan Bypass Gatot Subroto"
+  },
+  {
+    "id": "n3791297306",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.534999,
+    "lng": 115.306609,
+    "street": "Jalan Raya Semebaung"
+  },
+  {
+    "id": "n3791477572",
+    "name": "SPBU 54.803.18",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.549091,
+    "lng": 115.23857
+  },
+  {
+    "id": "n3800945890",
+    "name": "SPBU Pertamina",
+    "lat": -8.49891,
+    "lng": 115.034218
+  },
+  {
+    "id": "n3828371871",
+    "name": "Pertamina",
+    "lat": -8.635936,
+    "lng": 115.237731
+  },
+  {
+    "id": "n3834339466",
+    "name": "Pertamina",
+    "lat": -8.636439,
+    "lng": 115.251937
+  },
+  {
+    "id": "n3915627035",
+    "name": "Pertamina",
+    "lat": -8.791788,
+    "lng": 115.214403
+  },
+  {
+    "id": "n3921459354",
+    "name": "Pertamina",
+    "lat": -8.402007,
+    "lng": 115.589692
+  },
+  {
+    "id": "n4157284889",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.675199,
+    "lng": 115.202341,
+    "regency": "Denpasar",
+    "street": "Jalan Imam Bonjol"
+  },
+  {
+    "id": "n4198773706",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.574886,
+    "lng": 115.276241
+  },
+  {
+    "id": "n4198773752",
+    "name": "Pertamina",
+    "lat": -8.566876,
+    "lng": 115.27476
+  },
+  {
+    "id": "n4217406976",
+    "name": "Pertamina Petrol Station",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.695865,
+    "lng": 115.18713,
+    "regency": "Denpasar",
+    "street": "Jalan Imam Bonjol"
+  },
+  {
+    "id": "n4236778069",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.681416,
+    "lng": 115.192623,
+    "regency": "Denpasar",
+    "street": "Jalan Pura Demak"
+  },
+  {
+    "id": "n4247757589",
+    "name": "Pertamina",
+    "lat": -8.362877,
+    "lng": 115.346094
+  },
+  {
+    "id": "n4249837879",
+    "name": "Pertamina",
+    "lat": -8.636416,
+    "lng": 115.185345,
+    "regency": "Denpasar",
+    "street": "Jalan Kebo Iwa"
+  },
+  {
+    "id": "n4362250290",
+    "name": "SPBU Pertamina",
+    "lat": -8.466968,
+    "lng": 115.352486
+  },
+  {
+    "id": "n4368999206",
+    "name": "SPBU Pertamina",
+    "lat": -8.264603,
+    "lng": 115.051295
+  },
+  {
+    "id": "n4420365789",
+    "name": "SPBU Pertamina",
+    "lat": -8.348568,
+    "lng": 114.895837
+  },
+  {
+    "id": "n4422250828",
+    "name": "SPBU Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.641534,
+    "lng": 115.278291
+  },
+  {
+    "id": "n4426603389",
+    "name": "Pompa bensin",
+    "lat": -8.606072,
+    "lng": 115.236073
+  },
+  {
+    "id": "n4438497483",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.638926,
+    "lng": 115.203916,
+    "regency": "Denpasar",
+    "street": "Jalan Bypass Gatot Subroto"
+  },
+  {
+    "id": "n4446960858",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.601805,
+    "lng": 115.324792
+  },
+  {
+    "id": "n4446961398",
+    "name": "Pertamina",
+    "lat": -8.581006,
+    "lng": 115.352618
+  },
+  {
+    "id": "n4467737446",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.553811,
+    "lng": 115.251501
+  },
+  {
+    "id": "n4467738292",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.462737,
+    "lng": 115.297603
+  },
+  {
+    "id": "n4467738625",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.177288,
+    "lng": 114.750065
+  },
+  {
+    "id": "n4467739093",
+    "name": "Pertamina",
+    "lat": -8.203879,
+    "lng": 114.884047
+  },
+  {
+    "id": "n4540413890",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.32279,
+    "lng": 115.61914
+  },
+  {
+    "id": "n4591597595",
+    "name": "Small place",
+    "lat": -8.278582,
+    "lng": 115.379336
+  },
+  {
+    "id": "n4593501492",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.565517,
+    "lng": 115.288008
+  },
+  {
+    "id": "n4593501496",
+    "name": "Pom bensin blahbatuh",
+    "lat": -8.56625,
+    "lng": 115.304977
+  },
+  {
+    "id": "n4593535189",
+    "name": "Pelumas Pertamina 54.805.09",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.528795,
+    "lng": 115.271714
+  },
+  {
+    "id": "n4593932704",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.612157,
+    "lng": 115.309289
+  },
+  {
+    "id": "n4593932705",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.635779,
+    "lng": 115.287224
+  },
+  {
+    "id": "n4630425094",
+    "name": "SPBU Pertamina",
+    "lat": -8.79352,
+    "lng": 115.129152
+  },
+  {
+    "id": "n4704509289",
+    "name": "Pertamina",
+    "lat": -8.191811,
+    "lng": 114.950056
+  },
+  {
+    "id": "n4706094090",
+    "name": "SPBU Pertamina",
+    "lat": -8.677887,
+    "lng": 115.571781
+  },
+  {
+    "id": "n4707866590",
+    "name": "SPBU Pertamina",
+    "lat": -8.40877,
+    "lng": 115.244896
+  },
+  {
+    "id": "n4710004789",
+    "name": "Pertamina",
+    "lat": -8.677071,
+    "lng": 115.532722
+  },
+  {
+    "id": "n4938684923",
+    "name": "Pertamina",
+    "lat": -8.641393,
+    "lng": 115.251796,
+    "regency": "Denpasar",
+    "street": "Jalan WR Supratman"
+  },
+  {
+    "id": "n4954534046",
+    "name": "Pertamina",
+    "lat": -8.784578,
+    "lng": 115.196826
+  },
+  {
+    "id": "n4954534047",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.7844,
+    "lng": 115.188101,
+    "regency": "Jimbaran",
+    "street": "Jl. Batur Raya"
+  },
+  {
+    "id": "n4954534052",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.783355,
+    "lng": 115.186824
+  },
+  {
+    "id": "n4959546626",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.676758,
+    "lng": 115.207097,
+    "regency": "Denpasar",
+    "street": "Jalan Pulau Kawe"
+  },
+  {
+    "id": "n4965837975",
+    "name": "SPBU Pertamina",
+    "lat": -8.182445,
+    "lng": 114.438708
+  },
+  {
+    "id": "n5015970023",
+    "name": "Pertamina",
+    "lat": -8.637212,
+    "lng": 115.17697
+  },
+  {
+    "id": "n5017453423",
+    "name": "SPBU Pertamina",
+    "lat": -8.563332,
+    "lng": 115.261646
+  },
+  {
+    "id": "n5052517732",
+    "name": "SPBU Pertamina",
+    "lat": -8.164735,
+    "lng": 115.021313
+  },
+  {
+    "id": "n5103311413",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.636525,
+    "lng": 115.194745,
+    "regency": "Denpasar",
+    "street": "Jalan Bypass Gatot Subroto"
+  },
+  {
+    "id": "n5104508763",
+    "name": "Pertamina",
+    "lat": -8.670553,
+    "lng": 115.190962
+  },
+  {
+    "id": "n5126061305",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.713275,
+    "lng": 115.224839
+  },
+  {
+    "id": "n5257494824",
+    "name": "Bensin motorbike",
+    "lat": -8.766083,
+    "lng": 115.592817
+  },
+  {
+    "id": "n5317781709",
+    "name": "SPBU Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.594157,
+    "lng": 115.186746
+  },
+  {
+    "id": "n5317781710",
+    "name": "SPBU Pertamina",
+    "lat": -8.572125,
+    "lng": 115.13915
+  },
+  {
+    "id": "n5419297521",
+    "name": "SPBU Pertamina",
+    "lat": -8.285962,
+    "lng": 114.976811
+  },
+  {
+    "id": "n5441794405",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.717793,
+    "lng": 115.202208
+  },
+  {
+    "id": "n5529682390",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.695383,
+    "lng": 115.259072
+  },
+  {
+    "id": "n5539012614",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.770381,
+    "lng": 115.178193
+  },
+  {
+    "id": "n5546845704",
+    "name": "SPBU Pertamina",
+    "lat": -8.638596,
+    "lng": 115.174207
+  },
+  {
+    "id": "n5575035954",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.682136,
+    "lng": 115.191359,
+    "regency": "Denpasar",
+    "street": "Jalan Teuku Umar Barat"
+  },
+  {
+    "id": "n5624314821",
+    "name": "Pertamina",
+    "lat": -8.678882,
+    "lng": 115.490079
+  },
+  {
+    "id": "n5651550475",
+    "name": "Pertamina",
+    "lat": -8.200698,
+    "lng": 114.832143
+  },
+  {
+    "id": "n5753254022",
+    "name": "SPBU Pertamina",
+    "lat": -8.718341,
+    "lng": 115.52295
+  },
+  {
+    "id": "n5755867921",
+    "name": "SPBU Pertamina",
+    "lat": -8.266461,
+    "lng": 115.054715
+  },
+  {
+    "id": "n5755867922",
+    "name": "SPBU Pertamina",
+    "lat": -8.266407,
+    "lng": 115.055053
+  },
+  {
+    "id": "n5833788586",
+    "name": "SPBU Pertamina",
+    "lat": -8.448345,
+    "lng": 115.239465
+  },
+  {
+    "id": "n5936396585",
+    "name": "Pertamina",
+    "lat": -8.672505,
+    "lng": 115.165138
+  },
+  {
+    "id": "n6040845285",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.426923,
+    "lng": 115.683947
+  },
+  {
+    "id": "n6050520885",
+    "name": "Pertamina",
+    "lat": -8.443711,
+    "lng": 115.578829
+  },
+  {
+    "id": "n6178072124",
+    "name": "SPBU Pertamina",
+    "lat": -8.095278,
+    "lng": 115.111762
+  },
+  {
+    "id": "n6229193250",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.568476,
+    "lng": 115.374625
+  },
+  {
+    "id": "n6286590885",
+    "name": "SPBU Pertamina",
+    "lat": -8.451204,
+    "lng": 115.318491
+  },
+  {
+    "id": "n6316044085",
+    "name": "SPBU Pertamina",
+    "lat": -8.807977,
+    "lng": 115.115225
+  },
+  {
+    "id": "n6332684386",
+    "name": "SPBU Pertamina",
+    "lat": -8.692811,
+    "lng": 115.449319
+  },
+  {
+    "id": "n6336822986",
+    "name": "SPBU Pertamina",
+    "lat": -8.688291,
+    "lng": 115.437781
+  },
+  {
+    "id": "n6355894185",
+    "name": "SPBU Pertamina",
+    "lat": -8.447857,
+    "lng": 115.280572
+  },
+  {
+    "id": "n6355894485",
+    "name": "SPBU Pertamina",
+    "lat": -8.448086,
+    "lng": 115.280419
+  },
+  {
+    "id": "n6355907290",
+    "name": "SPBU Pertamina",
+    "lat": -8.452356,
+    "lng": 115.279707
+  },
+  {
+    "id": "n6355913587",
+    "name": "SPBU Pertamina",
+    "lat": -8.45331,
+    "lng": 115.279605
+  },
+  {
+    "id": "n6400253085",
+    "name": "Pertamina",
+    "lat": -8.645606,
+    "lng": 115.160431
+  },
+  {
+    "id": "n6460723863",
+    "name": "SPBU Pertamina",
+    "lat": -8.769109,
+    "lng": 115.171825
+  },
+  {
+    "id": "n6611231166",
+    "name": "Pompa Bensin",
+    "lat": -8.12721,
+    "lng": 115.079297
+  },
+  {
+    "id": "n6611231167",
+    "name": "Pompa Bensin",
+    "lat": -8.11315,
+    "lng": 115.082669
+  },
+  {
+    "id": "n6644577557",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.114623,
+    "lng": 114.401241
+  },
+  {
+    "id": "n6680805485",
+    "name": "Pertamina",
+    "lat": -8.113237,
+    "lng": 115.082724,
+    "street": "Jl. A Yani"
+  },
+  {
+    "id": "n6712210032",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.439641,
+    "lng": 115.308113
+  },
+  {
+    "id": "n6712210047",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.318198,
+    "lng": 115.346715
+  },
+  {
+    "id": "n6721922709",
+    "name": "SPBU Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.444664,
+    "lng": 115.362789
+  },
+  {
+    "id": "n6721922710",
+    "name": "SPBU Bunutin",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.513371,
+    "lng": 115.345469
+  },
+  {
+    "id": "n6875260470",
+    "name": "Pertamina Buwit",
+    "lat": -8.617388,
+    "lng": 115.11615
+  },
+  {
+    "id": "n7105955685",
+    "name": "Pertamina",
+    "lat": -8.085333,
+    "lng": 115.175149
+  },
+  {
+    "id": "n7192803785",
+    "name": "pertamina",
+    "lat": -8.428359,
+    "lng": 115.423317
+  },
+  {
+    "id": "n7622285885",
+    "name": "Pertamina",
+    "lat": -8.327054,
+    "lng": 115.222665
+  },
+  {
+    "id": "n7660527085",
+    "name": "Small garage",
+    "lat": -8.288714,
+    "lng": 115.479947
+  },
+  {
+    "id": "n9274481126",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.415452,
+    "lng": 115.280741
+  },
+  {
+    "id": "n9464806554",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.418534,
+    "lng": 115.298365
+  },
+  {
+    "id": "n9498002342",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.329493,
+    "lng": 115.325653
+  },
+  {
+    "id": "n9768297246",
+    "name": "Pom Bensin 54.803.01",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.612131,
+    "lng": 115.192487
+  },
+  {
+    "id": "n9969087618",
+    "name": "SPBU Pertamina",
+    "lat": -8.664073,
+    "lng": 115.153354
+  },
+  {
+    "id": "n10779010555",
+    "name": "SPBU Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.348416,
+    "lng": 114.578581
+  },
+  {
+    "id": "n10779013748",
+    "name": "SPBU Pertamina 54.822.16",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.357586,
+    "lng": 114.624596
+  },
+  {
+    "id": "n10779027615",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.366457,
+    "lng": 114.661583
+  },
+  {
+    "id": "n10779073221",
+    "name": "SPBU Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.401394,
+    "lng": 114.77905
+  },
+  {
+    "id": "n10779078991",
+    "name": "SPBU Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.441784,
+    "lng": 114.871129
+  },
+  {
+    "id": "n10779108513",
+    "name": "SPBU Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.495693,
+    "lng": 115.04923
+  },
+  {
+    "id": "n10779121218",
+    "name": "SPBU Pertamina 54.821.04",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.549589,
+    "lng": 115.123164
+  },
+  {
+    "id": "n10798201666",
+    "name": "SPBU Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.237011,
+    "lng": 115.138592
+  },
+  {
+    "id": "n10799072563",
+    "name": "SPBU Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.175895,
+    "lng": 115.003635
+  },
+  {
+    "id": "n10800799512",
+    "name": "SPBU Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.32928,
+    "lng": 115.17194
+  },
+  {
+    "id": "n10801074996",
+    "name": "SPBU Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.469024,
+    "lng": 115.137224
+  },
+  {
+    "id": "n10801074998",
+    "name": "SPBU Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.454486,
+    "lng": 115.138515
+  },
+  {
+    "id": "n10997051997",
+    "name": "SPBU Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.673645,
+    "lng": 115.177805,
+    "regency": "Kerobokan Kelod, North Kuta, Bali",
+    "street": "Jalan Raya Kerobokan"
+  },
+  {
+    "id": "n11002446836",
+    "name": "Pertamina SPBU",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.624551,
+    "lng": 115.208976
+  },
+  {
+    "id": "n11002446837",
+    "name": "SPBU Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.562499,
+    "lng": 115.220439
+  },
+  {
+    "id": "n11002450532",
+    "name": "SPBU Darmasaba",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.589582,
+    "lng": 115.215703,
+    "regency": "Darmasaba"
+  },
+  {
+    "id": "n11002478812",
+    "name": "Green Nitrogen A Yani",
+    "lat": -8.624731,
+    "lng": 115.208824
+  },
+  {
+    "id": "n11002518744",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.367643,
+    "lng": 115.307489
+  },
+  {
+    "id": "n11012490777",
+    "name": "SPBU Pertamina",
+    "lat": -8.268233,
+    "lng": 115.342288
+  },
+  {
+    "id": "n11012490778",
+    "name": "SPBU Pertamina",
+    "lat": -8.140935,
+    "lng": 115.20028
+  },
+  {
+    "id": "n11012490782",
+    "name": "SPBU Petramini",
+    "operator": "Petramini",
+    "brand": "Petramini",
+    "lat": -8.174426,
+    "lng": 115.187765
+  },
+  {
+    "id": "n11012490783",
+    "name": "SPBU Pertamina",
+    "lat": -8.279154,
+    "lng": 115.378028
+  },
+  {
+    "id": "n11012515469",
+    "name": "SPBU Pertamina",
+    "lat": -8.177124,
+    "lng": 115.464716
+  },
+  {
+    "id": "n11012542529",
+    "name": "SPBU Pertamina",
+    "lat": -8.118493,
+    "lng": 115.187277
+  },
+  {
+    "id": "n11012542530",
+    "name": "SPBU Pertamina",
+    "lat": -8.139014,
+    "lng": 115.21382
+  },
+  {
+    "id": "n11033884332",
+    "name": "SPBU Pertamina",
+    "lat": -8.212969,
+    "lng": 115.323774
+  },
+  {
+    "id": "n11033884333",
+    "name": "SPBU Pertamina",
+    "lat": -8.126387,
+    "lng": 115.216751
+  },
+  {
+    "id": "n11033884335",
+    "name": "SPBU Pertamina",
+    "lat": -8.287183,
+    "lng": 115.319536
+  },
+  {
+    "id": "n11033884336",
+    "name": "SPBU Pertamina",
+    "lat": -8.423973,
+    "lng": 115.246273
+  },
+  {
+    "id": "n11033884337",
+    "name": "SPBU Pertamina",
+    "lat": -8.194537,
+    "lng": 115.290685
+  },
+  {
+    "id": "n11033915359",
+    "name": "SPBU Pertamina",
+    "lat": -8.091758,
+    "lng": 115.175892
+  },
+  {
+    "id": "n11033915360",
+    "name": "SPBU Pertamina",
+    "lat": -8.131258,
+    "lng": 115.21034
+  },
+  {
+    "id": "n11048153450",
+    "name": "PetraMINA",
+    "lat": -8.149882,
+    "lng": 115.057153
+  },
+  {
+    "id": "n11048165238",
+    "name": "SPBU Pertamina",
+    "lat": -8.437726,
+    "lng": 115.479388
+  },
+  {
+    "id": "n11048165239",
+    "name": "SPBU Pertamina",
+    "lat": -8.415186,
+    "lng": 115.579307
+  },
+  {
+    "id": "n11048165240",
+    "name": "SPBU Pertamina",
+    "lat": -8.426173,
+    "lng": 115.441495
+  },
+  {
+    "id": "n11048165241",
+    "name": "SPBU Pertamina",
+    "lat": -8.403676,
+    "lng": 115.420963
+  },
+  {
+    "id": "n11048180310",
+    "name": "SPBU Pertamina",
+    "lat": -8.36758,
+    "lng": 115.700051
+  },
+  {
+    "id": "n11048180311",
+    "name": "SPBU Pertamina",
+    "lat": -8.390673,
+    "lng": 115.597489
+  },
+  {
+    "id": "n11048180312",
+    "name": "SPBU Pertamina",
+    "lat": -8.421672,
+    "lng": 115.683429
+  },
+  {
+    "id": "n11048180313",
+    "name": "SPBU Pertamina",
+    "lat": -8.340628,
+    "lng": 115.619111
+  },
+  {
+    "id": "n11048180314",
+    "name": "SPBU Pertamina",
+    "lat": -8.374161,
+    "lng": 115.705365
+  },
+  {
+    "id": "n11048190871",
+    "name": "Pertashop",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.462646,
+    "lng": 115.625821
+  },
+  {
+    "id": "n11048190872",
+    "name": "SPBU Pertamina",
+    "lat": -8.452921,
+    "lng": 115.651987
+  },
+  {
+    "id": "n11048190873",
+    "name": "SPBU Pertamina",
+    "lat": -8.426412,
+    "lng": 115.680917
+  },
+  {
+    "id": "n11048192287",
+    "name": "SPBU Pertamina",
+    "lat": -8.531442,
+    "lng": 115.495927
+  },
+  {
+    "id": "n11048192289",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.547732,
+    "lng": 115.485227
+  },
+  {
+    "id": "n11203013135",
+    "name": "SPBU Pertamina",
+    "lat": -8.522743,
+    "lng": 115.36516
+  },
+  {
+    "id": "n11674186496",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.079111,
+    "lng": 115.219919
+  },
+  {
+    "id": "n11707649769",
+    "name": "Pertamina",
+    "lat": -8.71092,
+    "lng": 115.233504
+  },
+  {
+    "id": "n11909772240",
+    "name": "Pertamini",
+    "lat": -8.351922,
+    "lng": 115.589098
+  },
+  {
+    "id": "n11909796444",
+    "name": "Pertamini",
+    "lat": -8.407047,
+    "lng": 115.484262
+  },
+  {
+    "id": "n11918886642",
+    "name": "Pertamini",
+    "lat": -8.266226,
+    "lng": 115.053696
+  },
+  {
+    "id": "n11934705251",
+    "name": "Pertamini",
+    "lat": -8.807956,
+    "lng": 115.115258
+  },
+  {
+    "id": "n11951722650",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.266333,
+    "lng": 115.054167
+  },
+  {
+    "id": "n11954796697",
+    "name": "SPBU Pertamina",
+    "lat": -8.270318,
+    "lng": 115.061553
+  },
+  {
+    "id": "n11954796698",
+    "name": "SPBU Pertamina",
+    "lat": -8.272811,
+    "lng": 115.057375
+  },
+  {
+    "id": "n11957676499",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.696092,
+    "lng": 115.451926
+  },
+  {
+    "id": "n12252323023",
+    "name": "Cửa hàng Xăng dầu",
+    "lat": -8.114026,
+    "lng": 115.135098
+  },
+  {
+    "id": "n12269097382",
+    "name": "PetraMini",
+    "lat": -8.149117,
+    "lng": 115.098135
+  },
+  {
+    "id": "n12277145587",
+    "name": "Fuel Station",
+    "lat": -8.46312,
+    "lng": 115.406025
+  },
+  {
+    "id": "n12277145588",
+    "name": "Fuel Station",
+    "lat": -8.510784,
+    "lng": 115.402047
+  },
+  {
+    "id": "n12277185797",
+    "name": "Fuel Station",
+    "lat": -8.309289,
+    "lng": 115.396837
+  },
+  {
+    "id": "n12277189747",
+    "name": "Fuel Station",
+    "lat": -8.365274,
+    "lng": 115.419117
+  },
+  {
+    "id": "n12277190271",
+    "name": "Pertamina",
+    "lat": -8.146571,
+    "lng": 115.247281
+  },
+  {
+    "id": "n12277198682",
+    "name": "Fuel Station",
+    "lat": -8.485845,
+    "lng": 115.401169
+  },
+  {
+    "id": "n12287905177",
+    "name": "Fuel Station",
+    "lat": -8.504821,
+    "lng": 115.210345
+  },
+  {
+    "id": "n12287921053",
+    "name": "Fuel Station",
+    "lat": -8.259961,
+    "lng": 115.027704
+  },
+  {
+    "id": "n12287923856",
+    "name": "Fuel Station",
+    "lat": -8.521976,
+    "lng": 115.213788
+  },
+  {
+    "id": "n12287937936",
+    "name": "Fuel Station",
+    "lat": -8.295299,
+    "lng": 115.174028
+  },
+  {
+    "id": "n12290074005",
+    "name": "Cửa hàng Xăng dầu",
+    "lat": -8.175878,
+    "lng": 115.003477
+  },
+  {
+    "id": "n12290095501",
+    "name": "Cửa hàng Xăng dầu",
+    "lat": -8.252911,
+    "lng": 114.981214
+  },
+  {
+    "id": "n12291632313",
+    "name": "Fuel Station",
+    "lat": -8.27667,
+    "lng": 114.970826
+  },
+  {
+    "id": "n12293396265",
+    "name": "Fuel Station",
+    "lat": -8.371184,
+    "lng": 114.625604
+  },
+  {
+    "id": "n12293398519",
+    "name": "Fuel Station",
+    "lat": -8.266138,
+    "lng": 114.969646
+  },
+  {
+    "id": "n12293398520",
+    "name": "Cửa hàng Xăng dầu",
+    "lat": -8.166539,
+    "lng": 114.50705
+  },
+  {
+    "id": "n12293406734",
+    "name": "Cửa hàng Xăng dầu",
+    "lat": -8.144232,
+    "lng": 114.595474
+  },
+  {
+    "id": "n12293406735",
+    "name": "Fuel Station",
+    "lat": -8.382464,
+    "lng": 114.597512
+  },
+  {
+    "id": "n12293410046",
+    "name": "SPBU",
+    "lat": -8.302407,
+    "lng": 114.516083
+  },
+  {
+    "id": "n12293422755",
+    "name": "Fuel Station",
+    "lat": -8.360824,
+    "lng": 114.571808
+  },
+  {
+    "id": "n12293426640",
+    "name": "Cửa hàng Xăng dầu",
+    "lat": -8.203746,
+    "lng": 114.883974
+  },
+  {
+    "id": "n12313863793",
+    "name": "Fuel Station",
+    "lat": -8.552535,
+    "lng": 115.076466
+  },
+  {
+    "id": "n12313877251",
+    "name": "Fuel Station",
+    "lat": -8.492523,
+    "lng": 114.958452
+  },
+  {
+    "id": "n12313882736",
+    "name": "Fuel Station",
+    "lat": -8.508547,
+    "lng": 115.077876
+  },
+  {
+    "id": "n12313908583",
+    "name": "Fuel Station",
+    "lat": -8.43781,
+    "lng": 114.863829
+  },
+  {
+    "id": "n12468698409",
+    "name": "Petramini",
+    "lat": -8.19156,
+    "lng": 114.95883
+  },
+  {
+    "id": "n12661989424",
+    "name": "Pertamina",
+    "lat": -8.650454,
+    "lng": 115.209052
+  },
+  {
+    "id": "n13122086601",
+    "name": "SPBU Pertamina Jalan Toyaning II",
+    "lat": -8.825737,
+    "lng": 115.151079,
+    "street": "Jalan Toyaning II"
+  },
+  {
+    "id": "n13948488673",
+    "name": "Pertamina",
+    "lat": -8.831861,
+    "lng": 115.205055
+  },
+  {
+    "id": "n14060362657",
+    "name": "Pertamini",
+    "lat": -8.706601,
+    "lng": 115.253121
+  },
+  {
+    "id": "w209462178",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.455642,
+    "lng": 115.60163
+  },
+  {
+    "id": "w225177250",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.437524,
+    "lng": 115.196275
+  },
+  {
+    "id": "w311216627",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.797859,
+    "lng": 115.16122,
+    "regency": "Ungasan",
+    "street": "Jalan Uluwatu"
+  },
+  {
+    "id": "w374650214",
+    "name": "Pertamina",
+    "lat": -8.699647,
+    "lng": 115.219462,
+    "regency": "Denpasar",
+    "street": "Jalan Raya Sesetan"
+  },
+  {
+    "id": "w374650232",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.709164,
+    "lng": 115.22107
+  },
+  {
+    "id": "w375347728",
+    "name": "Pertamina",
+    "lat": -8.644757,
+    "lng": 115.209575,
+    "regency": "Denpasar",
+    "street": "Jalan H.O.S. Cokroaminoto"
+  },
+  {
+    "id": "w419467852",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.738978,
+    "lng": 115.179841
+  },
+  {
+    "id": "w464475021",
+    "name": "Pertamina",
+    "lat": -8.806409,
+    "lng": 115.2011
+  },
+  {
+    "id": "w475757306",
+    "name": "Pertamina",
+    "lat": -8.257855,
+    "lng": 115.161726
+  },
+  {
+    "id": "w509677807",
+    "name": "SPBU",
+    "lat": -8.18651,
+    "lng": 114.977491
+  },
+  {
+    "id": "w509984088",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.102465,
+    "lng": 115.283632
+  },
+  {
+    "id": "w512355161",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.524192,
+    "lng": 115.263715
+  },
+  {
+    "id": "w512629948",
+    "name": "SPBU Pertamina",
+    "lat": -8.791775,
+    "lng": 115.214392
+  },
+  {
+    "id": "w512629994",
+    "name": "SPBU Pertamina",
+    "lat": -8.793446,
+    "lng": 115.215193
+  },
+  {
+    "id": "w514001663",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.52774,
+    "lng": 115.243778
+  },
+  {
+    "id": "w514011012",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.526281,
+    "lng": 115.295061
+  },
+  {
+    "id": "w522920168",
+    "name": "Pertamina",
+    "lat": -8.677771,
+    "lng": 115.211622
+  },
+  {
+    "id": "w541037284",
+    "name": "Pertamina",
+    "lat": -8.540366,
+    "lng": 115.409884
+  },
+  {
+    "id": "w545825031",
+    "name": "Pertamina 54.805.20",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.505225,
+    "lng": 115.2717
+  },
+  {
+    "id": "w550979020",
+    "name": "Pertamina",
+    "lat": -8.56466,
+    "lng": 115.416579
+  },
+  {
+    "id": "w559976070",
+    "name": "SPBU",
+    "lat": -8.215186,
+    "lng": 114.940167
+  },
+  {
+    "id": "w560886709",
+    "name": "SPBU",
+    "lat": -8.191722,
+    "lng": 114.950132
+  },
+  {
+    "id": "w560893611",
+    "name": "SPBU",
+    "lat": -8.193308,
+    "lng": 114.922258
+  },
+  {
+    "id": "w563856417",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.268518,
+    "lng": 115.342361
+  },
+  {
+    "id": "w563856427",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.416077,
+    "lng": 115.280646
+  },
+  {
+    "id": "w564399387",
+    "name": "Petrolimex",
+    "operator": "Petrolimex",
+    "brand": "Petrolimex",
+    "lat": -8.177114,
+    "lng": 114.749207
+  },
+  {
+    "id": "w577920894",
+    "name": "Gas Station Buluh Indah (54.801.31)",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.643363,
+    "lng": 115.196293
+  },
+  {
+    "id": "w595268291",
+    "name": "Pertamina",
+    "lat": -8.543997,
+    "lng": 115.140881
+  },
+  {
+    "id": "w596231848",
+    "name": "SPBU Pertamina",
+    "lat": -8.519966,
+    "lng": 115.174518
+  },
+  {
+    "id": "w597363262",
+    "name": "SPBU Pertamina",
+    "lat": -8.362175,
+    "lng": 115.189959
+  },
+  {
+    "id": "w597363267",
+    "name": "SPBU Pertamina",
+    "lat": -8.362172,
+    "lng": 115.190477
+  },
+  {
+    "id": "w600380264",
+    "name": "SPBU Pertamina",
+    "lat": -8.528148,
+    "lng": 115.001281
+  },
+  {
+    "id": "w602497076",
+    "name": "Pertamina Giri Emas Gas Station",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.082702,
+    "lng": 115.143297
+  },
+  {
+    "id": "w602497077",
+    "name": "Pertamina Giri Emas Gas Station",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.082615,
+    "lng": 115.143346
+  },
+  {
+    "id": "w602497078",
+    "name": "Pertamina Giri Emas Gas Station",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.082488,
+    "lng": 115.143218
+  },
+  {
+    "id": "w603585689",
+    "name": "SPBU Pertamina",
+    "lat": -8.523573,
+    "lng": 115.200419
+  },
+  {
+    "id": "w603638421",
+    "name": "Padma Sari (P. Bayu)",
+    "lat": -8.482632,
+    "lng": 115.098058
+  },
+  {
+    "id": "w603638557",
+    "name": "PERTASHOP TIMPAG (CV Restu Mahitala)",
+    "lat": -8.48697,
+    "lng": 115.094563
+  },
+  {
+    "id": "w603638612",
+    "name": "PERTASHOP TIMPAG (CV Restu Mahitala)",
+    "lat": -8.486425,
+    "lng": 115.095221
+  },
+  {
+    "id": "w714724146",
+    "name": "SPBU Pertamina Sunset Road 54.803.34",
+    "lat": -8.69869,
+    "lng": 115.17805,
+    "regency": "Kuta, Kabupaten Badung, Bali, Indonesia",
+    "street": "Sunset Road"
+  },
+  {
+    "id": "w714724147",
+    "name": "SPBU Pertamina Pererenan 54.803.21",
+    "lat": -8.630885,
+    "lng": 115.132763
+  },
+  {
+    "id": "w753245598",
+    "name": "Pertamina",
+    "lat": -8.602847,
+    "lng": 115.171636
+  },
+  {
+    "id": "w763376973",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.568569,
+    "lng": 115.374614
+  },
+  {
+    "id": "w937995717",
+    "name": "PERTASHOP TIMPAG (CV Restu Mahitala)",
+    "lat": -8.487097,
+    "lng": 115.094743
+  },
+  {
+    "id": "w937995718",
+    "name": "PERTASHOP TIMPAG (CV Restu Mahitala)",
+    "lat": -8.487052,
+    "lng": 115.094666
+  },
+  {
+    "id": "w1072524309",
+    "name": "Distributor Minicon Bali (Penghemat BBM)",
+    "lat": -8.488305,
+    "lng": 115.093229
+  },
+  {
+    "id": "w1087950699",
+    "name": "Pertashop Telagatawang",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.479283,
+    "lng": 115.446903
+  },
+  {
+    "id": "w1087957090",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.536636,
+    "lng": 115.333427
+  },
+  {
+    "id": "w1089980892",
+    "name": "SPBU Pertamina",
+    "lat": -8.636301,
+    "lng": 115.185272
+  },
+  {
+    "id": "w1090641137",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.667122,
+    "lng": 115.187723,
+    "regency": "Padang Sambian, Denpasar, Bali, Indonesia",
+    "street": "Jalan Buana Raya"
+  },
+  {
+    "id": "w1090665871",
+    "name": "Pertamina",
+    "lat": -8.673465,
+    "lng": 115.177781
+  },
+  {
+    "id": "w1090920815",
+    "name": "SPBU Pertamina",
+    "lat": -8.648888,
+    "lng": 115.186174
+  },
+  {
+    "id": "w1091987493",
+    "name": "SPBU Pertamina",
+    "lat": -8.672937,
+    "lng": 115.165158
+  },
+  {
+    "id": "w1093717433",
+    "name": "SPBU Pertamina",
+    "lat": -8.645654,
+    "lng": 115.160501
+  },
+  {
+    "id": "w1109033923",
+    "name": "Pertamina",
+    "lat": -8.567236,
+    "lng": 115.391631
+  },
+  {
+    "id": "w1111172220",
+    "name": "SPBU Pertamina",
+    "lat": -8.550113,
+    "lng": 115.375018
+  },
+  {
+    "id": "w1119410373",
+    "name": "SPBU Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.474742,
+    "lng": 114.932644
+  },
+  {
+    "id": "w1121908173",
+    "name": "SPBU Pertamina",
+    "lat": -8.22624,
+    "lng": 114.944835
+  },
+  {
+    "id": "w1150185346",
+    "name": "SPBU Pertamina",
+    "lat": -8.250934,
+    "lng": 114.478875
+  },
+  {
+    "id": "w1175041480",
+    "name": "SPBU Pertamina",
+    "lat": -8.177175,
+    "lng": 115.464776
+  },
+  {
+    "id": "w1181397892",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.223502,
+    "lng": 115.254311
+  },
+  {
+    "id": "w1184213626",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.13529,
+    "lng": 115.101378
+  },
+  {
+    "id": "w1185103949",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.420195,
+    "lng": 114.808682
+  },
+  {
+    "id": "w1190145498",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.356861,
+    "lng": 114.630782
+  },
+  {
+    "id": "w1192654164",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.426949,
+    "lng": 114.834778
+  },
+  {
+    "id": "w1329030189",
+    "name": "Pertamina",
+    "operator": "Pertamina",
+    "brand": "Pertamina",
+    "lat": -8.623218,
+    "lng": 115.236368
+  },
+  {
+    "id": "w1447743524",
+    "name": "SPBU Pertamina",
+    "lat": -8.148952,
+    "lng": 114.632387
+  },
+  {
+    "id": "w1489545694",
+    "name": "Pertamina",
+    "lat": -8.548329,
+    "lng": 115.308416
+  },
+  {
+    "id": "w1532743149",
+    "name": "Pertamina",
+    "lat": -8.541351,
+    "lng": 115.321092
+  },
+  {
+    "id": "w1534383090",
+    "name": "Pertamina",
+    "lat": -8.466886,
+    "lng": 115.352351
+  },
+  {
+    "id": "w1547522483",
+    "name": "Pertamina",
+    "lat": -8.618919,
+    "lng": 115.183122
+  },
+  {
+    "id": "w1557359089",
+    "name": "Pertamina",
+    "lat": -8.691464,
+    "lng": 115.227932
+  },
+  {
+    "id": "w1567223230",
+    "name": "SPBU Pertamina",
+    "lat": -8.182505,
+    "lng": 114.438641
+  }
+]
