@@ -2,7 +2,10 @@ import 'server-only';
 
 import { cache } from 'react';
 import { detectPlayerType, detectRegion } from '@/lib/cctv-utils';
+import { enrichChannelWithSPBU } from '@/lib/spbu-matcher';
 import type { CCTVChannel, CCTVRegion } from '@/types/cctv';
+import baliSPBUData from '@/data/bali-spbu.json';
+import type { SPBUNode } from '@/scripts/fetch-bali-spbu';
 
 const DEFAULT_CCTV_API_URL = 'https://balisatudata.baliprov.go.id/api/v1/report-cctv';
 const CCTV_REVALIDATE_SECONDS = 900;
@@ -243,7 +246,9 @@ export async function getAllCCTVChannels(): Promise<CCTVChannel[]> {
     getBulelengCCTVs().catch(() => [] as CCTVChannel[]),
   ]);
   
-  return [...provincial, ...denpasar, ...buleleng];
+  const merged = [...provincial, ...denpasar, ...buleleng];
+  const spbuList = baliSPBUData as SPBUNode[];
+  return merged.map((cam) => enrichChannelWithSPBU(cam, spbuList));
 }
 
 export async function getCCTVByRegion(): Promise<Record<string, CCTVChannel[]>> {
