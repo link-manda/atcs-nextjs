@@ -11,7 +11,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { Check, Search, Camera, Radio } from 'lucide-react';
+import { Check, Search, Camera, Radio, Fuel } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 interface Props {
@@ -30,19 +30,28 @@ export default function CCTVSidebar({
   onDeselect,
 }: Props) {
   const [search, setSearch] = React.useState('');
+  const [spbuOnly, setSpbuOnly] = React.useState(false);
 
   const selectedIds = React.useMemo(
     () => new Set(selectedCams.map((c) => c.cctv_id)),
     [selectedCams]
   );
 
+  const spbuCount = React.useMemo(() => {
+    return channels.filter((c) => Boolean(c.nearby_spbu)).length;
+  }, [channels]);
+
   const filteredChannels = React.useMemo(() => {
-    if (!search) return channels;
-    return channels.filter(c => 
-      c.ch_name.toLowerCase().includes(search.toLowerCase()) ||
-      c.region.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [channels, search]);
+    return channels.filter((c) => {
+      if (spbuOnly && !c.nearby_spbu) return false;
+      if (!search) return true;
+      const q = search.toLowerCase();
+      const matchName = c.ch_name.toLowerCase().includes(q);
+      const matchRegion = c.region.toLowerCase().includes(q);
+      const matchSpbu = c.nearby_spbu?.name.toLowerCase().includes(q) ?? false;
+      return matchName || matchRegion || matchSpbu;
+    });
+  }, [channels, search, spbuOnly]);
 
   const grouped = React.useMemo(() => {
     return filteredChannels.reduce<Record<CCTVRegion, CCTVChannel[]>>((acc, cam) => {
@@ -73,12 +82,35 @@ export default function CCTVSidebar({
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <Input 
-            placeholder="Cari kamera atau jalan..." 
+            placeholder="Cari kamera, jalan, atau SPBU..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="h-8 pl-8 text-xs bg-secondary/50 border-border focus:border-emerald-500/50 text-foreground placeholder:text-muted-foreground rounded-md font-sans transition-colors"
           />
         </div>
+
+        {/* Toggle Filter SPBU */}
+        <button
+          type="button"
+          onClick={() => setSpbuOnly((prev) => !prev)}
+          className={cn(
+            "w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium transition-all border",
+            spbuOnly
+              ? "bg-amber-500/20 text-amber-500 dark:text-amber-300 border-amber-500/40 shadow-sm"
+              : "bg-secondary/40 text-muted-foreground hover:text-foreground border-border/60 hover:bg-secondary/70"
+          )}
+        >
+          <div className="flex items-center gap-1.5">
+            <Fuel className={cn("w-3.5 h-3.5", spbuOnly ? "text-amber-500 dark:text-amber-400" : "text-muted-foreground")} />
+            <span>Hanya Dekat SPBU</span>
+          </div>
+          <span className={cn(
+            "font-mono text-[10px] px-1.5 py-0.2 rounded font-semibold",
+            spbuOnly ? "bg-amber-500/30 text-amber-600 dark:text-amber-200" : "bg-secondary text-muted-foreground"
+          )}>
+            {spbuCount}
+          </span>
+        </button>
       </div>
 
       {/* Accordion Region Groups */}
@@ -117,14 +149,31 @@ export default function CCTVSidebar({
                           isDisabled && "opacity-35 cursor-not-allowed hover:bg-transparent"
                         )}
                       >
-                        <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <span
-                            className={cn(
-                              "w-1.5 h-1.5 rounded-full flex-shrink-0",
-                              isSelected ? "bg-emerald-500 dark:bg-emerald-400 animate-pulse" : "bg-muted-foreground/50"
-                            )}
-                          />
-                          <span className="truncate">{cam.ch_name}</span>
+                        <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span
+                              className={cn(
+                                "w-1.5 h-1.5 rounded-full flex-shrink-0",
+                                isSelected ? "bg-emerald-500 dark:bg-emerald-400 animate-pulse" : "bg-muted-foreground/50"
+                              )}
+                            />
+                            <span className="truncate">{cam.ch_name}</span>
+                          </div>
+
+                          {/* SPBU Proximity Badge */}
+                          {cam.nearby_spbu && (
+                            <div className="flex items-center gap-1 pl-3 text-[10px] text-amber-600 dark:text-amber-400 font-mono">
+                              <Fuel className="w-2.5 h-2.5 flex-shrink-0" />
+                              <span className="truncate">
+                                {cam.nearby_spbu.name} (~{cam.nearby_spbu.distance_meters}m)
+                              </span>
+                              {cam.nearby_spbu.is_panoramic_recommended && (
+                                <span className="px-1 py-0.2 rounded bg-amber-500/20 text-[9px] font-sans font-semibold text-amber-700 dark:text-amber-300 flex-shrink-0">
+                                  Panoramic
+                                </span>
+                              )}
+                            </div>
+                          )}
                         </div>
                         {isSelected ? (
                           <div className="w-3.5 h-3.5 rounded bg-emerald-500 flex items-center justify-center flex-shrink-0">

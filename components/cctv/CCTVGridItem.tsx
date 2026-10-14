@@ -2,7 +2,7 @@
 
 import { CCTVChannel } from "@/types/cctv";
 import { CCTVPlayer } from "./CCTVPlayer";
-import { X, Maximize, Radio, MapPin } from "lucide-react";
+import { X, Maximize, Radio, MapPin, Fuel } from "lucide-react";
 import { useRef } from "react";
 
 interface CCTVGridItemProps {
@@ -40,6 +40,15 @@ export function CCTVGridItem({ channel, onRemove }: CCTVGridItemProps) {
         </div>
 
         <div className="flex items-center gap-1.5 flex-shrink-0">
+          {channel.nearby_spbu && (
+            <span
+              title={`Dekat ${channel.nearby_spbu.name} (~${channel.nearby_spbu.distance_meters}m)`}
+              className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-500/40 text-amber-300 font-mono text-[9px] font-medium"
+            >
+              <Fuel className="w-2.5 h-2.5 text-amber-400" />
+              <span className="hidden sm:inline">SPBU</span> ~{channel.nearby_spbu.distance_meters}m
+            </span>
+          )}
           <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono text-[9px] font-medium">
             <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
             LIVE
