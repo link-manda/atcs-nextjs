@@ -7,9 +7,12 @@ import {
 export const revalidate = CCTV_DATA_REVALIDATE_SECONDS;
 
 export const metadata = {
-  title: 'BALI COMMAND CENTER | CCTV Grid — Bali ATCS',
+  title: 'Pantau CCTV Jalan & Antrean SPBU Bali Live',
   description:
-    'Live CCTV monitoring grid untuk Area Traffic Control System Bali. 92 kamera aktif dengan streaming real-time, peta interaktif, dan filter per wilayah.',
+    'Streaming langsung 90+ kamera CCTV lalu lintas persimpangan dan titik pantau SPBU di Denpasar, Badung, dan wilayah Bali secara real-time.',
+  alternates: {
+    canonical: '/cctv',
+  },
 };
 
 export default async function CCTVPage() {

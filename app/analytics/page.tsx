@@ -7,9 +7,12 @@ import {
 export const revalidate = CCTV_DATA_REVALIDATE_SECONDS;
 
 export const metadata = {
-  title: 'BALI COMMAND CENTER | Analytics — Bali ATCS',
+  title: 'Statistik & Persebaran CCTV ATCS Bali',
   description:
-    'Analitik data kamera CCTV Bali: distribusi wilayah, coverage GPS, tipe stream, dan peta persebaran.',
+    'Data analitik persebaran kamera pengawas lalu lintas, tipe streaming, dan cakupan wilayah se-Provinsi Bali.',
+  alternates: {
+    canonical: '/analytics',
+  },
 };
 
 export default async function AnalyticsPage() {

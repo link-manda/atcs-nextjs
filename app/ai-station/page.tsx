@@ -4,8 +4,12 @@ import { AIStationClient } from "./AIStationClient";
 export const revalidate = CCTV_DATA_REVALIDATE_SECONDS;
 
 export const metadata = {
-  title: "AI Traffic Vision Station — Bali Command Center",
-  description: "Real-time YOLOv12 + ByteTrack Multi-Object Vehicle Tracking & Traffic Flow Intelligence for Bali ATCS",
+  title: 'AI Traffic Station — Deteksi Kendaraan Bali',
+  description:
+    'Analisis kecerdasan buatan computer vision untuk deteksi dan tracking kepadatan arus kendaraan CCTV Bali secara langsung di browser.',
+  alternates: {
+    canonical: '/ai-station',
+  },
 };
 
 export default async function AIStationPage() {
