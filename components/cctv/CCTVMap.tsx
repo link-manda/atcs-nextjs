@@ -6,10 +6,13 @@ import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { useTheme } from 'next-themes';
-import { Activity, Key, ExternalLink, X, Settings2, Check, Video, Camera } from 'lucide-react';
+import { Activity, Key, ExternalLink, X, Settings2, Check, Video, Camera, Fuel } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { getBasemapTileConfig } from '@/lib/map-tile-config';
+import baliSPBUData from '@/data/bali-spbu.json';
+import type { SPBUNode } from '@/scripts/fetch-bali-spbu';
+import { calculateHaversineDistance } from '@/lib/spbu-matcher';
 
 interface CCTVMapProps {
   cameras: CCTVChannel[];
@@ -103,6 +106,28 @@ const createCCTVMarkerIcon = (station: CCTVStation, isAnySelected: boolean) => {
   });
 };
 
+const createSPBUIcon = () => {
+  return L.divIcon({
+    className: 'bg-transparent border-none',
+    html: `
+      <div class="relative flex items-center justify-center w-7 h-8 cursor-pointer transition-transform duration-200 hover:scale-120">
+        <svg width="28" height="32" viewBox="0 0 32 36" fill="none" xmlns="http://www.w3.org/2000/svg" class="filter drop-shadow-[0_2px_6px_rgba(245,158,11,0.5)]">
+          <!-- Teardrop Pin Base -->
+          <path d="M16 35C16 35 30 22.5 30 14C30 6.26801 23.732 0 16 0C8.26801 0 2 6.26801 2 14C2 22.5 16 35 16 35Z" fill="#1c1917" stroke="#f59e0b" stroke-width="2.5"/>
+          <!-- Fuel Dispenser Icon -->
+          <g transform="translate(8.5, 6.5)" fill="#f59e0b">
+            <path d="M3 2C2.44772 2 2 2.44772 2 3V12C2 12.5523 2.44772 13 3 13H9C9.5523 13 10 12.5523 10 12V3C10 2.44772 9.5523 2 9 2H3ZM4 4H8V7H4V4Z"/>
+            <path d="M10.5 5H11.5C12.0523 5 12.5 5.44772 12.5 6V9.5C12.5 10.0523 12.0523 10.5 11.5 10.5H10.5"/>
+          </g>
+        </svg>
+      </div>
+    `,
+    iconSize: [28, 32],
+    iconAnchor: [14, 31],
+    popupAnchor: [0, -28],
+  });
+};
+
 // Component to handle map bounds
 function MapBounds({ stations }: { stations: CCTVStation[] }) {
   const map = useMap();
@@ -123,6 +148,7 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
   const isLight = resolvedTheme === 'light';
   const basemap = getBasemapTileConfig(isLight);
   const [showTraffic, setShowTraffic] = useState(false);
+  const [showSPBU, setShowSPBU] = useState(true);
   const [apiKey, setApiKey] = useState<string>('');
   const [showKeyModal, setShowKeyModal] = useState(false);
   const [inputKey, setInputKey] = useState('');
@@ -166,6 +192,30 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
   // Group cameras into stations to eliminate overlapping pins
   const stations = useMemo(() => groupCamerasByLocation(cameras), [cameras]);
 
+  // SPBU Nodes with associated nearby cameras (radius <= 250m)
+  const spbuStations = useMemo(() => {
+    const rawSPBUs = baliSPBUData as SPBUNode[];
+    return rawSPBUs.map((spbu) => {
+      let nearestCam: CCTVChannel | null = null;
+      let minCamDist = Infinity;
+
+      for (const cam of cameras) {
+        if (cam.lat == null || cam.lng == null) continue;
+        const d = calculateHaversineDistance(spbu.lat, spbu.lng, cam.lat, cam.lng);
+        if (d < minCamDist) {
+          minCamDist = d;
+          nearestCam = cam;
+        }
+      }
+
+      return {
+        ...spbu,
+        nearestCam: minCamDist <= 250 ? nearestCam : null,
+        distanceToCam: minCamDist <= 250 ? minCamDist : null,
+      };
+    });
+  }, [cameras]);
+
   if (stations.length === 0) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-background text-muted-foreground font-mono text-xs">
@@ -178,6 +228,19 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
     <div className="w-full h-full relative bg-background isolate">
       {/* ─── Map Controls ─── */}
       <div className="absolute top-4 right-4 z-[1000] flex items-center gap-2">
+        <button
+          onClick={() => setShowSPBU((prev) => !prev)}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium font-sans transition-all shadow-md backdrop-blur-md border ${
+            showSPBU
+              ? 'bg-amber-500/15 border-amber-500/40 text-amber-600 dark:text-amber-300 ring-1 ring-amber-500/30'
+              : 'bg-background/90 border-border text-foreground hover:bg-secondary'
+          }`}
+          title="Tampilkan / Sembunyikan Titik SPBU se-Bali"
+        >
+          <Fuel className={`w-3.5 h-3.5 ${showSPBU ? 'text-amber-500 dark:text-amber-400' : 'text-muted-foreground'}`} />
+          <span>Titik SPBU</span>
+        </button>
+
         <button
           onClick={handleToggleTraffic}
           className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium font-sans transition-all shadow-md backdrop-blur-md border ${
@@ -393,6 +456,84 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
             </Marker>
           );
         })}
+
+        {/* ─── SPBU Marker Layer ─── */}
+        {showSPBU &&
+          spbuStations.map((spbu) => {
+            const hasCamera = Boolean(spbu.nearestCam);
+            const isCamSelected = spbu.nearestCam ? selectedIds.has(spbu.nearestCam.cctv_id) : false;
+
+            return (
+              <Marker
+                key={`spbu-${spbu.id}`}
+                position={[spbu.lat, spbu.lng]}
+                icon={createSPBUIcon()}
+              >
+                <Popup className="cctv-custom-popup">
+                  <div className="flex flex-col gap-2 p-1 max-w-[260px] font-sans">
+                    <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
+                      <div className="w-6 h-6 rounded bg-amber-500/20 text-amber-500 flex items-center justify-center flex-shrink-0">
+                        <Fuel className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-xs font-bold text-foreground leading-tight truncate">
+                          {spbu.name}
+                        </h4>
+                        <span className="text-[10px] text-muted-foreground">
+                          {spbu.street || spbu.regency || 'Bali'} {spbu.operator ? `• ${spbu.operator}` : ''}
+                        </span>
+                      </div>
+                    </div>
+
+                    {hasCamera && spbu.nearestCam && spbu.distanceToCam ? (
+                      <div className="flex flex-col gap-1.5 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="font-medium text-amber-600 dark:text-amber-400">
+                            Kamera Terdekat:
+                          </span>
+                          <span className="font-mono text-[10px] text-muted-foreground font-semibold">
+                            ~{spbu.distanceToCam}m
+                          </span>
+                        </div>
+                        <span className="text-[11px] font-semibold text-foreground truncate">
+                          {spbu.nearestCam.ch_name}
+                        </span>
+                        <button
+                          onClick={() => spbu.nearestCam && onCameraClick(spbu.nearestCam)}
+                          className={`w-full mt-1 py-1 px-2 rounded text-[10px] font-bold uppercase tracking-wider flex items-center justify-center gap-1 transition-colors ${
+                            isCamSelected
+                              ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                              : 'bg-amber-500 hover:bg-amber-600 text-black font-semibold'
+                          }`}
+                        >
+                          {isCamSelected ? (
+                            <>
+                              <Check className="w-3 h-3" />
+                              <span>Terpilih di Grid</span>
+                            </>
+                          ) : (
+                            <>
+                              <Video className="w-3 h-3" />
+                              <span>Pantau di Grid</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="p-2 rounded-md bg-secondary/40 text-[10px] text-muted-foreground italic">
+                        Belum ada tiang kamera ATCS dalam radius 250m.
+                      </div>
+                    )}
+
+                    <span className="text-[9px] font-mono text-muted-foreground/70 text-center">
+                      {spbu.lat.toFixed(5)}, {spbu.lng.toFixed(5)}
+                    </span>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
+
         <MapBounds stations={stations} />
       </MapContainer>
     </div>
