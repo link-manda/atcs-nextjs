@@ -282,7 +282,7 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
   return (
     <div className="w-full h-full relative bg-background isolate">
       {/* ─── Map Controls ─── */}
-      <div className="absolute top-4 right-4 z-[1000] flex items-center gap-2">
+      <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-[1000] flex items-center gap-1.5 sm:gap-2">
         <div className="flex items-center shadow-md backdrop-blur-md rounded-md overflow-hidden border border-amber-500/40 bg-amber-500/10 dark:bg-amber-500/15">
           <Button
             size="sm"
@@ -420,80 +420,80 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
       {showAttributionModal && (
         <div
           onClick={handleCloseAttributionModal}
-          className="absolute inset-0 z-[1001] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
+          className="fixed inset-0 z-[2000] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-background border border-border rounded-xl p-5 max-w-lg w-full shadow-2xl flex flex-col gap-4 relative animate-in fade-in zoom-in-95 font-sans"
+            className="bg-background border border-border rounded-xl p-4 sm:p-5 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col gap-3.5 sm:gap-4 relative animate-in fade-in zoom-in-95 font-sans"
           >
             <Button
               size="icon-xs"
               variant="ghost"
               onClick={handleCloseAttributionModal}
-              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
+              className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 text-muted-foreground hover:text-foreground"
             >
               <X className="w-4 h-4" />
             </Button>
 
-            <div className="flex items-center gap-3 border-b border-border/60 pb-3">
-              <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center flex-shrink-0">
-                <HeartHandshake className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+            <div className="flex items-start sm:items-center gap-3 border-b border-border/60 pb-3 pr-8">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center flex-shrink-0 mt-0.5 sm:mt-0">
+                <HeartHandshake className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 dark:text-amber-400" />
               </div>
-              <div>
-                <h3 className="text-sm font-bold text-foreground">
+              <div className="min-w-0 flex-1">
+                <h3 className="text-xs sm:text-sm font-bold text-foreground leading-snug">
                   Kolaborasi Terbuka & Atribusi Komunitas
                 </h3>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-[10px] sm:text-[11px] text-muted-foreground leading-tight mt-0.5">
                   Sinergi Gotong Royong Warga Bali & Jaringan ATCS Dishub
                 </p>
               </div>
             </div>
 
-            <div className="space-y-3 text-xs leading-relaxed text-muted-foreground">
-              <div className="p-3 rounded-lg bg-secondary/40 border border-border/50 text-foreground">
-                <p className="font-medium text-amber-600 dark:text-amber-400 mb-1 flex items-center gap-1.5">
+            <div className="space-y-2.5 sm:space-y-3 text-xs leading-relaxed text-muted-foreground">
+              <div className="p-2.5 sm:p-3 rounded-lg bg-secondary/40 border border-border/50 text-foreground">
+                <p className="font-semibold text-[11px] sm:text-xs text-amber-600 dark:text-amber-400 mb-1 flex items-center gap-1.5">
                   <span>Apresiasi untuk Inisiatif Bali Fuel Watch</span>
                 </p>
-                <p className="text-[11px] leading-relaxed text-muted-foreground">
+                <p className="text-[10.5px] sm:text-[11px] leading-relaxed text-muted-foreground">
                   Informasi ketersediaan bahan bakar (Pertalite, Pertamax, Solar) dan estimasi antrean di tiap SPBU dihimpun secara sukarela oleh ribuan warga Bali melalui platform independen <strong className="text-foreground">Bali Fuel Watch</strong> (<code>balifuelwatch.vercel.app</code>).
                 </p>
               </div>
 
               <div>
-                <h4 className="text-[11px] font-bold text-foreground uppercase tracking-wider mb-1.5">
+                <h4 className="text-[10px] sm:text-[11px] font-bold text-foreground uppercase tracking-wider mb-1.5">
                   Bagaimana Sinergi Ini Membantu Anda?
                 </h4>
-                <div className="grid grid-cols-2 gap-2 text-[11px]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
                   <div className="p-2 rounded bg-background border border-border/70">
-                    <span className="font-semibold text-emerald-600 dark:text-emerald-400 block mb-0.5">
+                    <span className="font-semibold text-emerald-600 dark:text-emerald-400 block mb-0.5 text-[11px]">
                       1. Laporan Warga
                     </span>
-                    <p className="text-[10px] text-muted-foreground">
+                    <p className="text-[10px] text-muted-foreground leading-normal">
                       Mengetahui kepastian ada/tidaknya stok di pompa pengisian sebelum berangkat.
                     </p>
                   </div>
                   <div className="p-2 rounded bg-background border border-border/70">
-                    <span className="font-semibold text-blue-600 dark:text-blue-400 block mb-0.5">
+                    <span className="font-semibold text-blue-600 dark:text-blue-400 block mb-0.5 text-[11px]">
                       2. Visual CCTV ATCS
                     </span>
-                    <p className="text-[10px] text-muted-foreground">
+                    <p className="text-[10px] text-muted-foreground leading-normal">
                       Memverifikasi fisik apakah antrean kendaraan sudah tumpah ke badan jalan raya.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <p className="text-[10px] italic text-muted-foreground/80">
+              <p className="text-[9.5px] sm:text-[10px] italic text-muted-foreground/80 leading-normal">
                 Data disajikan dengan serverless cache 60 detik demi menjaga stabilitas sistem upstream dan menghormati kapasitas server Bali Fuel Watch.
               </p>
             </div>
 
-            <div className="flex items-center justify-between pt-2 border-t border-border/60">
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-2.5 border-t border-border/60">
               <a
                 href="https://balifuelwatch.vercel.app/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs font-semibold text-amber-500 hover:text-amber-400 flex items-center gap-1.5"
+                className="text-[11px] sm:text-xs font-semibold text-amber-500 hover:text-amber-400 flex items-center justify-center sm:justify-start gap-1.5 py-1"
               >
                 <span>Kunjungi Bali Fuel Watch</span>
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -503,7 +503,7 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
                 size="sm"
                 variant="secondary"
                 onClick={handleCloseAttributionModal}
-                className="text-xs font-semibold"
+                className="text-xs font-semibold w-full sm:w-auto"
               >
                 Tutup & Mengerti
               </Button>
