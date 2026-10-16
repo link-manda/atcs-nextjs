@@ -469,7 +469,8 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
                 position={[spbu.lat, spbu.lng]}
                 icon={createSPBUIcon()}
               >
-                <Popup className="cctv-custom-popup">
+                {/* ponytail: reuse existing theme-adaptive tactical-popup style */}
+                <Popup className="tactical-popup">
                   <div className="flex flex-col gap-2 p-1 max-w-[260px] font-sans">
                     <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
                       <div className="w-6 h-6 rounded bg-amber-500/20 text-amber-500 flex items-center justify-center flex-shrink-0">
