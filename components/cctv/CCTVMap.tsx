@@ -6,7 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { useTheme } from 'next-themes';
-import { Activity, Key, ExternalLink, X, Settings2, Check, Video, Camera, Fuel, RefreshCw } from 'lucide-react';
+import { Activity, Key, ExternalLink, X, Settings2, Check, Video, Camera, Fuel, RefreshCw, Info, HeartHandshake } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -157,6 +157,7 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
   const [showKeyModal, setShowKeyModal] = useState(false);
   const [inputKey, setInputKey] = useState('');
   const [keySaved, setKeySaved] = useState(false);
+  const [showAttributionModal, setShowAttributionModal] = useState(false);
   const [fuelStatusMap, setFuelStatusMap] = useState<Record<string, StationFuelStatus>>({});
   const [loadingFuel, setLoadingFuel] = useState<boolean>(false);
 
@@ -262,18 +263,31 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
     <div className="w-full h-full relative bg-background isolate">
       {/* ─── Map Controls ─── */}
       <div className="absolute top-4 right-4 z-[1000] flex items-center gap-2">
-        <button
-          onClick={() => setShowSPBU((prev) => !prev)}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium font-sans transition-all shadow-md backdrop-blur-md border ${
-            showSPBU
-              ? 'bg-amber-500/15 border-amber-500/40 text-amber-600 dark:text-amber-300 ring-1 ring-amber-500/30'
-              : 'bg-background/90 border-border text-foreground hover:bg-secondary'
-          }`}
-          title="Tampilkan / Sembunyikan Titik SPBU se-Bali"
-        >
-          <Fuel className={`w-3.5 h-3.5 ${showSPBU ? 'text-amber-500 dark:text-amber-400' : 'text-muted-foreground'}`} />
-          <span>Titik SPBU</span>
-        </button>
+        <div className="flex items-center">
+          <button
+            onClick={() => setShowSPBU((prev) => !prev)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-l-md text-xs font-medium font-sans transition-all shadow-md backdrop-blur-md border ${
+              showSPBU
+                ? 'bg-amber-500/15 border-amber-500/40 text-amber-600 dark:text-amber-300 ring-1 ring-amber-500/30'
+                : 'bg-background/90 border-border text-foreground hover:bg-secondary'
+            }`}
+            title="Tampilkan / Sembunyikan Titik SPBU se-Bali"
+          >
+            <Fuel className={`w-3.5 h-3.5 ${showSPBU ? 'text-amber-500 dark:text-amber-400' : 'text-muted-foreground'}`} />
+            <span>Titik SPBU</span>
+          </button>
+          <button
+            onClick={() => setShowAttributionModal(true)}
+            className={`px-2 py-1.5 rounded-r-md text-xs font-sans transition-all shadow-md backdrop-blur-md border border-l-0 ${
+              showSPBU
+                ? 'bg-amber-500/20 border-amber-500/40 text-amber-600 dark:text-amber-300 hover:bg-amber-500/30'
+                : 'bg-background/90 border-border text-muted-foreground hover:text-foreground hover:bg-secondary'
+            }`}
+            title="Tentang Integrasi Data Bali Fuel Watch & Etika Komunitas"
+          >
+            <Info className="w-3.5 h-3.5" />
+          </button>
+        </div>
 
         <button
           onClick={handleToggleTraffic}
@@ -372,6 +386,98 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
                 ) : (
                   <span>Simpan & Aktifkan</span>
                 )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── Bali Fuel Watch Attribution & Community Modal ─── */}
+      {showAttributionModal && (
+        <div
+          onClick={() => setShowAttributionModal(false)}
+          className="absolute inset-0 z-[1001] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-background border border-border rounded-xl p-5 max-w-lg w-full shadow-2xl flex flex-col gap-4 relative animate-in fade-in zoom-in-95 font-sans"
+          >
+            <button
+              onClick={() => setShowAttributionModal(false)}
+              className="absolute top-4 right-4 p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="flex items-center gap-3 border-b border-border/60 pb-3">
+              <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center flex-shrink-0">
+                <HeartHandshake className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-foreground">
+                  Kolaborasi Terbuka & Atribusi Komunitas
+                </h3>
+                <p className="text-[11px] text-muted-foreground">
+                  Sinergi Gotong Royong Warga Bali & Jaringan ATCS Dishub
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-3 text-xs leading-relaxed text-muted-foreground">
+              <div className="p-3 rounded-lg bg-secondary/40 border border-border/50 text-foreground">
+                <p className="font-medium text-amber-600 dark:text-amber-400 mb-1 flex items-center gap-1.5">
+                  <span>Apresiasi untuk Inisiatif Bali Fuel Watch</span>
+                </p>
+                <p className="text-[11px] leading-relaxed text-muted-foreground">
+                  Informasi ketersediaan bahan bakar (Pertalite, Pertamax, Solar) dan estimasi antrean di tiap SPBU dihimpun secara sukarela oleh ribuan warga Bali melalui platform independen <strong className="text-foreground">Bali Fuel Watch</strong> (<code>balifuelwatch.vercel.app</code>).
+                </p>
+              </div>
+
+              <div>
+                <h4 className="text-[11px] font-bold text-foreground uppercase tracking-wider mb-1.5">
+                  Bagaimana Sinergi Ini Membantu Anda?
+                </h4>
+                <div className="grid grid-cols-2 gap-2 text-[11px]">
+                  <div className="p-2 rounded bg-background border border-border/70">
+                    <span className="font-semibold text-emerald-600 dark:text-emerald-400 block mb-0.5">
+                      1. Laporan Warga
+                    </span>
+                    <p className="text-[10px] text-muted-foreground">
+                      Mengetahui kepastian ada/tidaknya stok di pompa pengisian sebelum berangkat.
+                    </p>
+                  </div>
+                  <div className="p-2 rounded bg-background border border-border/70">
+                    <span className="font-semibold text-blue-600 dark:text-blue-400 block mb-0.5">
+                      2. Visual CCTV ATCS
+                    </span>
+                    <p className="text-[10px] text-muted-foreground">
+                      Memverifikasi fisik apakah antrean kendaraan sudah tumpah ke badan jalan raya.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-[10px] italic text-muted-foreground/80">
+                Data disajikan dengan serverless cache 60 detik demi menjaga stabilitas sistem upstream dan menghormati kapasitas server Bali Fuel Watch.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between pt-2 border-t border-border/60">
+              <a
+                href="https://balifuelwatch.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-semibold text-amber-500 hover:text-amber-400 flex items-center gap-1.5"
+              >
+                <span>Kunjungi Bali Fuel Watch</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+
+              <button
+                onClick={() => setShowAttributionModal(false)}
+                className="px-4 py-1.5 rounded-md text-xs font-semibold bg-secondary hover:bg-secondary/80 text-foreground border border-border transition-colors"
+              >
+                Tutup
               </button>
             </div>
           </div>
@@ -620,6 +726,13 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
                             <ExternalLink className="w-2.5 h-2.5 text-muted-foreground" />
                             <span>Update / Laporkan Stok</span>
                           </a>
+
+                          <button
+                            onClick={() => setShowAttributionModal(true)}
+                            className="text-[9px] text-muted-foreground/80 hover:text-foreground text-center mt-0.5 underline decoration-dotted transition-colors"
+                          >
+                            Sumber Data & Atribusi Komunitas
+                          </button>
                         </div>
                       );
                     })()}
