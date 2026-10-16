@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { CCTVChannel } from '@/types/cctv';
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
@@ -160,6 +161,11 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
   const [showAttributionModal, setShowAttributionModal] = useState(false);
   const [fuelStatusMap, setFuelStatusMap] = useState<Record<string, StationFuelStatus>>({});
   const [loadingFuel, setLoadingFuel] = useState<boolean>(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Initialize API key from env or localStorage
   useEffect(() => {
@@ -416,11 +422,11 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
         </div>
       )}
 
-      {/* ─── Bali Fuel Watch Attribution & Community Modal ─── */}
-      {showAttributionModal && (
+      {/* ─── Bali Fuel Watch Attribution & Community Modal (Rendered to body portal to ensure top-layer stacking) ─── */}
+      {mounted && showAttributionModal && createPortal(
         <div
           onClick={handleCloseAttributionModal}
-          className="fixed inset-0 z-[2000] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200"
+          className="fixed inset-0 z-[99999] bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200"
         >
           <div
             onClick={(e) => e.stopPropagation()}
@@ -509,7 +515,8 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
               </Button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ─── Leaflet Map Container ─── */}
