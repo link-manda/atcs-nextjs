@@ -6,13 +6,17 @@ import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { useTheme } from 'next-themes';
-import { Activity, Key, ExternalLink, X, Settings2, Check, Video, Camera, Fuel } from 'lucide-react';
+import { Activity, Key, ExternalLink, X, Settings2, Check, Video, Camera, Fuel, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { getBasemapTileConfig } from '@/lib/map-tile-config';
 import baliSPBUData from '@/data/bali-spbu.json';
+import spbuMapping from '@/data/spbu-bfw-mapping.json';
 import type { SPBUNode } from '@/scripts/fetch-bali-spbu';
 import { calculateHaversineDistance } from '@/lib/spbu-matcher';
+import type { StationFuelStatus } from '@/types/fuel';
+import { formatRelativeTime, getQueueDisplay } from '@/lib/fuel-utils';
 
 interface CCTVMapProps {
   cameras: CCTVChannel[];
@@ -153,6 +157,8 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
   const [showKeyModal, setShowKeyModal] = useState(false);
   const [inputKey, setInputKey] = useState('');
   const [keySaved, setKeySaved] = useState(false);
+  const [fuelStatusMap, setFuelStatusMap] = useState<Record<string, StationFuelStatus>>({});
+  const [loadingFuel, setLoadingFuel] = useState<boolean>(false);
 
   // Initialize API key from env or localStorage
   useEffect(() => {
@@ -161,6 +167,34 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
     const effectiveKey = envKey || storedKey;
     setApiKey(effectiveKey);
     setInputKey(effectiveKey);
+  }, []);
+
+  // Fetch fuel availability status from our cached aggregator
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchFuelStatus() {
+      try {
+        setLoadingFuel(true);
+        const res = await fetch('/api/fuel/status');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (isMounted && data.by_spbu_id) {
+          setFuelStatusMap(data.by_spbu_id);
+        }
+      } catch (err) {
+        console.error('Failed to load fuel status:', err);
+      } finally {
+        if (isMounted) setLoadingFuel(false);
+      }
+    }
+
+    fetchFuelStatus();
+    // Poll every 60 seconds
+    const interval = setInterval(fetchFuelStatus, 60000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   const handleToggleTraffic = () => {
@@ -486,6 +520,110 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
                       </div>
                     </div>
 
+                    {/* ─── Fuel Status & Queue Crowdsourcing HUD ─── */}
+                    {(() => {
+                      const fuelData = fuelStatusMap[spbu.id];
+                      const bfwId = (spbuMapping.spbu_to_bfw as any)[spbu.id]?.bfw_id;
+                      const queueInfo = getQueueDisplay(fuelData?.queue);
+
+                      return (
+                        <div className="flex flex-col gap-1.5 p-2 rounded-lg bg-secondary/30 border border-border/70">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-semibold text-foreground uppercase tracking-wider">
+                              Status BBM (Warga)
+                            </span>
+                            <span className="text-[9px] text-muted-foreground">
+                              {fuelData?.last_updated
+                                ? formatRelativeTime(fuelData.last_updated)
+                                : 'Belum ada laporan'}
+                            </span>
+                          </div>
+
+                          {/* Fuel Badges Grid */}
+                          <div className="grid grid-cols-3 gap-1 my-0.5">
+                            {/* Pertalite */}
+                            <div className="flex flex-col items-center justify-center p-1 rounded bg-background/80 border border-border/60">
+                              <span className="text-[9px] font-bold text-foreground">Pertalite</span>
+                              {fuelData?.pertalite ? (
+                                <span
+                                  className={`text-[9px] font-bold mt-0.5 px-1 py-0.2 rounded ${
+                                    fuelData.pertalite.available === 'available'
+                                      ? 'text-emerald-500 bg-emerald-500/10'
+                                      : 'text-rose-500 bg-rose-500/10'
+                                  }`}
+                                >
+                                  {fuelData.pertalite.available === 'available' ? 'ADA' : 'HABIS'}
+                                </span>
+                              ) : (
+                                <span className="text-[9px] text-muted-foreground mt-0.5">-</span>
+                              )}
+                            </div>
+
+                            {/* Pertamax */}
+                            <div className="flex flex-col items-center justify-center p-1 rounded bg-background/80 border border-border/60">
+                              <span className="text-[9px] font-bold text-foreground">Pertamax</span>
+                              {fuelData?.pertamax ? (
+                                <span
+                                  className={`text-[9px] font-bold mt-0.5 px-1 py-0.2 rounded ${
+                                    fuelData.pertamax.available === 'available'
+                                      ? 'text-blue-500 bg-blue-500/10'
+                                      : 'text-rose-500 bg-rose-500/10'
+                                  }`}
+                                >
+                                  {fuelData.pertamax.available === 'available' ? 'ADA' : 'HABIS'}
+                                </span>
+                              ) : (
+                                <span className="text-[9px] text-muted-foreground mt-0.5">-</span>
+                              )}
+                            </div>
+
+                            {/* Solar */}
+                            <div className="flex flex-col items-center justify-center p-1 rounded bg-background/80 border border-border/60">
+                              <span className="text-[9px] font-bold text-foreground">Solar</span>
+                              {fuelData?.solar ? (
+                                <span
+                                  className={`text-[9px] font-bold mt-0.5 px-1 py-0.2 rounded ${
+                                    fuelData.solar.available === 'available'
+                                      ? 'text-amber-500 bg-amber-500/10'
+                                      : 'text-rose-500 bg-rose-500/10'
+                                  }`}
+                                >
+                                  {fuelData.solar.available === 'available' ? 'ADA' : 'HABIS'}
+                                </span>
+                              ) : (
+                                <span className="text-[9px] text-muted-foreground mt-0.5">-</span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Queue Badge */}
+                          <div className="flex items-center justify-between pt-0.5">
+                            <span className="text-[10px] text-muted-foreground">Kondisi:</span>
+                            <span
+                              className={`text-[10px] font-medium px-1.5 py-0.5 rounded border ${queueInfo.badgeClass}`}
+                            >
+                              {queueInfo.label}
+                            </span>
+                          </div>
+
+                          {/* Report Button Link */}
+                          <a
+                            href={
+                              bfwId
+                                ? `https://balifuelwatch.vercel.app/?station=${bfwId}`
+                                : 'https://balifuelwatch.vercel.app/'
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full mt-1 py-1 px-2 rounded text-[10px] font-medium bg-secondary hover:bg-secondary/80 text-foreground border border-border flex items-center justify-center gap-1 transition-colors"
+                          >
+                            <ExternalLink className="w-2.5 h-2.5 text-muted-foreground" />
+                            <span>Update / Laporkan Stok</span>
+                          </a>
+                        </div>
+                      );
+                    })()}
+
                     {hasCamera && spbu.nearestCam && spbu.distanceToCam ? (
                       <div className="flex flex-col gap-1.5 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
                         <div className="flex items-center justify-between text-[11px]">
@@ -515,7 +653,7 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
                           ) : (
                             <>
                               <Video className="w-3 h-3" />
-                              <span>Pantau di Grid</span>
+                              <span>Pantau Visual di Grid</span>
                             </>
                           )}
                         </button>
