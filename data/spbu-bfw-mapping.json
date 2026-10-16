@@ -1,0 +1,1095 @@
+{
+  "generated_at": "2026-10-16T06:39:22.793Z",
+  "total_bfw_stations": 181,
+  "mapped_stations": 181,
+  "spbu_to_bfw": {
+    "n274750656": {
+      "bfw_id": 1,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Negara"
+    },
+    "n274813078": {
+      "bfw_id": 2,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Negara"
+    },
+    "n610371699": {
+      "bfw_id": 3,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Kuta"
+    },
+    "n610371788": {
+      "bfw_id": 4,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Renon"
+    },
+    "n641643890": {
+      "bfw_id": 5,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Tabanan"
+    },
+    "n941307526": {
+      "bfw_id": 6,
+      "distance_meters": 0,
+      "bfw_name": "SPBU 54.803.31 · Sunset Road"
+    },
+    "n945648527": {
+      "bfw_id": 7,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Nusa Dua"
+    },
+    "n963276323": {
+      "bfw_id": 8,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Tuban"
+    },
+    "n1291386618": {
+      "bfw_id": 9,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Amlapura"
+    },
+    "n1292872676": {
+      "bfw_id": 10,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Kuta"
+    },
+    "n1456289125": {
+      "bfw_id": 11,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Mengwi"
+    },
+    "n1502919830": {
+      "bfw_id": 12,
+      "distance_meters": 1,
+      "bfw_name": "SPBU 54.803.20 · Legian"
+    },
+    "n1534960000": {
+      "bfw_id": 13,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Sanur"
+    },
+    "n1675080290": {
+      "bfw_id": 14,
+      "distance_meters": 1,
+      "bfw_name": "SPBU 54.801.32 · Seminyak"
+    },
+    "n1830362205": {
+      "bfw_id": 15,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Jimbaran"
+    },
+    "n1963414951": {
+      "bfw_id": 16,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Petang"
+    },
+    "n1963414988": {
+      "bfw_id": 17,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Mengwi"
+    },
+    "n1963415557": {
+      "bfw_id": 18,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Canggu"
+    },
+    "n1963471634": {
+      "bfw_id": 19,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Renon"
+    },
+    "n2000869724": {
+      "bfw_id": 20,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Mengwi"
+    },
+    "n2148876485": {
+      "bfw_id": 21,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Amlapura"
+    },
+    "n2276389503": {
+      "bfw_id": 22,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Dalung"
+    },
+    "n2279234528": {
+      "bfw_id": 23,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Kerobokan"
+    },
+    "n2279259061": {
+      "bfw_id": 24,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Kuta"
+    },
+    "n2487421377": {
+      "bfw_id": 25,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Mengwi"
+    },
+    "n2487421443": {
+      "bfw_id": 26,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Baturiti"
+    },
+    "n2487422443": {
+      "bfw_id": 27,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Tabanan"
+    },
+    "n2487544914": {
+      "bfw_id": 28,
+      "distance_meters": 0,
+      "bfw_name": "SPBU 54.803.19 · Seminyak"
+    },
+    "n2488170415": {
+      "bfw_id": 29,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Sanur"
+    },
+    "n2498046486": {
+      "bfw_id": 30,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Renon"
+    },
+    "n2498046487": {
+      "bfw_id": 31,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Renon"
+    },
+    "n2498046488": {
+      "bfw_id": 32,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Renon"
+    },
+    "n2872212679": {
+      "bfw_id": 33,
+      "distance_meters": 0,
+      "bfw_name": "SPBU 54.803.06 · Kerobokan"
+    },
+    "n3175963462": {
+      "bfw_id": 34,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Renon"
+    },
+    "n3217531312": {
+      "bfw_id": 35,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Ungasan"
+    },
+    "n3219129615": {
+      "bfw_id": 36,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Sanur"
+    },
+    "n3292077086": {
+      "bfw_id": 37,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Denpasar"
+    },
+    "n3299570661": {
+      "bfw_id": 38,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Seririt"
+    },
+    "n3329762011": {
+      "bfw_id": 39,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Padangbai"
+    },
+    "n3530974108": {
+      "bfw_id": 40,
+      "distance_meters": 0,
+      "bfw_name": "SPBU 54.805.12 · Ubud"
+    },
+    "n3646990902": {
+      "bfw_id": 41,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Renon"
+    },
+    "n3671677724": {
+      "bfw_id": 42,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Renon"
+    },
+    "n3675164637": {
+      "bfw_id": 43,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Renon"
+    },
+    "n3718349380": {
+      "bfw_id": 44,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Renon"
+    },
+    "n3749170052": {
+      "bfw_id": 45,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Padangbai"
+    },
+    "n3749171670": {
+      "bfw_id": 46,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Candidasa"
+    },
+    "n3754488728": {
+      "bfw_id": 47,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Lovina"
+    },
+    "n3754491925": {
+      "bfw_id": 48,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Singaraja"
+    },
+    "n3780445716": {
+      "bfw_id": 49,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Renon"
+    },
+    "n3781991815": {
+      "bfw_id": 50,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Renon"
+    },
+    "n3784338063": {
+      "bfw_id": 51,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Denpasar"
+    },
+    "n3785230436": {
+      "bfw_id": 52,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Dawan"
+    },
+    "n3787237309": {
+      "bfw_id": 53,
+      "distance_meters": 1,
+      "bfw_name": "SPBU 54.801.35 · Ubung"
+    },
+    "n3791203569": {
+      "bfw_id": 54,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Denpasar"
+    },
+    "n3791297306": {
+      "bfw_id": 55,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Gianyar"
+    },
+    "n3791477572": {
+      "bfw_id": 56,
+      "distance_meters": 0,
+      "bfw_name": "SPBU 54.803.18 · Ubud"
+    },
+    "n3828371871": {
+      "bfw_id": 57,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Denpasar"
+    },
+    "n3834339466": {
+      "bfw_id": 58,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Denpasar"
+    },
+    "n3915627035": {
+      "bfw_id": 59,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Nusa Dua"
+    },
+    "n3921459354": {
+      "bfw_id": 60,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Abang"
+    },
+    "n4157284889": {
+      "bfw_id": 61,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Denpasar"
+    },
+    "n4198773706": {
+      "bfw_id": 62,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Sukawati"
+    },
+    "n4198773752": {
+      "bfw_id": 63,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Blahbatuh"
+    },
+    "n4217406976": {
+      "bfw_id": 64,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Legian"
+    },
+    "n4236778069": {
+      "bfw_id": 65,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Seminyak"
+    },
+    "n4247757589": {
+      "bfw_id": 66,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Bangli"
+    },
+    "n4249837879": {
+      "bfw_id": 67,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Ubung"
+    },
+    "n4422250828": {
+      "bfw_id": 68,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Sukawati"
+    },
+    "n4438497483": {
+      "bfw_id": 69,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Ubung"
+    },
+    "n4446960858": {
+      "bfw_id": 70,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Sukawati"
+    },
+    "n4446961398": {
+      "bfw_id": 71,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Gianyar"
+    },
+    "n4467737446": {
+      "bfw_id": 72,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Ubud"
+    },
+    "n4467738292": {
+      "bfw_id": 73,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Tegallalang"
+    },
+    "n4467738625": {
+      "bfw_id": 74,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Gerokgak"
+    },
+    "n4467739093": {
+      "bfw_id": 75,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Seririt"
+    },
+    "n4540413890": {
+      "bfw_id": 76,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Abang"
+    },
+    "n4593501492": {
+      "bfw_id": 77,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Blahbatuh"
+    },
+    "n4593535189": {
+      "bfw_id": 78,
+      "distance_meters": 1,
+      "bfw_name": "SPBU 54.805.09 · Ubud"
+    },
+    "n4593932704": {
+      "bfw_id": 79,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Sukawati"
+    },
+    "n4593932705": {
+      "bfw_id": 80,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Sukawati"
+    },
+    "n4704509289": {
+      "bfw_id": 81,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Seririt"
+    },
+    "n4710004789": {
+      "bfw_id": 82,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Nusa Penida"
+    },
+    "n4938684923": {
+      "bfw_id": 83,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Renon"
+    },
+    "n4954534046": {
+      "bfw_id": 84,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Nusa Dua"
+    },
+    "n4954534047": {
+      "bfw_id": 85,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Jimbaran"
+    },
+    "n4954534052": {
+      "bfw_id": 86,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Jimbaran"
+    },
+    "n4959546626": {
+      "bfw_id": 87,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Denpasar"
+    },
+    "n5015970023": {
+      "bfw_id": 88,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Dalung"
+    },
+    "n5103311413": {
+      "bfw_id": 89,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Ubung"
+    },
+    "n5104508763": {
+      "bfw_id": 90,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Kerobokan"
+    },
+    "n5126061305": {
+      "bfw_id": 91,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Renon"
+    },
+    "n5317781709": {
+      "bfw_id": 92,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Dalung"
+    },
+    "n5441794405": {
+      "bfw_id": 93,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Kuta"
+    },
+    "n5529682390": {
+      "bfw_id": 94,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Sanur"
+    },
+    "n5539012614": {
+      "bfw_id": 95,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Jimbaran"
+    },
+    "n5575035954": {
+      "bfw_id": 96,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Seminyak"
+    },
+    "n5624314821": {
+      "bfw_id": 97,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Nusa Penida"
+    },
+    "n5651550475": {
+      "bfw_id": 98,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Gerokgak"
+    },
+    "n6040845285": {
+      "bfw_id": 99,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Abang"
+    },
+    "n6050520885": {
+      "bfw_id": 100,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Amlapura"
+    },
+    "n6229193250": {
+      "bfw_id": 101,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Klungkung Semarapura"
+    },
+    "n6400253085": {
+      "bfw_id": 102,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Kerobokan"
+    },
+    "n6680805485": {
+      "bfw_id": 103,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Singaraja"
+    },
+    "n6712210032": {
+      "bfw_id": 104,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Tegallalang"
+    },
+    "n6712210047": {
+      "bfw_id": 105,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Kintamani"
+    },
+    "n6721922709": {
+      "bfw_id": 106,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Bangli"
+    },
+    "n6721922710": {
+      "bfw_id": 107,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Bunutin"
+    },
+    "n6875260470": {
+      "bfw_id": 108,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Buwit"
+    },
+    "n7105955685": {
+      "bfw_id": 109,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Kubutambahan"
+    },
+    "n7192803785": {
+      "bfw_id": 110,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Rendang"
+    },
+    "n7622285885": {
+      "bfw_id": 111,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Baturiti"
+    },
+    "n9274481126": {
+      "bfw_id": 112,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Tegallalang"
+    },
+    "n9464806554": {
+      "bfw_id": 113,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Tegallalang"
+    },
+    "n9498002342": {
+      "bfw_id": 114,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Kintamani"
+    },
+    "n9768297246": {
+      "bfw_id": 115,
+      "distance_meters": 0,
+      "bfw_name": "SPBU 54.803.01 · Ubung"
+    },
+    "n10779010555": {
+      "bfw_id": 116,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Negara"
+    },
+    "n10779013748": {
+      "bfw_id": 117,
+      "distance_meters": 1,
+      "bfw_name": "SPBU 54.822.16 · Negara"
+    },
+    "n10779027615": {
+      "bfw_id": 118,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Mendoyo"
+    },
+    "n10779073221": {
+      "bfw_id": 119,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Pekutatan"
+    },
+    "n10779078991": {
+      "bfw_id": 120,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Pekutatan"
+    },
+    "n10779108513": {
+      "bfw_id": 121,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Selemadeg"
+    },
+    "n10779121218": {
+      "bfw_id": 122,
+      "distance_meters": 0,
+      "bfw_name": "SPBU 54.821.04 · Tabanan"
+    },
+    "n10798201666": {
+      "bfw_id": 123,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Baturiti"
+    },
+    "n10799072563": {
+      "bfw_id": 124,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Lovina"
+    },
+    "n10800799512": {
+      "bfw_id": 125,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Baturiti"
+    },
+    "n10801074996": {
+      "bfw_id": 126,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Penebel"
+    },
+    "n10801074998": {
+      "bfw_id": 127,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Penebel"
+    },
+    "n10997051997": {
+      "bfw_id": 128,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Kerobokan"
+    },
+    "n11002446836": {
+      "bfw_id": 129,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Ubung"
+    },
+    "n11002446837": {
+      "bfw_id": 130,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Mengwi"
+    },
+    "n11002450532": {
+      "bfw_id": 131,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Darmasaba"
+    },
+    "n11002518744": {
+      "bfw_id": 132,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Tegallalang"
+    },
+    "n11048192289": {
+      "bfw_id": 133,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Padangbai"
+    },
+    "n11674186496": {
+      "bfw_id": 134,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Kubutambahan"
+    },
+    "n11707649769": {
+      "bfw_id": 135,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Sanur"
+    },
+    "n11951722650": {
+      "bfw_id": 136,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Lovina"
+    },
+    "n11957676499": {
+      "bfw_id": 137,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Nusa Penida"
+    },
+    "n12277190271": {
+      "bfw_id": 138,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Tejakula"
+    },
+    "n12293410046": {
+      "bfw_id": 139,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Negara"
+    },
+    "n12661989424": {
+      "bfw_id": 140,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Denpasar"
+    },
+    "n13948488673": {
+      "bfw_id": 141,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Nusa Dua"
+    },
+    "w209462178": {
+      "bfw_id": 142,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Amlapura"
+    },
+    "w225177250": {
+      "bfw_id": 143,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Petang"
+    },
+    "w311216627": {
+      "bfw_id": 144,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Ungasan"
+    },
+    "w374650214": {
+      "bfw_id": 145,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Renon"
+    },
+    "w374650232": {
+      "bfw_id": 146,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Renon"
+    },
+    "w375347728": {
+      "bfw_id": 147,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Denpasar"
+    },
+    "w419467852": {
+      "bfw_id": 148,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Tuban"
+    },
+    "w464475021": {
+      "bfw_id": 149,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Nusa Dua"
+    },
+    "w475757306": {
+      "bfw_id": 150,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Baturiti"
+    },
+    "w509677807": {
+      "bfw_id": 151,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Seririt"
+    },
+    "w509984088": {
+      "bfw_id": 152,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Tejakula"
+    },
+    "w512355161": {
+      "bfw_id": 153,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Ubud"
+    },
+    "w514001663": {
+      "bfw_id": 154,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Ubud"
+    },
+    "w514011012": {
+      "bfw_id": 155,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Gianyar"
+    },
+    "w522920168": {
+      "bfw_id": 156,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Renon"
+    },
+    "w541037284": {
+      "bfw_id": 157,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Klungkung Semarapura"
+    },
+    "w545825031": {
+      "bfw_id": 158,
+      "distance_meters": 1,
+      "bfw_name": "SPBU 54.805.20 · Ubud"
+    },
+    "w550979020": {
+      "bfw_id": 159,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Klungkung Semarapura"
+    },
+    "w559976070": {
+      "bfw_id": 160,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Seririt"
+    },
+    "w560893611": {
+      "bfw_id": 161,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Seririt"
+    },
+    "w563856417": {
+      "bfw_id": 162,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Kintamani"
+    },
+    "w577920894": {
+      "bfw_id": 163,
+      "distance_meters": 0,
+      "bfw_name": "SPBU 54.801.31 · Buluh Indah"
+    },
+    "w602497076": {
+      "bfw_id": 164,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Giri Emas"
+    },
+    "w714724146": {
+      "bfw_id": 165,
+      "distance_meters": 0,
+      "bfw_name": "SPBU 54.803.34 · Sunset Road"
+    },
+    "w753245598": {
+      "bfw_id": 166,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Dalung"
+    },
+    "w1087957090": {
+      "bfw_id": 167,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Gianyar"
+    },
+    "w1090641137": {
+      "bfw_id": 168,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Kerobokan"
+    },
+    "w1109033923": {
+      "bfw_id": 169,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Klungkung Semarapura"
+    },
+    "w1119410373": {
+      "bfw_id": 170,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Selemadeg"
+    },
+    "w1181397892": {
+      "bfw_id": 171,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Kintamani"
+    },
+    "w1184213626": {
+      "bfw_id": 172,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Singaraja"
+    },
+    "w1185103949": {
+      "bfw_id": 173,
+      "distance_meters": 1,
+      "bfw_name": "SPBU Pekutatan"
+    },
+    "w1190145498": {
+      "bfw_id": 174,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Negara"
+    },
+    "w1192654164": {
+      "bfw_id": 175,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Pekutatan"
+    },
+    "w1329030189": {
+      "bfw_id": 176,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Ubung"
+    },
+    "w1489545694": {
+      "bfw_id": 177,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Blahbatuh"
+    },
+    "w1532743149": {
+      "bfw_id": 178,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Gianyar"
+    },
+    "w1534383090": {
+      "bfw_id": 179,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Bangli"
+    },
+    "w1547522483": {
+      "bfw_id": 180,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Dalung"
+    },
+    "w1557359089": {
+      "bfw_id": 181,
+      "distance_meters": 0,
+      "bfw_name": "SPBU Renon"
+    }
+  },
+  "bfw_to_spbu": {
+    "1": "n274750656",
+    "2": "n274813078",
+    "3": "n610371699",
+    "4": "n610371788",
+    "5": "n641643890",
+    "6": "n941307526",
+    "7": "n945648527",
+    "8": "n963276323",
+    "9": "n1291386618",
+    "10": "n1292872676",
+    "11": "n1456289125",
+    "12": "n1502919830",
+    "13": "n1534960000",
+    "14": "n1675080290",
+    "15": "n1830362205",
+    "16": "n1963414951",
+    "17": "n1963414988",
+    "18": "n1963415557",
+    "19": "n1963471634",
+    "20": "n2000869724",
+    "21": "n2148876485",
+    "22": "n2276389503",
+    "23": "n2279234528",
+    "24": "n2279259061",
+    "25": "n2487421377",
+    "26": "n2487421443",
+    "27": "n2487422443",
+    "28": "n2487544914",
+    "29": "n2488170415",
+    "30": "n2498046486",
+    "31": "n2498046487",
+    "32": "n2498046488",
+    "33": "n2872212679",
+    "34": "n3175963462",
+    "35": "n3217531312",
+    "36": "n3219129615",
+    "37": "n3292077086",
+    "38": "n3299570661",
+    "39": "n3329762011",
+    "40": "n3530974108",
+    "41": "n3646990902",
+    "42": "n3671677724",
+    "43": "n3675164637",
+    "44": "n3718349380",
+    "45": "n3749170052",
+    "46": "n3749171670",
+    "47": "n3754488728",
+    "48": "n3754491925",
+    "49": "n3780445716",
+    "50": "n3781991815",
+    "51": "n3784338063",
+    "52": "n3785230436",
+    "53": "n3787237309",
+    "54": "n3791203569",
+    "55": "n3791297306",
+    "56": "n3791477572",
+    "57": "n3828371871",
+    "58": "n3834339466",
+    "59": "n3915627035",
+    "60": "n3921459354",
+    "61": "n4157284889",
+    "62": "n4198773706",
+    "63": "n4198773752",
+    "64": "n4217406976",
+    "65": "n4236778069",
+    "66": "n4247757589",
+    "67": "n4249837879",
+    "68": "n4422250828",
+    "69": "n4438497483",
+    "70": "n4446960858",
+    "71": "n4446961398",
+    "72": "n4467737446",
+    "73": "n4467738292",
+    "74": "n4467738625",
+    "75": "n4467739093",
+    "76": "n4540413890",
+    "77": "n4593501492",
+    "78": "n4593535189",
+    "79": "n4593932704",
+    "80": "n4593932705",
+    "81": "n4704509289",
+    "82": "n4710004789",
+    "83": "n4938684923",
+    "84": "n4954534046",
+    "85": "n4954534047",
+    "86": "n4954534052",
+    "87": "n4959546626",
+    "88": "n5015970023",
+    "89": "n5103311413",
+    "90": "n5104508763",
+    "91": "n5126061305",
+    "92": "n5317781709",
+    "93": "n5441794405",
+    "94": "n5529682390",
+    "95": "n5539012614",
+    "96": "n5575035954",
+    "97": "n5624314821",
+    "98": "n5651550475",
+    "99": "n6040845285",
+    "100": "n6050520885",
+    "101": "n6229193250",
+    "102": "n6400253085",
+    "103": "n6680805485",
+    "104": "n6712210032",
+    "105": "n6712210047",
+    "106": "n6721922709",
+    "107": "n6721922710",
+    "108": "n6875260470",
+    "109": "n7105955685",
+    "110": "n7192803785",
+    "111": "n7622285885",
+    "112": "n9274481126",
+    "113": "n9464806554",
+    "114": "n9498002342",
+    "115": "n9768297246",
+    "116": "n10779010555",
+    "117": "n10779013748",
+    "118": "n10779027615",
+    "119": "n10779073221",
+    "120": "n10779078991",
+    "121": "n10779108513",
+    "122": "n10779121218",
+    "123": "n10798201666",
+    "124": "n10799072563",
+    "125": "n10800799512",
+    "126": "n10801074996",
+    "127": "n10801074998",
+    "128": "n10997051997",
+    "129": "n11002446836",
+    "130": "n11002446837",
+    "131": "n11002450532",
+    "132": "n11002518744",
+    "133": "n11048192289",
+    "134": "n11674186496",
+    "135": "n11707649769",
+    "136": "n11951722650",
+    "137": "n11957676499",
+    "138": "n12277190271",
+    "139": "n12293410046",
+    "140": "n12661989424",
+    "141": "n13948488673",
+    "142": "w209462178",
+    "143": "w225177250",
+    "144": "w311216627",
+    "145": "w374650214",
+    "146": "w374650232",
+    "147": "w375347728",
+    "148": "w419467852",
+    "149": "w464475021",
+    "150": "w475757306",
+    "151": "w509677807",
+    "152": "w509984088",
+    "153": "w512355161",
+    "154": "w514001663",
+    "155": "w514011012",
+    "156": "w522920168",
+    "157": "w541037284",
+    "158": "w545825031",
+    "159": "w550979020",
+    "160": "w559976070",
+    "161": "w560893611",
+    "162": "w563856417",
+    "163": "w577920894",
+    "164": "w602497076",
+    "165": "w714724146",
+    "166": "w753245598",
+    "167": "w1087957090",
+    "168": "w1090641137",
+    "169": "w1109033923",
+    "170": "w1119410373",
+    "171": "w1181397892",
+    "172": "w1184213626",
+    "173": "w1185103949",
+    "174": "w1190145498",
+    "175": "w1192654164",
+    "176": "w1329030189",
+    "177": "w1489545694",
+    "178": "w1532743149",
+    "179": "w1534383090",
+    "180": "w1547522483",
+    "181": "w1557359089"
+  }
+}
