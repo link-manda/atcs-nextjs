@@ -170,6 +170,26 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
     setInputKey(effectiveKey);
   }, []);
 
+  // Auto-display Bali Fuel Watch attribution modal once on first visit
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const hasSeen = localStorage.getItem('bfw_attribution_dismissed');
+    if (!hasSeen) {
+      // Short delay for smooth entrance after map tiles start rendering
+      const timer = setTimeout(() => {
+        setShowAttributionModal(true);
+      }, 700);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const handleCloseAttributionModal = () => {
+    setShowAttributionModal(false);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('bfw_attribution_dismissed', 'true');
+    }
+  };
+
   // Fetch fuel availability status from our cached aggregator
   useEffect(() => {
     let isMounted = true;
@@ -263,53 +283,57 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
     <div className="w-full h-full relative bg-background isolate">
       {/* ─── Map Controls ─── */}
       <div className="absolute top-4 right-4 z-[1000] flex items-center gap-2">
-        <div className="flex items-center">
-          <button
+        <div className="flex items-center shadow-md backdrop-blur-md rounded-md overflow-hidden border border-amber-500/40 bg-amber-500/10 dark:bg-amber-500/15">
+          <Button
+            size="sm"
+            variant="ghost"
             onClick={() => setShowSPBU((prev) => !prev)}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-l-md text-xs font-medium font-sans transition-all shadow-md backdrop-blur-md border ${
+            className={`h-8 gap-1.5 px-3 rounded-none text-xs font-medium font-sans border-r border-amber-500/30 transition-colors ${
               showSPBU
-                ? 'bg-amber-500/15 border-amber-500/40 text-amber-600 dark:text-amber-300 ring-1 ring-amber-500/30'
-                : 'bg-background/90 border-border text-foreground hover:bg-secondary'
+                ? 'text-amber-600 dark:text-amber-300 hover:bg-amber-500/20 hover:text-amber-500'
+                : 'text-muted-foreground opacity-70 hover:opacity-100 hover:bg-secondary'
             }`}
             title="Tampilkan / Sembunyikan Titik SPBU se-Bali"
           >
             <Fuel className={`w-3.5 h-3.5 ${showSPBU ? 'text-amber-500 dark:text-amber-400' : 'text-muted-foreground'}`} />
             <span>Titik SPBU</span>
-          </button>
-          <button
+          </Button>
+          <Button
+            size="icon-sm"
+            variant="ghost"
             onClick={() => setShowAttributionModal(true)}
-            className={`px-2 py-1.5 rounded-r-md text-xs font-sans transition-all shadow-md backdrop-blur-md border border-l-0 ${
-              showSPBU
-                ? 'bg-amber-500/20 border-amber-500/40 text-amber-600 dark:text-amber-300 hover:bg-amber-500/30'
-                : 'bg-background/90 border-border text-muted-foreground hover:text-foreground hover:bg-secondary'
-            }`}
+            className="h-8 w-8 rounded-none text-amber-600 dark:text-amber-300 hover:bg-amber-500/20 hover:text-amber-500 transition-colors"
             title="Tentang Integrasi Data Bali Fuel Watch & Etika Komunitas"
           >
             <Info className="w-3.5 h-3.5" />
-          </button>
+          </Button>
         </div>
 
-        <button
+        <Button
+          size="sm"
+          variant="outline"
           onClick={handleToggleTraffic}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium font-sans transition-all shadow-md backdrop-blur-md border ${
-            showTraffic 
-              ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-300 ring-1 ring-emerald-500/30' 
+          className={`h-8 gap-2 px-3 text-xs font-medium font-sans shadow-md backdrop-blur-md transition-all ${
+            showTraffic
+              ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-300 ring-1 ring-emerald-500/30 hover:bg-emerald-500/20'
               : 'bg-background/90 border-border text-foreground hover:bg-secondary'
           }`}
           title="Pantauan Kepadatan Arus Lalu Lintas Real-Time"
         >
           <Activity className={`w-3.5 h-3.5 ${showTraffic ? 'animate-pulse text-emerald-500 dark:text-emerald-400' : 'text-muted-foreground'}`} />
           <span>Live Traffic</span>
-        </button>
+        </Button>
 
         {showTraffic && (
-          <button
+          <Button
+            size="icon-sm"
+            variant="outline"
             onClick={() => setShowKeyModal(true)}
-            className="p-1.5 rounded-md bg-background/90 border border-border text-muted-foreground hover:text-foreground shadow-md backdrop-blur-md"
+            className="h-8 w-8 bg-background/90 border border-border text-muted-foreground hover:text-foreground shadow-md backdrop-blur-md"
             title="Pengaturan API Key TomTom"
           >
             <Settings2 className="w-3.5 h-3.5" />
-          </button>
+          </Button>
         )}
       </div>
 
@@ -395,19 +419,21 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
       {/* ─── Bali Fuel Watch Attribution & Community Modal ─── */}
       {showAttributionModal && (
         <div
-          onClick={() => setShowAttributionModal(false)}
+          onClick={handleCloseAttributionModal}
           className="absolute inset-0 z-[1001] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
         >
           <div
             onClick={(e) => e.stopPropagation()}
             className="bg-background border border-border rounded-xl p-5 max-w-lg w-full shadow-2xl flex flex-col gap-4 relative animate-in fade-in zoom-in-95 font-sans"
           >
-            <button
-              onClick={() => setShowAttributionModal(false)}
-              className="absolute top-4 right-4 p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
+            <Button
+              size="icon-xs"
+              variant="ghost"
+              onClick={handleCloseAttributionModal}
+              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
             >
               <X className="w-4 h-4" />
-            </button>
+            </Button>
 
             <div className="flex items-center gap-3 border-b border-border/60 pb-3">
               <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center flex-shrink-0">
@@ -473,12 +499,14 @@ export default function CCTVMap({ cameras, selectedIds, onCameraClick }: CCTVMap
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
 
-              <button
-                onClick={() => setShowAttributionModal(false)}
-                className="px-4 py-1.5 rounded-md text-xs font-semibold bg-secondary hover:bg-secondary/80 text-foreground border border-border transition-colors"
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={handleCloseAttributionModal}
+                className="text-xs font-semibold"
               >
-                Tutup
-              </button>
+                Tutup & Mengerti
+              </Button>
             </div>
           </div>
         </div>
