@@ -3,7 +3,8 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useMemo } from 'react';
-import type { CCTVChannel } from '@/types/cctv';
+import SourceStatusBanner from '@/components/cctv/SourceStatusBanner';
+import type { CCTVChannel, CCTVSourceHealth } from '@/types/cctv';
 import { Video, BarChart3, ArrowRight, MapPin, Radio, Compass, Shield } from 'lucide-react';
 
 const DashboardMap = dynamic(() => import('@/components/dashboard/DashboardMap'), {
@@ -36,9 +37,12 @@ const REGION_COLORS: Record<string, string> = {
 
 interface Props {
   channels: CCTVChannel[];
+  sourceHealth?: CCTVSourceHealth[];
 }
 
-export default function DashboardClient({ channels }: Props) {
+export default function DashboardClient({ channels, sourceHealth = [] }: Props) {
+  const degradedSources = sourceHealth.filter((source) => source.status !== 'ok');
+
   const stats = useMemo(() => {
     const total = channels.length;
     const withGPS = channels.filter((c) => c.lat !== null && c.lng !== null).length;
@@ -73,11 +77,29 @@ export default function DashboardClient({ channels }: Props) {
               Sebaran Titik Pantau Bali
             </h2>
           </div>
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
-            <span>ONLINE</span>
+          <div
+            className={
+              degradedSources.length > 0
+                ? "flex items-center gap-1.5 px-2 py-0.5 rounded bg-tertiary/10 border border-tertiary/25 text-tertiary text-[10px] font-mono font-medium"
+                : "flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono font-medium"
+            }
+          >
+            <span
+              className={
+                degradedSources.length > 0
+                  ? "w-1.5 h-1.5 rounded-full bg-tertiary"
+                  : "w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse"
+              }
+            />
+            <span>{degradedSources.length > 0 ? 'SEBAGIAN' : 'ONLINE'}</span>
           </div>
         </div>
+
+        {degradedSources.length > 0 && (
+          <div className="px-3.5 pt-3.5 flex-shrink-0">
+            <SourceStatusBanner health={sourceHealth} compact />
+          </div>
+        )}
 
         {/* Metric Cards */}
         <div className="p-3.5 grid grid-cols-2 gap-2.5 flex-shrink-0">

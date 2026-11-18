@@ -13,12 +13,21 @@ export type CCTVRegion =
   | 'Bangli'
   | 'Lainnya';
 
-export interface NearbySPBU {
-  id: string | number;
-  name: string;
-  operator?: string;
-  distance_meters: number;
-  is_panoramic_recommended?: boolean;
+/**
+ * Kondisi sebuah sumber data CCTV.
+ * - `ok`          : sumber membalas normal dan mengirim kanal.
+ * - `maintenance` : sumber mengalihkan seluruh trafik ke halaman pemeliharaan.
+ * - `blocked`     : permintaan ditolak WAF di depan sumber (kode nonstandar).
+ * - `unavailable` : gangguan lain (koneksi gagal, HTTP error, payload kosong).
+ */
+export type CCTVSourceStatus = 'ok' | 'maintenance' | 'blocked' | 'unavailable';
+
+export interface CCTVSourceHealth {
+  id: 'provinsi' | 'denpasar' | 'buleleng';
+  label: string;
+  status: CCTVSourceStatus;
+  channelCount: number;
+  detail?: string;
 }
 
 export interface CCTVChannel {
@@ -31,5 +40,4 @@ export interface CCTVChannel {
   player_type: PlayerType;
   region: CCTVRegion;
   is_online?: boolean;
-  nearby_spbu?: NearbySPBU;
 }

@@ -1,25 +1,38 @@
-node_modules
+# ─── Dependencies & build output ───
+node_modules/
 .next/
-.DS_Store
+.swc/
+out/
 *.tsbuildinfo
-.superpowers/
+
+# ─── OS & log ───
+.DS_Store
+*.log
+npm-debug.log*
+
+# ─── Environment ───
+.env
 .env.local
+.env.*.local
 
-# Test scripts
-test-api.js
-test-puppeteer*.js
-
-# AI agent configs (not part of app)
+# ─── AI / MCP tooling (bukan bagian aplikasi) ───
 .agents/
+.claude/
 .gemini/
 .opencode/
-.claude/
+.superpowers/
+graphify-out/
+.mcp.json
+skills-lock.json
+CLAUDE.md
+GEMINI.md
 
-# Misc non-app folders
+# ─── Arsip & scratch lokal ───
 Users/
 docs/
 hooks/
-graphify-out
+test-api.js
+test-puppeteer*.js
 
-# Local sensitive data
+# ─── Data sensitif lokal ───
 atcs-dps.json

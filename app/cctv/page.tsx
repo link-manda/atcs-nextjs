@@ -1,15 +1,17 @@
 import CCTVPageClient from './CCTVPageClient';
+import SourceStatusBanner from '@/components/cctv/SourceStatusBanner';
 import {
   CCTV_DATA_REVALIDATE_SECONDS,
   getAllCCTVChannels,
+  getCCTVSourceHealth,
 } from '@/data/cctv-api';
 
 export const revalidate = CCTV_DATA_REVALIDATE_SECONDS;
 
 export const metadata = {
-  title: 'Pantau CCTV Jalan & Antrean SPBU Bali Live',
+  title: 'Pantau CCTV Jalan & Lalu Lintas Bali Live',
   description:
-    'Streaming langsung 90+ kamera CCTV lalu lintas persimpangan dan titik pantau SPBU di Denpasar, Badung, dan wilayah Bali secara real-time.',
+    'Streaming langsung 90+ kamera CCTV lalu lintas persimpangan di Denpasar, Badung, dan wilayah Bali secara real-time.',
   alternates: {
     canonical: '/cctv',
   },
@@ -17,11 +19,22 @@ export const metadata = {
 
 export default async function CCTVPage() {
   try {
-    const channels = await getAllCCTVChannels();
+    const [channels, health] = await Promise.all([
+      getAllCCTVChannels(),
+      getCCTVSourceHealth(),
+    ]);
+    const hasDegradedSource = health.some((source) => source.status !== 'ok');
 
     return (
-      <div className="h-[calc(100vh-5.75rem)] overflow-hidden">
-        <CCTVPageClient channels={channels} />
+      <div className="h-[calc(100vh-5.75rem)] overflow-hidden flex flex-col">
+        {hasDegradedSource && (
+          <div className="flex-shrink-0 px-3 md:px-4 pt-3 md:pt-4">
+            <SourceStatusBanner health={health} />
+          </div>
+        )}
+        <div className="flex-1 min-h-0">
+          <CCTVPageClient channels={channels} />
+        </div>
       </div>
     );
   } catch {

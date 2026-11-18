@@ -2,6 +2,7 @@ import DashboardClient from '@/app/DashboardClient';
 import {
   CCTV_DATA_REVALIDATE_SECONDS,
   getAllCCTVChannels,
+  getCCTVSourceHealth,
 } from '@/data/cctv-api';
 
 export const revalidate = CCTV_DATA_REVALIDATE_SECONDS;
@@ -14,8 +15,11 @@ export const metadata = {
 
 export default async function DashboardPage() {
   try {
-    const channels = await getAllCCTVChannels();
-    return <DashboardClient channels={channels} />;
+    const [channels, health] = await Promise.all([
+      getAllCCTVChannels(),
+      getCCTVSourceHealth(),
+    ]);
+    return <DashboardClient channels={channels} sourceHealth={health} />;
   } catch {
     return (
       <div className="px-4 md:px-8 py-6">

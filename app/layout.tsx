@@ -13,18 +13,16 @@ const baseUrl = "https://atcs.andhira-tech.my.id";
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "CCTV Bali Live — Pantau Macet & Antrean SPBU Real-Time | ATCS Bali",
+    default: "CCTV Bali Live — Pantau Macet & Lalu Lintas Real-Time | ATCS Bali",
     template: "%s | CCTV ATCS Bali",
   },
   description:
-    "Pantau siaran langsung kamera CCTV ATCS se-Bali, cek antrean SPBU, dan kondisi kemacetan lalu lintas real-time di Denpasar, Badung, Buleleng, dan sekitarnya.",
+    "Pantau siaran langsung kamera CCTV ATCS se-Bali dan kondisi kemacetan lalu lintas real-time di Denpasar, Badung, Buleleng, dan sekitarnya.",
   keywords: [
     "CCTV Bali",
     "CCTV Bali Live",
     "ATCS Denpasar",
     "ATCS Bali",
-    "Pantau Antrean SPBU Bali",
-    "CCTV SPBU Bali",
     "Macet Bali Live",
     "Kamera Lalu Lintas Bali",
     "CCTV Jalan Raya Bali",
@@ -41,15 +39,15 @@ export const metadata: Metadata = {
     locale: "id_ID",
     url: baseUrl,
     siteName: "Bali Command Center — ATCS CCTV Live",
-    title: "CCTV Bali Live — Pantau Macet & Antrean SPBU Real-Time",
+    title: "CCTV Bali Live — Pantau Macet & Lalu Lintas Real-Time",
     description:
-      "Akses 90+ siaran langsung kamera CCTV ATCS Bali, peta interaktif kepadatan lalu lintas, dan pemantau antrean SPBU se-Bali secara gratis dan cepat.",
+      "Akses 90+ siaran langsung kamera CCTV ATCS Bali dan peta interaktif kepadatan lalu lintas se-Bali secara gratis dan cepat.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "CCTV Bali Live — Pantau Macet & Antrean SPBU Real-Time",
+    title: "CCTV Bali Live — Pantau Macet & Lalu Lintas Real-Time",
     description:
-      "Akses 90+ siaran langsung kamera CCTV ATCS Bali, peta interaktif kepadatan lalu lintas, dan pemantau antrean SPBU se-Bali.",
+      "Akses 90+ siaran langsung kamera CCTV ATCS Bali dan peta interaktif kepadatan lalu lintas se-Bali.",
   },
   robots: {
     index: true,

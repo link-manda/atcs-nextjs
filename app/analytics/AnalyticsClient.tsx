@@ -2,7 +2,8 @@
 
 import dynamic from 'next/dynamic';
 import { useMemo } from 'react';
-import type { CCTVChannel } from '@/types/cctv';
+import type { CCTVChannel, CCTVSourceHealth } from '@/types/cctv';
+import SourceStatusBanner from '@/components/cctv/SourceStatusBanner';
 import {
   BarChart3,
   Video,
@@ -41,9 +42,10 @@ const REGION_COLORS: Record<string, string> = {
 
 interface Props {
   channels: CCTVChannel[];
+  sourceHealth?: CCTVSourceHealth[];
 }
 
-export default function AnalyticsClient({ channels }: Props) {
+export default function AnalyticsClient({ channels, sourceHealth = [] }: Props) {
   const stats = useMemo(() => {
     const total = channels.length;
     const withGPS = channels.filter((c) => c.lat !== null && c.lng !== null).length;
@@ -89,6 +91,10 @@ export default function AnalyticsClient({ channels }: Props) {
           </div>
         </div>
       </header>
+
+      {sourceHealth.some((source) => source.status !== 'ok') && (
+        <SourceStatusBanner health={sourceHealth} className="mb-4" />
+      )}
 
       {/* ─── Bento Grid ─── */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-4">

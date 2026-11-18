@@ -2,6 +2,7 @@ import AnalyticsClient from './AnalyticsClient';
 import {
   CCTV_DATA_REVALIDATE_SECONDS,
   getAllCCTVChannels,
+  getCCTVSourceHealth,
 } from '@/data/cctv-api';
 
 export const revalidate = CCTV_DATA_REVALIDATE_SECONDS;
@@ -17,8 +18,11 @@ export const metadata = {
 
 export default async function AnalyticsPage() {
   try {
-    const channels = await getAllCCTVChannels();
-    return <AnalyticsClient channels={channels} />;
+    const [channels, health] = await Promise.all([
+      getAllCCTVChannels(),
+      getCCTVSourceHealth(),
+    ]);
+    return <AnalyticsClient channels={channels} sourceHealth={health} />;
   } catch {
     return (
       <div className="px-4 md:px-8 py-6">

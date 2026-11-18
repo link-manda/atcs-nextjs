@@ -2,13 +2,22 @@ import 'server-only';
 
 import { cache } from 'react';
 import { detectPlayerType, detectRegion } from '@/lib/cctv-utils';
-import { enrichChannelWithSPBU } from '@/lib/spbu-matcher';
-import type { CCTVChannel, CCTVRegion } from '@/types/cctv';
-import baliSPBUData from '@/data/bali-spbu.json';
-import type { SPBUNode } from '@/scripts/fetch-bali-spbu';
+import { classifyDenpasarResponse, classifyNetworkFailure } from '@/lib/cctv-source-status';
+import type { CCTVChannel, CCTVRegion, CCTVSourceHealth, CCTVSourceStatus } from '@/types/cctv';
 
 const DEFAULT_CCTV_API_URL = 'https://balisatudata.baliprov.go.id/api/v1/report-cctv';
+const DENPASAR_API_URL = 'https://atcs.denpasarkota.go.id/api/v3/pv/ldevice';
 const CCTV_REVALIDATE_SECONDS = 900;
+
+/**
+ * Hasil satu sumber data. `status` membuat kegagalan terlihat oleh UI, bukan
+ * ditelan diam-diam menjadi array kosong.
+ */
+interface SourceResult {
+  status: CCTVSourceStatus;
+  channels: CCTVChannel[];
+  detail?: string;
+}
 
 interface RawCCTVEntry {
   cctv_id?: number | string;
@@ -77,39 +86,77 @@ function mapToChannel(entry: RawCCTVEntry): CCTVChannel {
   };
 }
 
-const loadCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
-  const endpoint = process.env.CCTV_API_URL ?? DEFAULT_CCTV_API_URL;
-  const response = await fetch(endpoint, {
-    next: { revalidate: CCTV_REVALIDATE_SECONDS },
-    headers: {
-      Accept: 'application/json',
-    },
-  });
+const loadCCTVChannels = cache(async (): Promise<SourceResult> => {
+  try {
+    const endpoint = process.env.CCTV_API_URL ?? DEFAULT_CCTV_API_URL;
+    const response = await fetch(endpoint, {
+      next: { revalidate: CCTV_REVALIDATE_SECONDS },
+      headers: {
+        Accept: 'application/json',
+      },
+    });
 
-  if (!response.ok) {
-    throw new Error(`CCTV API request failed with status ${response.status}`);
+    if (!response.ok) {
+      return {
+        status: 'unavailable',
+        channels: [],
+        detail: `Bali Satu Data membalas HTTP ${response.status}.`,
+      };
+    }
+
+    const payload = (await response.json()) as CCTVApiResponse;
+    const entries = normalizeEntries(payload.data);
+
+    if (!entries.length) {
+      return {
+        status: 'unavailable',
+        channels: [],
+        detail: 'Bali Satu Data mengirim payload tanpa kanal.',
+      };
+    }
+
+    const channels = entries
+      .map(mapToChannel)
+      .filter((c) => !c.streaming_url.includes('shinobi.bulelengkab.go.id') && c.region !== 'Buleleng');
+
+    return { status: 'ok', channels };
+  } catch (error) {
+    console.error('[cctv] Gagal mengambil data Bali Satu Data:', error);
+    return { ...classifyNetworkFailure(error), channels: [] };
   }
-
-  const payload = (await response.json()) as CCTVApiResponse;
-  const entries = normalizeEntries(payload.data);
-
-  if (!entries.length) {
-    throw new Error('CCTV API payload contains no channels');
-  }
-
-  return entries
-    .map(mapToChannel)
-    .filter((c) => !c.streaming_url.includes('shinobi.bulelengkab.go.id') && c.region !== 'Buleleng');
 });
 
 export async function getCCTVChannels(): Promise<CCTVChannel[]> {
-  return loadCCTVChannels();
+  const { status, detail, channels } = await loadCCTVChannels();
+  if (status !== 'ok') {
+    throw new Error(detail ?? 'CCTV API request failed');
+  }
+  return channels;
 }
 
-const loadDenpasarCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
-  const DENPASAR_API_URL = 'https://atcs.denpasarkota.go.id/api/v3/pv/ldevice';
+interface RawDenpasarCamera {
+  nama?: string;
+  nama_alias?: string;
+  url_proxy_hls?: string;
+}
+
+interface RawDenpasarLocation {
+  id_lokasi: number;
+  lat_lokasi?: number | string | null;
+  lon_lokasi?: number | string | null;
+  tb_device_lokasi?: RawDenpasarCamera[];
+}
+
+interface DenpasarApiResponse {
+  data?: RawDenpasarLocation[];
+}
+
+const loadDenpasarCCTVChannels = cache(async (): Promise<SourceResult> => {
   try {
     const response = await fetch(DENPASAR_API_URL, {
+      // Redirect ditangani sendiri supaya 308 ke halaman pemeliharaan bisa
+      // dibedakan dari gangguan lain, bukan berakhir sebagai 403 samar.
+      redirect: 'manual',
       next: { revalidate: CCTV_REVALIDATE_SECONDS },
       headers: {
         Accept: 'application/json',
@@ -119,15 +166,23 @@ const loadDenpasarCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
       },
     });
 
-    if (!response.ok) return [];
+    const outcome = classifyDenpasarResponse(
+      response.status,
+      response.headers.get('location')
+    );
 
-    const result = await response.json();
+    if (outcome.status !== 'ok') {
+      console.warn(`[cctv] ATCS Denpasar ${outcome.status}: ${outcome.detail ?? '-'}`);
+      return { status: outcome.status, channels: [], detail: outcome.detail };
+    }
+
+    const result = (await response.json()) as DenpasarApiResponse;
     const channels: CCTVChannel[] = [];
 
-    if (result && result.data && Array.isArray(result.data)) {
-      result.data.forEach((lokasi: any) => {
+    if (result && Array.isArray(result.data)) {
+      result.data.forEach((lokasi) => {
         if (lokasi.tb_device_lokasi && Array.isArray(lokasi.tb_device_lokasi)) {
-          lokasi.tb_device_lokasi.forEach((cam: any, idx: number) => {
+          lokasi.tb_device_lokasi.forEach((cam, idx) => {
             const rawUrl = (cam.url_proxy_hls || '').trim().replace(/\/+$/, '');
             const m3u8Url = rawUrl ? `${rawUrl}/index.m3u8` : '';
             if (!m3u8Url) return;
@@ -147,10 +202,18 @@ const loadDenpasarCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
       });
     }
 
-    return channels;
+    if (!channels.length) {
+      return {
+        status: 'unavailable',
+        channels: [],
+        detail: 'ATCS Denpasar membalas normal tetapi tanpa kanal kamera.',
+      };
+    }
+
+    return { status: 'ok', channels };
   } catch (error) {
-    console.error('Failed to load Denpasar CCTV:', error);
-    return [];
+    console.error('[cctv] Gagal mengambil data ATCS Denpasar:', error);
+    return { ...classifyNetworkFailure(error), channels: [] };
   }
 });
 
@@ -181,7 +244,7 @@ interface BulelengMonitor {
   status?: string;
 }
 
-const loadBulelengCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
+const loadBulelengCCTVChannels = cache(async (): Promise<SourceResult> => {
   const BULELENG_API_KEY = process.env.BULELENG_API_KEY || 'Amk60KFacq87lQMvTCMHu17u00ONuC';
   const BULELENG_GROUP = process.env.BULELENG_GROUP || 'admin';
   const BULELENG_API_URL = `https://shinobi.bulelengkab.go.id/${BULELENG_API_KEY}/monitor/${BULELENG_GROUP}`;
@@ -195,12 +258,24 @@ const loadBulelengCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
       },
     });
 
-    if (!response.ok) return [];
+    if (!response.ok) {
+      return {
+        status: 'unavailable',
+        channels: [],
+        detail: `Shinobi Buleleng membalas HTTP ${response.status}.`,
+      };
+    }
 
     const data = (await response.json()) as BulelengMonitor[];
-    if (!Array.isArray(data)) return [];
+    if (!Array.isArray(data)) {
+      return {
+        status: 'unavailable',
+        channels: [],
+        detail: 'Shinobi Buleleng mengirim payload yang tidak dikenali.',
+      };
+    }
 
-    return data.map((monitor, idx) => {
+    const channels: CCTVChannel[] = data.map((monitor, idx) => {
       const mid = monitor.mid;
       const meta = BULELENG_MONITOR_METADATA[mid];
       const chName = meta?.name || monitor.name || `Buleleng CCTV ${mid}`;
@@ -225,19 +300,58 @@ const loadBulelengCCTVChannels = cache(async (): Promise<CCTVChannel[]> => {
         is_online: monitor.mode !== 'stop',
       };
     });
+
+    return { status: 'ok', channels };
   } catch (error) {
-    console.error('Failed to load Buleleng CCTV:', error);
-    return [];
+    console.error('[cctv] Gagal mengambil data Shinobi Buleleng:', error);
+    return { ...classifyNetworkFailure(error), channels: [] };
   }
 });
 
+const SOURCE_LABELS: Record<CCTVSourceHealth['id'], string> = {
+  provinsi: 'Bali Satu Data (Provinsi)',
+  denpasar: 'ATCS Denpasar',
+  buleleng: 'Shinobi Buleleng',
+};
+
+function toSourceHealth(id: CCTVSourceHealth['id'], result: SourceResult): CCTVSourceHealth {
+  return {
+    id,
+    label: SOURCE_LABELS[id],
+    status: result.status,
+    channelCount: result.channels.length,
+    detail: result.detail,
+  };
+}
+
 export async function getBulelengCCTVs(): Promise<CCTVChannel[]> {
-  return loadBulelengCCTVChannels();
+  const { channels } = await loadBulelengCCTVChannels();
+  return channels;
 }
 
 export async function getDenpasarCCTVs(): Promise<CCTVChannel[]> {
-  return loadDenpasarCCTVChannels();
+  const { channels } = await loadDenpasarCCTVChannels();
+  return channels;
 }
+
+/**
+ * Kondisi tiap sumber data, dipakai UI untuk memberi tahu pengguna saat kamera
+ * sengaja disembunyikan. Aman dipanggil bersama `getAllCCTVChannels()` karena
+ * setiap loader dibungkus `cache()`, jadi fetch tetap satu kali per render.
+ */
+export const getCCTVSourceHealth = cache(async (): Promise<CCTVSourceHealth[]> => {
+  const [provinsi, denpasar, buleleng] = await Promise.all([
+    loadCCTVChannels(),
+    loadDenpasarCCTVChannels(),
+    loadBulelengCCTVChannels(),
+  ]);
+
+  return [
+    toSourceHealth('provinsi', provinsi),
+    toSourceHealth('denpasar', denpasar),
+    toSourceHealth('buleleng', buleleng),
+  ];
+});
 
 export async function getAllCCTVChannels(): Promise<CCTVChannel[]> {
   const [provincial, denpasar, buleleng] = await Promise.all([
@@ -247,8 +361,7 @@ export async function getAllCCTVChannels(): Promise<CCTVChannel[]> {
   ]);
   
   const merged = [...provincial, ...denpasar, ...buleleng];
-  const spbuList = baliSPBUData as SPBUNode[];
-  return merged.map((cam) => enrichChannelWithSPBU(cam, spbuList));
+  return merged;
 }
 
 export async function getCCTVByRegion(): Promise<Record<string, CCTVChannel[]>> {

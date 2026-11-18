@@ -6,9 +6,9 @@ export function JsonLd() {
         '@type': 'WebSite',
         '@id': 'https://atcs.andhira-tech.my.id/#website',
         url: 'https://atcs.andhira-tech.my.id',
-        name: 'CCTV ATCS Bali — Pantau Macet & SPBU Real-Time',
+        name: 'CCTV ATCS Bali — Pantau Macet & Lalu Lintas Real-Time',
         description:
-          'Sistem pemantau siaran langsung kamera CCTV ATCS se-Bali, cek antrean SPBU, dan kondisi kemacetan lalu lintas real-time.',
+          'Sistem pemantau siaran langsung kamera CCTV ATCS se-Bali dan kondisi kemacetan lalu lintas real-time.',
         inLanguage: 'id-ID',
       },
       {
